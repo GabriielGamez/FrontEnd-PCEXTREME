@@ -2,20 +2,27 @@
     <div class="w-full px-8 md:px-16 lg:px-24 h-20 flex justify-between items-center">
         
         <div class="flex items-center gap-3 cursor-pointer">
-            <img src="./assets/logo.png" alt="PC Extreme" class="h-10 w-10 object-contain">
+            <img src="/assets/logo.png" alt="PC Extreme" class="h-10 w-10 object-contain">
             <span class="font-extrabold text-xl tracking-wide uppercase">PC Extreme</span>
         </div>
 
         <nav class="hidden md:flex gap-8 text-sm font-semibold">
-            <a href="#" class="hover:text-[#7ed957] transition duration-300">Inicio</a>
-            <a href="#" class="hover:text-[#7ed957] transition duration-300">Consulta tu equipo</a>
-            <a href="#" class="hover:text-[#7ed957] transition duration-300">Productos</a>
-            <a href="#" class="hover:text-[#7ed957] transition duration-300">Sobre nosotros</a>
+            <a href="/index.html" class="hover:text-[#7ed957] transition duration-300">Inicio</a>
+            <a href="/consultaequipo" class="hover:text-[#7ed957] transition duration-300">Consulta tu equipo</a>
+            <a href="/productos" class="hover:text-[#7ed957] transition duration-300">Productos</a>
+            <a href="contacto" class="hover:text-[#7ed957] transition duration-300">Sobre nosotros</a>
         </nav>
 
-        <button class="bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-2 px-6 rounded-full text-sm transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.4)]">
-            Cuenta
-        </button>
+       <div class="relative">
+            <button id="authButton" class="bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-2 px-6 rounded-full text-sm transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.4)]">
+                Cuenta
+            </button>
+
+            <div id="authMenu" class="hidden absolute right-0 mt-3 w-40 bg-[#1e1e1e] border border-gray-700 rounded-lg shadow-xl py-2 z-50">
+                <a href="/public/login.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Iniciar Sesión</a>
+                <a href="/public/login.html?tab=registro" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Registrarse</a>
+            </div>
+        </div>
         
     </div>
 </header>
