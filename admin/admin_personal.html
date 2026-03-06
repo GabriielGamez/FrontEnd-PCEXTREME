@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PC EXTREME — Gestión de Personal</title>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-[#0a0a0a] text-white antialiased">
+
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800"></header>
+
+    <main id="contenedor-gestion-personal" class="w-full px-8 md:px-16 lg:px-24 py-12">
+        
+        <div id="cabecera-pagina" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold text-white">Gestión de Personal</h2>
+                <p class="text-gray-400 mt-2">Administra los accesos y roles de los empleados del sistema.</p>
+            </div>
+            <button onclick="abrirModal()" class="w-full md:w-auto bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-3 px-6 rounded-lg transition duration-300 shadow-[0_0_10px_rgba(126,217,87,0.2)]">
+                + Nuevo Empleado
+            </button>
+        </div>
+
+        <div id="contenedor-tabla-personal" class="overflow-x-auto bg-[#111] rounded-xl border border-gray-800 shadow-lg">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-black text-gray-400 uppercase text-xs tracking-wider border-b border-gray-800">
+                        <th class="p-4">Nombre / ID</th>
+                        <th class="p-4">Rol</th>
+                        <th class="p-4">Contacto</th>
+                        <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-gray-800">
+                    
+                    <tr class="hover:bg-[#1a1a1a] transition duration-200">
+                        <td class="p-4">
+                            <strong class="text-white text-base block">Cristhian Vargas</strong>
+                            <span class="text-gray-500 text-xs mt-1">ID: 1</span>
+                        </td>
+                        <td class="p-4">
+                            <span class="bg-green-900 text-green-300 border border-green-700 py-1 px-3 rounded-full text-xs font-bold tracking-wide">
+                                Administrador
+                            </span>
+                        </td>
+                        <td class="p-4 text-gray-300">
+                            <div class="mb-1">✉️ admin@pcextreme.com</div>
+                            <div>📞 555-111-2222</div>
+                        </td>
+                        <td class="p-4 text-right space-x-3">
+                            <button onclick="abrirModal()" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
+                            <button class="text-gray-600 cursor-not-allowed font-semibold" title="No puedes eliminar tu propia cuenta">Eliminar</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-[#1a1a1a] transition duration-200">
+                        <td class="p-4">
+                            <strong class="text-white text-base block">Laura Gómez</strong>
+                            <span class="text-gray-500 text-xs mt-1">ID: 4</span>
+                        </td>
+                        <td class="p-4">
+                            <span class="bg-purple-900 text-purple-300 border border-purple-700 py-1 px-3 rounded-full text-xs font-bold tracking-wide">
+                                Recepcionista
+                            </span>
+                        </td>
+                        <td class="p-4 text-gray-300">
+                            <div class="mb-1">✉️ laura.g@pcextreme.com</div>
+                            <div>📞 555-333-4444</div>
+                        </td>
+                        <td class="p-4 text-right space-x-3">
+                            <button onclick="abrirModal()" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
+                            <button class="text-red-500 hover:text-red-400 transition font-semibold" onclick="confirmarEliminacion()">Eliminar</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-[#1a1a1a] transition duration-200">
+                        <td class="p-4">
+                            <strong class="text-white text-base block">Roberto Martínez</strong>
+                            <span class="text-gray-500 text-xs mt-1">ID: 7</span>
+                        </td>
+                        <td class="p-4">
+                            <span class="bg-blue-900 text-blue-300 border border-blue-700 py-1 px-3 rounded-full text-xs font-bold tracking-wide">
+                                Técnico
+                            </span>
+                        </td>
+                        <td class="p-4 text-gray-300">
+                            <div class="mb-1">✉️ roberto.m@pcextreme.com</div>
+                            <div>📞 555-555-6666</div>
+                        </td>
+                        <td class="p-4 text-right space-x-3">
+                            <button onclick="abrirModal()" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
+                            <button class="text-red-500 hover:text-red-400 transition font-semibold" onclick="confirmarEliminacion()">Eliminar</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <div id="modal-personal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 transition-opacity p-4">
+        <div class="bg-[#111] border border-gray-800 p-8 rounded-2xl w-full max-w-2xl shadow-[0_0_30px_rgba(0,0,0,0.8)] relative overflow-y-auto max-h-screen">
+            
+            <button onclick="cerrarModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-[#7ed957] mb-6 border-b border-gray-800 pb-4">
+                Registrar / Editar Empleado
+            </h3>
+            
+            <form id="formulario-personal" onsubmit="event.preventDefault(); cerrarModal(); alert('Simulación: Empleado guardado correctamente.');" class="space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Nombre(s)</label>
+                        <input type="text" required class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Paterno</label>
+                        <input type="text" required class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Materno</label>
+                        <input type="text" class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Rol de Acceso</label>
+                        <select required class="w-full bg-[#1e1e1e] border border-[#7ed957] text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-[#7ed957]">
+                            <option value="" disabled selected>Selecciona rol...</option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Recepcionista</option>
+                            <option value="3">Técnico</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Correo (Usuario de acceso)</label>
+                        <input type="email" required class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Teléfono</label>
+                        <input type="text" required class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Dirección</label>
+                        <input type="text" class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div class="md:col-span-2 bg-[#1a1a1a] p-4 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
+                        <input type="password" placeholder="Obligatoria para nuevo usuario / Dejar vacío para NO cambiar" class="w-full bg-black border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-500">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-gray-800">
+                    <button type="button" onclick="cerrarModal()" class="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded font-bold transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-[#7ed957] hover:bg-[#6bc148] text-black rounded font-bold transition shadow-[0_0_10px_rgba(126,217,87,0.2)]">
+                        Guardar Datos
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+    
+    <script src="./assets/main.js"></script>
+    
+    <script>
+        const modalPersonal = document.getElementById('modal-personal');
+        
+        function abrirModal() {
+            modalPersonal.classList.remove('hidden');
+        }
+        
+        function cerrarModal() {
+            modalPersonal.classList.add('hidden');
+        }
+
+        // Cerrar al hacer clic fuera
+        modalPersonal.addEventListener('click', function(event) {
+            if (event.target === modalPersonal) {
+                cerrarModal();
+            }
+        });
+
+        function confirmarEliminacion() {
+            if(confirm('¿Eliminar acceso a este empleado?')) {
+                alert('Simulación: Empleado eliminado.');
+            }
+        }
+    </script>
+</body>
+</html>
