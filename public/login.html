@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acceso — PC EXTREME</title>
+    
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    
+    <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+
+<body class="bg-[#0a0a0a] bg-[url('/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
+
+    <header id="encabezado-principal"></header>
+
+    <main class="flex-grow flex items-center justify-center py-12 px-6">
+        
+        <div class="w-full max-w-2xl bg-[#111] border border-gray-800 rounded-2xl p-8 md:p-12 shadow-[0_0_40px_rgba(126,217,87,0.05)] relative overflow-hidden">
+            
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7ed957] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+
+            <div id="bloque-login" class="block transition-all duration-500">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-extrabold mb-2">Bienvenido de nuevo</h2>
+                    <p class="text-gray-400 text-sm">Ingresa tus credenciales para acceder a tu cuenta.</p>
+                </div>
+
+                <form id="formulario-login" class="flex flex-col gap-5">
+                    <div>
+                        <label for="correo-login" class="block text-sm font-medium text-gray-400 mb-1">Correo Electrónico:</label>
+                        <input type="email" id="correo-login" required placeholder="ejemplo@correo.com" 
+                               class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                    </div>
+
+                    <div>
+                        <label for="password-login" class="block text-sm font-medium text-gray-400 mb-1">Contraseña:</label>
+                        <input type="password" id="password-login" required placeholder="••••••••" 
+                               class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                    </div>
+
+                    <button type="submit" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 mt-2 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+                        Entrar
+                    </button>
+
+                    <div class="text-center mt-4 text-sm text-gray-400">
+                        ¿No tienes cuenta? 
+                        <a href="" id="ir-a-registro" class="text-[#7ed957] hover:underline font-semibold ml-1">Regístrate como Cliente</a>
+                    </div>
+                </form>
+            </div>
+
+
+            <div id="bloque-registro" class="hidden transition-all duration-500">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-extrabold mb-2">Crear Cuenta</h2>
+                    <p class="text-gray-400 text-sm">Únete a PC EXTREME y gestiona tus equipos.</p>
+                </div>
+
+                <form id="formulario-registro" class="flex flex-col gap-6">
+                    
+                    <div>
+                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Datos Personales</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="reg-nombre" class="block text-sm text-gray-400 mb-1">Nombre(s):</label>
+                                <input type="text" id="reg-nombre" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-ap-paterno" class="block text-sm text-gray-400 mb-1">Apellido Paterno:</label>
+                                <input type="text" id="reg-ap-paterno" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-ap-materno" class="block text-sm text-gray-400 mb-1">Apellido Materno:</label>
+                                <input type="text" id="reg-ap-materno" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="reg-telefono" class="block text-sm text-gray-400 mb-1">Teléfono:</label>
+                                <input type="tel" id="reg-telefono" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Dirección</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="reg-calle" class="block text-sm text-gray-400 mb-1">Calle y Número:</label>
+                                <input type="text" id="reg-calle" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-colonia" class="block text-sm text-gray-400 mb-1">Colonia:</label>
+                                <input type="text" id="reg-colonia" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-ciudad" class="block text-sm text-gray-400 mb-1">Ciudad:</label>
+                                <input type="text" id="reg-ciudad" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-estado" class="block text-sm text-gray-400 mb-1">Estado:</label>
+                                <input type="text" id="reg-estado" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-cp" class="block text-sm text-gray-400 mb-1">C.P.:</label>
+                                <input type="text" id="reg-cp" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Cuenta</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="reg-email" class="block text-sm text-gray-400 mb-1">Correo Electrónico:</label>
+                                <input type="email" id="reg-email" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-password" class="block text-sm text-gray-400 mb-1">Contraseña:</label>
+                                <input type="password" id="reg-password" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label for="reg-password-confirm" class="block text-sm text-gray-400 mb-1">Confirmar Contraseña:</label>
+                                <input type="password" id="reg-password-confirm" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 mt-4 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+                        Registrarse
+                    </button>
+
+                    <div class="text-center mt-2 text-sm text-gray-400">
+                        ¿Ya tienes cuenta? 
+                        <a href="#" id="ir-a-login" class="text-[#7ed957] hover:underline font-semibold ml-1">Inicia Sesión aquí</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <footer id="pie-de-pagina" class="mt-auto"></footer>
+
+    <script src="/assets/main.js"></script>
+    
+</body>
+</html>
