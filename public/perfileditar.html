@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PC EXTREME — Mantenimiento y Optimización</title>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-[#0a0a0a] text-white antialiased">
+
+    <header 
+    id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
+    </header>
+    
+    <main class="perfil-main">
+        
+        <section class="perfil-contenedor" style="border-color: #3842c8;"> 
+            
+            <div class="perfil-lateral">
+                <h2>Editando</h2>
+                <img src="./aseets/registro.png" alt="Foto de Perfil" class="foto-perfil" style="border-color: #3842c8;">
+                <p style="color: #aaa; margin-top: 10px;">Actualiza tus datos</p>
+            </div>
+
+            <div class="perfil-datos-area">
+                
+                    <div style="background: #ff4d4d; color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                        
+                    </div>
+                
+
+                <form method="POST" action="perfileditar.php">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        
+                        <div class="grupo-dato">
+                            <label>Nombre</label>
+                            <input type="text" name="nombre" class="input-perfil" required value="">
+                        </div>
+
+                        <div class="grupo-dato">
+                            <label>Apellido Paterno</label>
+                            <input type="text" name="ap" class="input-perfil" required value="">
+                        </div>
+
+                        <div class="grupo-dato">
+                            <label>Apellido Materno</label>
+                            <input type="text" name="am" class="input-perfil" required value="">
+                        </div>
+
+                        <div class="grupo-dato">
+                            <label>Teléfono</label>
+                            <input type="tel" name="telefono" class="input-perfil" required value="">
+                        </div>
+
+                        <div class="grupo-dato" style="grid-column: span 2;">
+                            <label>Correo Electrónico (No modificable)</label>
+                            <input type="email" name="email" class="input-perfil" readonly 
+                                   style="background-color: #1a1a1a; color: #777; cursor: not-allowed; border-color: #333;"
+                                   value="">
+                        </div>
+
+                        <div class="grupo-dato" style="grid-column: span 2;">
+                            <label>Dirección</label>
+                            <input type="text" name="direccion" class="input-perfil" required value="">
+                        </div>
+
+                    </div>
+
+                    <div class="acciones-perfil">
+                        <a href="perfil.php" class="btn-cancelar">Cancelar</a>
+                        <button type="submit" name="guardar" class="btn-guardar">Guardar Cambios</button>
+                    </div>
+
+                </form>
+            </d>
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+    
+    <script src="./assets/main.js"></script>
+</body>
+</html>
