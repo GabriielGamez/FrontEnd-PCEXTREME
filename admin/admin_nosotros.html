@@ -4,104 +4,132 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
+    <title>Panel PC Extreme — Gestor de Contenido</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link rel="icon" type="image/png" href="./assets/logo.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { border-bottom: 3px solid #3b49df; color: #3b49df; font-weight: 700; }
     </style>
 </head>
 
-<body class="bg-[#0a0a0a] text-white antialiased">
+<body class="bg-[#f3f4f6] text-gray-800 antialiased min-h-screen flex flex-col">
 
-    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
+    <header class="w-full h-20 bg-[#1a1a1a] flex items-center justify-between px-10 sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center gap-2">
+            <img src="./assets/logo.png" alt="Logo" class="h-10">
+            <span class="text-white text-2xl font-extrabold tracking-tighter uppercase italic">PC EXTREME</span>
+        </div>
+        
+        <nav class="hidden lg:flex items-center gap-6 text-gray-300 font-semibold text-sm">
+            <a href="#" class="hover:text-white transition">Inicio</a>
+            <a href="#" class="hover:text-white transition">Reparaciones</a>
+            <a href="#" class="hover:text-white transition">Clientes</a>
+            <a href="#" class="hover:text-white transition">Mensajes</a>
+            <a href="#" class="hover:text-white transition">Productos</a>
+            <div class="bg-[#2d2d2d] px-4 py-2 rounded-md border border-gray-700 text-green-400">Gestionar Web</div>
+            <div class="flex items-center gap-2 ml-4">
+                <span class="text-xs text-gray-500 italic">Personal</span>
+                <span class="bg-green-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Administrador</span>
+                <span class="text-white text-xs">Administrador</span>
+            </div>
+            <button class="ml-4 border border-red-900/50 bg-red-950/20 text-red-500 px-5 py-1.5 rounded-full hover:bg-red-600 hover:text-white transition text-xs font-bold uppercase">Cerrar Sesión</button>
+        </nav>
     </header>
 
+    <main class="max-w-7xl mx-auto w-full p-8 flex-grow">
+        
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-8">Gestor de Contenido Web</h1>
 
-    <h3>Gestión de "Sobre Nosotros"</h3>
-    <p>Edita las tarjetas de Quiénes Somos, Misión y Visión.</p>
-
-    <div style="background: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-    </div>
-
-    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-
-        <div style="flex: 1; min-width: 300px;">
-            <table class="table-admin">
-                <thead>
-                    <tr>
-                        <th>Imagen</th>
-                        <th>Título</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <img src=" style=" width: 50px; height: 50px; object-fit: cover; border-radius: 4px;>
-                        </td>
-                        <td><strong></strong></td>
-                        <td>
-                            <a href="admin_nosotros.html editar=>" class="btn-action"
-                                style="background-color: #333;">Editar</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="flex gap-4 mb-0">
+            <button class="bg-gray-200 text-gray-600 px-6 py-3 rounded-t-xl font-bold flex items-center gap-2 text-sm">
+                🏠 Portada Inicio
+            </button>
+            <button class="bg-white text-[#3b49df] px-8 py-3 rounded-t-xl font-bold flex items-center gap-2 text-sm border-x border-t border-gray-200 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] relative z-10">
+                🏢 Sobre Nosotros
+            </button>
+            <button class="bg-gray-200 text-gray-600 px-6 py-3 rounded-t-xl font-bold flex items-center gap-2 text-sm">
+                📞 Contacto y Mapa
+            </button>
         </div>
 
-        <div style="flex: 1; min-width: 300px;">
-            <div
-                style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid #76c838;">
-                <h4 style="margin-top:0;">Editando:</h4>
-
-                <form method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="idInfo" value="">
-
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Título:</label>
-                    <input type="text" name="titulo" value="" required
-                        style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd;">
-
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Descripción:</label>
-                    <textarea name="descripcion" rows="6" required
-                        style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd;"></textarea>
-
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Imagen Actual:</label>
-                    <img src="" style="max-width: 150px; display:block; margin-bottom: 10px; border-radius: 5px;">
-
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Cambiar Imagen
-                        (Opcional):</label>
-                    <input type="file" name="imagen" accept="image/*" style="margin-bottom: 20px;">
-
-                    <div style="display: flex; gap: 10px;">
-                        <button type="submit" name="actualizar_info" class="btn-action"
-                            style="padding: 10px 20px;">Guardar Cambios</button>
-                        <a href="admin_nosotros.html"
-                            style="padding: 10px 20px; background: #ccc; color: #333; text-decoration: none; border-radius: 5px; font-weight: bold;">Cancelar</a>
-                    </div>
-                </form>
+        <div class="bg-white rounded-tr-xl rounded-b-xl shadow-sm border border-gray-200 p-8">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-700">Secciones Informativas</h2>
+                <p class="text-gray-400 text-sm">Edita el contenido de Misión, Visión y Quiénes Somos.</p>
             </div>
-            <div style="background: #e9ecef; padding: 30px; border-radius: 8px; text-align: center; color: #666;">
-                <p>Selecciona un elemento de la lista para editarlo.</p>
+
+            <div class="overflow-hidden border border-gray-100 rounded-lg">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b border-gray-100 uppercase text-[11px] font-bold text-gray-500 tracking-wider">
+                        <tr>
+                            <th class="px-6 py-4">Imagen</th>
+                            <th class="px-6 py-4">Título y Descripción</th>
+                            <th class="px-6 py-4 text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-6 w-40">
+                                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070" class="w-24 h-16 object-cover rounded shadow-sm">
+                            </td>
+                            <td class="px-6 py-6">
+                                <h4 class="font-extrabold text-gray-800 text-lg mb-1">¿Quienes Somos?</h4>
+                                <p class="text-gray-500 text-sm leading-relaxed max-w-2xl">PC Extreme fue fundada en 2019 con el objetivo de ser un espacio con enfoque al mundo gamer, sin embargo después de...</p>
+                            </td>
+                            <td class="px-6 py-6 text-right">
+                                <button class="bg-[#3b49df] hover:bg-blue-700 text-white text-xs font-bold py-2 px-6 rounded uppercase tracking-wide transition">Editar</button>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-6 w-40">
+                                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=2070" class="w-24 h-16 object-cover rounded shadow-sm">
+                            </td>
+                            <td class="px-6 py-6">
+                                <h4 class="font-extrabold text-gray-800 text-lg mb-1">Mision</h4>
+                                <p class="text-gray-500 text-sm leading-relaxed max-w-2xl">Proporcionar asistencia técnica en los equipos de cómputo, brindando la mejor atención, calidad y una experiencia de...</p>
+                            </td>
+                            <td class="px-6 py-6 text-right">
+                                <button class="bg-[#3b49df] hover:bg-blue-700 text-white text-xs font-bold py-2 px-6 rounded uppercase tracking-wide transition">Editar</button>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-6 w-40">
+                                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072" class="w-24 h-16 object-cover rounded shadow-sm">
+                            </td>
+                            <td class="px-6 py-6">
+                                <h4 class="font-extrabold text-gray-800 text-lg mb-1">Visión</h4>
+                                <p class="text-gray-500 text-sm leading-relaxed max-w-2xl">Llegar a ser una empresa consolidada con muchas sucursales a nivel nacional, tener un sello propio que los distinga como...</p>
+                            </td>
+                            <td class="px-6 py-6 text-right">
+                                <button class="bg-[#3b49df] hover:bg-blue-700 text-white text-xs font-bold py-2 px-6 rounded uppercase tracking-wide transition">Editar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <p class="mt-8 text-center text-gray-400 text-xs font-medium italic">
+                * Para agregar más secciones, contacta al desarrollador.
+            </p>
         </div>
-
-    </div>
 
     </main>
-    </div>
+    <footer class="bg-[#1a1a1a] py-12 px-8 text-center border-t border-gray-800">
+        <p class="text-gray-500 text-sm mb-2">© 2026 PC EXTREME - Sistema de Gestión Interna v2.0</p>
+        <p class="text-gray-600 text-xs">Desarrollado para optimización de procesos.</p>
+    </footer>
 
-    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
-
-    <script src="./assets/main.js"></script>
 </body>
 
 </html>
