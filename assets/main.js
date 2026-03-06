@@ -14,14 +14,14 @@
 async function cargarComponentes() {
     try {
         // 1.1 Cargar e inyectar el Header
-        const respuestaHeader = await fetch('/components/header.html');
+        const respuestaHeader = await fetch('./components/header.html');
         if (!respuestaHeader.ok) throw new Error('No se pudo cargar el header');
         const htmlHeader = await respuestaHeader.text();
         document.getElementById('encabezado-principal').innerHTML = htmlHeader;
 
         inicializarMenuCuenta();
         // 1.2 Cargar e inyectar el Footer
-        const respuestaFooter = await fetch('/components/footer.html');
+        const respuestaFooter = await fetch('./components/footer.html');
         if (!respuestaFooter.ok) throw new Error('No se pudo cargar el footer');
         const htmlFooter = await respuestaFooter.text();
         document.getElementById('pie-de-pagina').innerHTML = htmlFooter;
