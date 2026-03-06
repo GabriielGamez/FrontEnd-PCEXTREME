@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Reparaciones - PC EXTREME</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-[#1a1c20] text-white px-6 py-3 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-8">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                    <i class="fas fa-chess-knight text-[#1a1c20] text-xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight">PC EXTREME</span>
+            </div>
+            
+            <div class="hidden lg:flex space-x-6 text-sm font-medium text-gray-400">
+                <a href="#" class="hover:text-white transition">Inicio</a>
+                <a href="#" class="text-green-500 bg-[#2d3035] px-3 py-1 rounded shadow-sm">Reparaciones</a>
+                <a href="#" class="hover:text-white transition">Clientes</a>
+                <a href="#" class="hover:text-white transition">Mensajes</a>
+                <a href="#" class="hover:text-white transition">Productos</a>
+                <a href="#" class="hover:text-white transition">Gestionar Web</a>
+                <a href="#" class="hover:text-white transition">Personal</a>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <span class="bg-[#76c043] text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase">Administrador</span>
+            <span class="text-sm text-gray-300 hidden md:inline">Administrador</span>
+            <button class="bg-[#5c2424] hover:bg-red-800 text-white text-xs font-bold py-2 px-4 rounded transition shadow-md">
+                Cerrar Sesión
+            </button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-10">
+        <div class="mb-10">
+            <h2 class="text-3xl font-bold text-[#333]">Gestión de Reparaciones</h2>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-[#f4f4f4] border-b border-gray-200 text-gray-500 text-[11px] font-bold uppercase tracking-wider">
+                        <th class="px-6 py-4 w-24">Folio</th>
+                        <th class="px-6 py-4 w-48">Equipo</th>
+                        <th class="px-6 py-4">Falla Reportada</th>
+                        <th class="px-6 py-4 w-[400px]">Actualizar Estado / Inventario</th>
+                        <th class="px-6 py-4 text-center w-24">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-6">
+                            <span class="bg-[#e9ecef] text-[#333] font-black text-sm px-3 py-1.5 rounded border border-gray-300">#66</span>
+                        </td>
+                        <td class="px-6 py-6">
+                            <span class="font-bold text-gray-800 text-sm">LENOVO LOQ Gen15</span>
+                        </td>
+                        <td class="px-6 py-6 text-gray-500 text-sm italic">
+                            El equipo presenta lentitud extrema y sobrecalentamiento.
+                        </td>
+                        <td class="px-6 py-6">
+                            <form class="flex items-end space-x-3">
+                                <div class="flex-grow space-y-2 text-xs">
+                                    <select class="w-full border border-gray-300 rounded p-2 focus:ring-1 focus:ring-blue-400 outline-none">
+                                        <option selected>Listo para entregar</option>
+                                        <option>En Reparación</option>
+                                        <option>Entregado</option>
+                                    </select>
+                                    <select class="w-full border border-blue-400 bg-[#f8fbff] text-blue-800 rounded p-2 outline-none">
+                                        <option>-- ¿Usó algún componente? --</option>
+                                    </select>
+                                    <textarea rows="2" class="w-full border border-gray-300 rounded p-2 resize-none outline-none" placeholder="Diagnóstico...">Pendiente de limpieza profunda y cambio de pasta</textarea>
+                                    <div class="flex items-center bg-white border border-gray-300 rounded overflow-hidden">
+                                        <span class="px-3 text-gray-400">$</span>
+                                        <input type="number" value="1740" class="w-full py-2 outline-none font-medium">
+                                    </div>
+                                </div>
+                                <button type="button" class="text-indigo-600 hover:text-indigo-900 transition mb-2">
+                                    <i class="fas fa-save text-2xl"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-6 py-6 text-center">
+                            <button class="w-10 h-10 border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-100 transition text-gray-400">
+                                <i class="far fa-file-alt text-lg"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-6">
+                            <span class="bg-[#e9ecef] text-[#333] font-black text-sm px-3 py-1.5 rounded border border-gray-300">#65</span>
+                        </td>
+                        <td class="px-6 py-6">
+                            <span class="font-bold text-gray-800 text-sm">DELL All-in-One</span>
+                        </td>
+                        <td class="px-6 py-6 text-gray-500 text-sm italic">
+                            El equipo presenta lentitud extrema y sobrecalentamiento.
+                        </td>
+                        <td class="px-6 py-6">
+                            <form class="flex items-end space-x-3">
+                                <div class="flex-grow space-y-2 text-xs">
+                                    <select class="w-full border border-gray-300 rounded p-2 outline-none">
+                                        <option selected>Entregado</option>
+                                    </select>
+                                    <select class="w-full border border-blue-400 bg-[#f8fbff] text-blue-800 rounded p-2 outline-none">
+                                        <option>-- ¿Usó algún componente? --</option>
+                                    </select>
+                                    <textarea rows="2" class="w-full border border-gray-300 rounded p-2 resize-none outline-none">Pendiente de limpieza profunda y cambio de pasta</textarea>
+                                    <div class="flex items-center bg-white border border-gray-300 rounded overflow-hidden">
+                                        <span class="px-3 text-gray-400">$</span>
+                                        <input type="number" value="898" class="w-full py-2 outline-none font-medium">
+                                    </div>
+                                </div>
+                                <button type="button" class="text-indigo-600 hover:text-indigo-900 transition mb-2">
+                                    <i class="fas fa-save text-2xl"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-6 py-6 text-center">
+                            <button class="w-10 h-10 border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-100 transition text-gray-400">
+                                <i class="far fa-file-alt text-lg"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </main>
+    
+    <footer class="bg-[#1a1c20] text-gray-500 py-10 text-center text-xs">
+        <p class="mb-2">© 2026 PC EXTREME - Sistema de Gestión Interna v2.0</p>
+        <p>Desarrollado para optimización de procesos.</p>
+    </footer>
+</body>
+</html>
