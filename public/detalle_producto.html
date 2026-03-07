@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tarjeta Gráfica NVIDIA RTX 4090 — PC EXTREME</title>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-[#0a0a0a] text-white antialiased">
+
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800"></header>
+
+    <main id="contenedor-detalle-producto" class="w-full px-8 md:px-16 lg:px-24 py-12">
+        
+        <a href="productos.html" id="boton-volver" class="inline-flex items-center text-gray-400 hover:text-[#7ed957] transition duration-300 mb-8 font-semibold">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver al Catálogo
+        </a>
+
+        <div id="cuadricula-detalle" class="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-[#111] p-8 md:p-12 rounded-2xl border border-gray-800 shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
+            
+            <div id="contenedor-imagen" class="bg-[#1a1a1a] rounded-xl flex items-center justify-center p-8 border border-gray-800 h-[400px] lg:h-[500px]">
+                <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=600&q=80" 
+                     alt="Tarjeta Gráfica RTX 4090" 
+                     id="imagen-producto" 
+                     class="max-w-full max-h-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:scale-105 transition duration-500">
+            </div>
+
+            <div id="contenedor-informacion" class="flex flex-col justify-center gap-6">
+                
+                <div>
+                    <span id="etiqueta-categoria" class="bg-gray-800 text-gray-300 py-1.5 px-4 rounded-full text-xs font-bold tracking-widest uppercase mb-4 inline-block">
+                        COMPONENTES
+                    </span>
+                    
+                    <h1 id="titulo-producto" class="text-4xl md:text-5xl font-extrabold leading-tight text-white mb-2">
+                        Tarjeta Gráfica NVIDIA RTX 4090
+                    </h1>
+                    
+                    <div id="precio-producto" class="text-4xl font-black text-[#7ed957] mt-4">
+                        $35,999.00
+                    </div>
+                </div>
+
+                <div id="stock-producto" class="bg-black border border-gray-800 inline-block w-max px-4 py-2 rounded-lg text-gray-400 text-sm">
+                    Disponibles: <strong class="text-white text-base">5</strong> unidades
+                </div>
+
+                <div id="descripcion-producto" class="border-t border-gray-800 pt-6 mt-2">
+                    <h3 class="text-lg font-bold text-white mb-3">Descripción:</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">
+                        Experimenta el máximo rendimiento en gaming y creación de contenido. La NVIDIA RTX 4090 cuenta con arquitectura Ada Lovelace, trazado de rayos de última generación y DLSS 3. Ideal para resoluciones 4K, VR y flujos de trabajo profesionales pesados.
+                        <br><br>
+                        Incluye sistema de refrigeración Windforce con 3 ventiladores para mantener temperaturas óptimas bajo cargas de trabajo extremas.
+                    </p>
+                </div>
+
+                <div class="pt-4">
+                    <a href="https://wa.me/525512345678?text=Hola%20PC%20EXTREME,%20me%20interesa%20el%20producto:%20Tarjeta%20Gráfica%20NVIDIA%20RTX%204090" 
+                       target="_blank" 
+                       id="boton-comprar-whatsapp" 
+                       class="inline-flex items-center justify-center w-full md:w-auto bg-[#7ed957] hover:bg-[#6bc148] text-black font-extrabold py-4 px-8 rounded-full transition duration-300 shadow-[0_0_20px_rgba(126,217,87,0.3)] hover:shadow-[0_0_30px_rgba(126,217,87,0.5)]">
+                        
+                        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.88-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.347-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                        Me interesa este artículo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+    
+    <script src="./assets/main.js"></script>
+</body>
+</html>
