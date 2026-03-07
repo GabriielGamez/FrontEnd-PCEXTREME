@@ -26,23 +26,10 @@
         }
     </style>
 </head>
-<body class="min-h-screen text-white flex flex-col">
+<body class="bg-[#0a0a0a] bg-[url('./assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
 
-    <nav class="flex items-center justify-between px-10 py-6">
-        <div class="flex items-center gap-2">
-            <img src="https://cdn-icons-png.flaticon.com/512/2004/2004699.png" alt="Logo" class="h-10 invert">
-            <span class="text-2xl font-extrabold tracking-tighter">PC EXTREME</span>
-        </div>
-        <div class="hidden md:flex items-center gap-10 text-sm font-semibold">
-            <a href="#" class="hover:text-green-500 transition">Inicio</a>
-            <a href="#" class="hover:text-green-500 transition">Consulta tu equipo</a>
-            <a href="#" class="hover:text-green-500 transition">Productos</a>
-            <a href="#" class="text-green-500">Sobre nosotros</a>
-        </div>
-        <button class="border border-white/30 rounded-full px-6 py-2 text-sm font-bold hover:bg-white hover:text-black transition">
-            Hola, MAURO
-        </button>
-    </nav>
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
+    </header>
 
     <main class="flex-grow flex flex-col items-center px-6 py-12 space-y-20">
         
@@ -115,13 +102,9 @@
 
     </main>
 
-    <footer class="p-10 flex flex-col items-center gap-6">
-        <button class="bg-[#4169e1] hover:bg-blue-700 text-white px-8 py-3 rounded-2xl flex items-center gap-3 font-bold transition shadow-lg">
-            <i class="fa-solid fa-volume-high"></i>
-            Escuchar Contenido
-        </button>
-        <p class="text-gray-500 text-sm">© 2026 PC EXTREME — Sistema de Gestión Interna v2.0</p>
-    </footer>
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+
+    <script src="./assets/main.js"></script>
 
 </body>
 </html>

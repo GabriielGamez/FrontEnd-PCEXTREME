@@ -29,23 +29,9 @@
     </style>
 </head>
 
-<body class="text-white antialiased min-h-screen flex flex-col">
+<body class="bg-[#0a0a0a] bg-[url('./assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
 
-    <header
-        class="w-full h-20 bg-black flex items-center justify-between px-12 border-b border-gray-800 sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <img src="./assets/logo.png" alt="Logo" class="h-10">
-            <span class="text-2xl font-extrabold tracking-tighter">PC EXTREME</span>
-        </div>
-        <nav class="hidden md:flex items-center gap-8 font-semibold text-sm">
-            <a href="#" class="hover:text-green-500 transition">Inicio</a>
-            <a href="#" class="hover:text-green-500 transition">Consulta tu equipo</a>
-            <a href="#" class="hover:text-green-500 transition">Productos</a>
-            <a href="#" class="hover:text-green-500 transition">Sobre nosotros</a>
-            <button
-                class="border border-white rounded-full px-6 py-2 hover:bg-white hover:text-black transition uppercase text-xs">Hola,
-                Esmeralda</button>
-        </nav>
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
     </header>
 
     <main class="flex-grow bg-overlay py-12 px-4">
@@ -122,60 +108,9 @@
         
     </main>
 
-    <footer class="bg-black border-t border-gray-800 py-16 px-12">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div>
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-xl font-bold italic">PC EXTREME</span>
-                </div>
-                <p class="text-gray-400 text-sm leading-relaxed">Con años de trabajo que nos respaldan. Soluciones
-                    tecnológicas a tu alcance.</p>
-                <div class="flex gap-4 mt-6">
-                    <span class="w-5 h-5 bg-gray-600 rounded-full"></span>
-                    <span class="w-5 h-5 bg-gray-600 rounded-full"></span>
-                    <span class="w-5 h-5 bg-gray-600 rounded-full"></span>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6 border-b border-gray-800 pb-2">Navegación</h4>
-                <ul class="text-gray-400 space-y-3 text-sm">
-                    <li><a href="#" class="hover:text-white transition">Inicio</a></li>
-                    <li><a href="#" class="hover:text-white transition">Productos</a></li>
-                    <li><a href="#" class="hover:text-white transition">Consulta tu Equipo</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6 border-b border-gray-800 pb-2">Sobre Nosotros</h4>
-                <ul class="text-gray-400 space-y-3 text-sm">
-                    <li><a href="#" class="hover:text-white transition">Misión y Visión</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6 border-b border-gray-800 pb-2">Soporte</h4>
-                <ul class="text-gray-400 space-y-3 text-sm">
-                    <li><a href="#" class="hover:text-white transition">Contáctanos</a></li>
-                    <li><a href="#" class="hover:text-white transition">Ubicación</a></li>
-                    <li><a href="#" class="hover:text-white transition">Aviso de Privacidad</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
 
-    <div class="fixed left-6 bottom-24 flex flex-col gap-3">
-        <button
-            class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold text-xs shadow-lg">A+</button>
-        <button class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center shadow-lg">↺</button>
-        <button
-            class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold text-xs shadow-lg">A-</button>
-        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
-            <div class="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-orange-400"></div>
-        </button>
-    </div>
-
-    <button
-        class="fixed left-6 bottom-8 bg-[#3b49df] text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold shadow-xl">
-        <span>🔊</span> Escuchar Contenido
-    </button>
+    <script src="./assets/main.js"></script>
 
 </body>
 
