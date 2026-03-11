@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rastreo de Servicio — PC EXTREME</title>
 
-    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 
@@ -16,48 +16,12 @@
         }
     </style>
 
-    <link rel="stylesheet" href="../assets/styles.css" />
+    <link rel="stylesheet" href="/FrontEnd-PCEXTREME/assets/styles.css" />
 </head>
 
 <body class="bg-[#0a0a0a] bg-[url('./assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
 
-    <header id="encabezado-principal" class="bg-black text-white w-full sticky top-0 z-50 border-b border-gray-800">
-        <div class="w-full px-8 md:px-16 lg:px-24 h-20 flex justify-between items-center">
-
-            <div class="flex items-center gap-3 cursor-pointer">
-                <img src="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/assets/logo.png" alt="PC Extreme"
-                    class="h-10 w-10 object-contain">
-                <span class="font-extrabold text-xl tracking-wide uppercase">PC Extreme</span>
-            </div>
-
-            <nav class="hidden md:flex gap-8 text-sm font-semibold">
-                <a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/index.html"
-                    class="hover:text-[#7ed957] transition duration-300">Inicio</a>
-                <a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/consultaequipo.html"
-                    class="hover:text-[#7ed957] transition duration-300">Consulta tu equipo</a>
-                <a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/productos.html"
-                    class="hover:text-[#7ed957] transition duration-300">Productos</a>
-                <a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/misionyvision.html"
-                    class="hover:text-[#7ed957] transition duration-300">Sobre nosotros</a>
-            </nav>
-
-            <div class="relative">
-                <button id="authButton"
-                    class="bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-2 px-6 rounded-full text-sm transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.4)]">
-                    Cuenta
-                </button>
-
-                <div id="authMenu"
-                    class="hidden absolute right-0 mt-3 w-40 bg-[#1e1e1e] border border-gray-700 rounded-lg shadow-xl py-2 z-50">
-                    <a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/login.html"
-                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Iniciar
-                        Sesión</a>
-                    <a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/login.html?tab=registro"
-                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Registrarse</a>
-                </div>
-            </div>
-
-        </div>
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
     </header>
 
     <main class="flex-grow flex items-center justify-center py-12 px-6">
@@ -148,64 +112,7 @@
 
     </main>
 
-    <footer id="pie-de-pagina" class="bg-[#050505] text-white pt-16 pb-8 border-t border-gray-800 mt-12">
-        <div class="w-full px-8 md:px-16 lg:px-24 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-
-            <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-3">
-                    <img src="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/assets/logo.png" alt="PC Extreme"
-                        width="10px" class="h-8 w-8 object-contain">
-                    <span class="font-bold text-lg uppercase">PC Extreme</span>
-                </div>
-                <p class="text-gray-400 text-sm leading-relaxed">
-                    Con años de trabajo que nos respaldan. Soluciones tecnológicas a tu alcance.
-                </p>
-                <div class="flex gap-4 mt-2">
-                    <span
-                        class="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#7ed957] hover:text-black hover:border-[#7ed957] transition duration-300 text-xs">Ig</span>
-                    <span
-                        class="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#7ed957] hover:text-black hover:border-[#7ed957] transition duration-300 text-xs">In</span>
-                    <span
-                        class="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#7ed957] hover:text-black hover:border-[#7ed957] transition duration-300 text-xs">X</span>
-                </div>
-            </div>
-
-            <div>
-                <h4 class="font-bold text-lg mb-4 border-b-2 border-[#7ed957] inline-block pb-1">Navegación</h4>
-                <ul class="flex flex-col gap-3 text-gray-400 text-sm">
-                    <li><a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/index.html"
-                            class="hover:text-[#7ed957] transition duration-300">Inicio</a></li>
-                    <li><a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/productos.html"
-                            class="hover:text-[#7ed957] transition duration-300">Productos</a></li>
-                    <li><a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/consultaequipo.html"
-                            class="hover:text-[#7ed957] transition duration-300">Consulta tu Equipo</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="font-bold text-lg mb-4 border-b-2 border-[#7ed957] inline-block pb-1">Sobre Nosotros</h4>
-                <ul class="flex flex-col gap-3 text-gray-400 text-sm">
-                    <li><a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/misionyvision.html"
-                            class="hover:text-[#7ed957] transition duration-300">Misión y Visión</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="font-bold text-lg mb-4 border-b-2 border-[#7ed957] inline-block pb-1">Soporte</h4>
-                <ul class="flex flex-col gap-3 text-gray-400 text-sm">
-                    <li><a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/contacto.html"
-                            class="hover:text-[#7ed957] transition duration-300">Contáctanos</a></li>
-                    <li><a href="https://gabriielgamez.github.io/FrontEnd-PCEXTREME/public/ubicacion.html#"
-                            class="hover:text-[#7ed957] transition duration-300">Ubicación</a></li>
-                    <li><a href="#" class="hover:text-[#7ed957] transition duration-300">Aviso de Privacidad</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="w-full px-8 md:px-16 lg:px-24 text-center border-t border-gray-800 pt-8 text-xs text-gray-600">
-            <p>&copy; 2026 PC EXTREME. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
     <script src="./assets/main.js"></script>
 
 </body>
