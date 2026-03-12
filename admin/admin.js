@@ -73,7 +73,7 @@ async function cargarReparaciones() {
                         <span class="bg-gray-200 text-gray-800 font-black px-2 py-1 rounded text-sm">#${rep.idFolio}</span>
                     </td>
                     <td class="px-4 py-4 align-top">
-                        <strong class="text-gray-900 block">Disp. ID: ${rep.idDispositivo}</strong>
+                        <strong class="text-gray-900 block">${rep.idDispositivo}</strong>
                     </td>
                     <td class="px-4 py-4 align-top text-gray-600">${rep.detalles}</td>
                     
@@ -88,11 +88,11 @@ async function cargarReparaciones() {
                                     <option value="Entregado">⚫ Entregado</option>
                                 </select>
                                 
-                                <textarea rows="1" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm resize-none" placeholder="Diagnóstico...">${rep.diagnostico || ''}</textarea>
+                                <textarea rows="1" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm resize-none" placeholder="Diagnóstico...">${rep.diagnostico}</textarea>
                                 
                                 <div class="flex items-center gap-2">
                                     <span class="text-gray-500 font-bold">$</span>
-                                    <input type="number" value="${rep.costo || 0}" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm no-spinners">
+                                    <input type="number" value="${rep.costo}" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm no-spinners">
                                 </div>
                             </div>
                             <button type="submit" class="text-2xl hover:scale-110 transition pb-1" title="Guardar">💾</button>
