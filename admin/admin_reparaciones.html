@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Reparaciones — Admin PC EXTREME</title>
-    
+
     <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
         /* Ocultar flechas numéricas igual que en consulta */
         .no-spinners::-webkit-outer-spin-button,
-        .no-spinners::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .no-spinners { -moz-appearance: textfield; }
+        .no-spinners::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .no-spinners {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 
@@ -23,93 +33,45 @@
     <header id="encabezado-admin"></header>
 
     <main class="flex-grow w-full max-w-[1400px] mx-auto px-6 py-8">
-        
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Gestión de Reparaciones</h1>
         </div>
 
-        <div id="alerta-sistema" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 font-medium">
-            </div>
+        <div id="alerta-sistema"
+            class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 font-medium">
+        </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-xs uppercase tracking-wider">
-                        <tr>
-                            <th class="px-4 py-4 w-24">Folio</th>
-                            <th class="px-4 py-4 w-48">Equipo</th>
-                            <th class="px-4 py-4">Falla Reportada</th>
-                            <th class="px-4 py-4 w-[350px]">Actualizar Estado / Inventario</th>
-                            <th class="px-4 py-4 w-24 text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody id="lista-reparaciones" class="divide-y divide-gray-100">
-                        
-                        <tr class="hover:bg-gray-50 transition">
-                            
-                            <td class="px-4 py-4 align-top">
-                                <span class="bg-gray-200 text-gray-800 font-black px-2 py-1 rounded text-sm">
-                                    #66
-                                </span>
-                            </td>
-                            
-                            <td class="px-4 py-4 align-top">
-                                <strong class="text-gray-900 block">LENOVO LOQ Gen15</strong>
-                            </td>
-                            
-                            <td class="px-4 py-4 align-top text-gray-600">
-                                El equipo presenta lentitud extrema y sobrecalentamiento.
-                            </td>
-                            
-                            <td class="px-4 py-4 align-top">
-                                <form class="flex items-end gap-2 formulario-actualizar-reparacion">
-                                    <div class="flex flex-col gap-2 w-full">
-                                        
-                                        <select class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                                            <option value="En Diagnóstico">🔵 En Diagnóstico</option>
-                                            <option value="En Reparación">🟠 En Reparación</option>
-                                            <option value="Listo para entregar" selected>🟢 Listo para entregar</option>
-                                            <option value="Entregado">⚫ Entregado</option>
-                                        </select>
-
-                                        <select class="w-full border border-blue-400 bg-blue-50 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-600">
-                                            <option value="">-- ¿Usó algún componente? --</option>
-                                            <option value="1">Kit de limpieza (Stock: 0)</option>
-                                            <option value="2">SSD 1TB Kingston (Stock: 10)</option>
-                                        </select>
-                                        
-                                        <textarea rows="2" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none" placeholder="Diagnóstico...">Pendiente de limpieza profunda y cambio de pasta térmica.</textarea>
-                                        
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-gray-500 font-bold">$</span>
-                                            <input type="number" value="1740" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 no-spinners">
-                                        </div>
-
-                                    </div>
-                                    
-                                    <button type="submit" class="text-2xl hover:scale-110 transition pb-1" title="Guardar cambios">
-                                        💾
-                                    </button>
-                                </form>
-                            </td>
-                            
-                            <td class="px-4 py-4 align-top text-center">
-                                <button class="text-gray-400 hover:text-blue-600 transition p-2 border border-gray-200 rounded-md hover:border-blue-200 hover:bg-blue-50" title="Ver Ticket">
-                                    📄
-                                </button>
-                            </td>
-                            
-                        </tr>
-                        </tbody>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead
+                                    class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-xs uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-4 py-4 w-24">Folio</th>
+                                        <th class="px-4 py-4 w-48">Equipo</th>
+                                        <th class="px-4 py-4">Falla Reportada</th>
+                                        <th class="px-4 py-4 w-[350px]">Actualizar Estado / Inventario</th>
+                                        <th class="px-4 py-4 w-24 text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-reparaciones" class="divide-y divide-gray-100">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </table>
             </div>
         </div>
 
     </main>
 
-   <footer id="pie-admin" class="mt-auto"></footer>
+    <footer id="pie-admin" class="mt-auto"></footer>
 
     <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
 </body>
+
 </html>
