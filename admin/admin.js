@@ -47,7 +47,7 @@ async function cargarReparaciones() {
         // Indicador de carga temporal
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
 
-        // ⚠️ AQUÍ IRÁ TU LLAMADA A VERCEL EN EL FUTURO
+        // AQUÍ IRÁ LA LLAMADA A VERCEL EN EL FUTURO
         // const respuesta = await fetch('https://tu-api-en-vercel.com/api/reparaciones');
         // const reparaciones = await respuesta.json();
 
@@ -116,8 +116,8 @@ async function cargarReparaciones() {
     }
 }
 
-// Asegurarnos de llamar la función cuando cargue la página
+//  llamar la función cuando cargue la página
 document.addEventListener('DOMContentLoaded', () => {
     cargarComponentesAdmin();
-    cargarReparaciones(); // <--- Agregamos esta llamada
+    cargarReparaciones(); 
 });
