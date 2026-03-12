@@ -51,7 +51,7 @@ async function cargarReparaciones() {
     contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
 
     // 1. Cambiamos a la URL real de tu API en Express (Asegúrate de que el puerto sea el correcto)
-    fetch("http://localhost:3000/api/registro")
+    fetch("https://app-web-java.vercel.app/api/registros")
       .then((resultado) => {
           if (!resultado.ok) throw new Error("Error en la respuesta de la API");
           return resultado.json();
