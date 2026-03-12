@@ -11,13 +11,13 @@
 async function cargarComponentesAdmin() {
     try {
         // 1.1 Cargar e inyectar el Header del Admin
-        const respuestaHeader = await fetch('./components/admin_header.html');
+        const respuestaHeader = await fetch('/FrontEnd-PCEXTREME/admin/admin_header.html');
         if (!respuestaHeader.ok) throw new Error('No se pudo cargar el header del admin');
         const htmlHeader = await respuestaHeader.text();
         document.getElementById('encabezado-admin').innerHTML = htmlHeader;
 
         // 1.2 Cargar e inyectar el Footer del Admin
-        const respuestaFooter = await fetch('./components/admin_footer.html');
+        const respuestaFooter = await fetch('/FrontEnd-PCEXTREME/admin/admin_footer.html');
         if (!respuestaFooter.ok) throw new Error('No se pudo cargar el footer del admin');
         const htmlFooter = await respuestaFooter.text();
         document.getElementById('pie-admin').innerHTML = htmlFooter;
