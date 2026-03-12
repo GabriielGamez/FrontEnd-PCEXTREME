@@ -9,24 +9,29 @@
 // ==========================================
 
 async function cargarComponentesAdmin() {
-    try {
-        // 1.1 Cargar e inyectar el Header del Admin
-        const respuestaHeader = await fetch('/FrontEnd-PCEXTREME/admin/admin_header.html');
-        if (!respuestaHeader.ok) throw new Error('No se pudo cargar el header del admin');
-        const htmlHeader = await respuestaHeader.text();
-        document.getElementById('encabezado-admin').innerHTML = htmlHeader;
+  try {
+    // 1.1 Cargar e inyectar el Header del Admin
+    const respuestaHeader = await fetch(
+      "/FrontEnd-PCEXTREME/admin/admin_header.html"
+    );
+    if (!respuestaHeader.ok)
+      throw new Error("No se pudo cargar el header del admin");
+    const htmlHeader = await respuestaHeader.text();
+    document.getElementById("encabezado-admin").innerHTML = htmlHeader;
 
-        // 1.2 Cargar e inyectar el Footer del Admin
-        const respuestaFooter = await fetch('/FrontEnd-PCEXTREME/admin/admin_footer.html');
-        if (!respuestaFooter.ok) throw new Error('No se pudo cargar el footer del admin');
-        const htmlFooter = await respuestaFooter.text();
-        document.getElementById('pie-admin').innerHTML = htmlFooter;
+    // 1.2 Cargar e inyectar el Footer del Admin
+    const respuestaFooter = await fetch(
+      "/FrontEnd-PCEXTREME/admin/admin_footer.html"
+    );
+    if (!respuestaFooter.ok)
+      throw new Error("No se pudo cargar el footer del admin");
+    const htmlFooter = await respuestaFooter.text();
+    document.getElementById("pie-admin").innerHTML = htmlFooter;
 
-        console.log("Componentes de Administración cargados correctamente.");
-
-    } catch (error) {
-        console.error("Error en la carga de componentes del admin:", error);
-    }
+    console.log("Componentes de Administración cargados correctamente.");
+  } catch (error) {
+    console.error("Error en la carga de componentes del admin:", error);
+  }
 }
 
 // ==========================================
@@ -38,39 +43,39 @@ async function cargarComponentesAdmin() {
  * y pintar las filas en la tabla del administrador.
  */
 async function cargarReparaciones() {
-    const contenedor = document.getElementById('lista-reparaciones');
-    
-    // Verificamos que estemos en la página correcta antes de ejecutar
-    if (!contenedor) return;
+  const contenedor = document.getElementById("lista-reparaciones");
 
-    try {
-        // Indicador de carga temporal
-        contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
+  // Verificamos que estemos en la página correcta antes de ejecutar
+  if (!contenedor) return;
 
-        // AQUÍ IRÁ LA LLAMADA A VERCEL EN EL FUTURO
-        // const respuesta = await fetch('https://tu-api-en-vercel.com/api/reparaciones');
-        // const reparaciones = await respuesta.json();
+  try {
+    // Indicador de carga temporal
+    contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
 
-        // ----------------------------------------------------
-        // DATOS SIMULADOS (Borrar cuando conectes la API real)
-        const reparaciones = [
-            { idFolio: 66, equipo: "LENOVO LOQ Gen15", falla: "Lentitud extrema y sobrecalentamiento", estado: "Listo para entregar", costo: 1740, diagnostico: "Limpieza profunda." },
-            { idFolio: 65, equipo: "DELL All-in-One", falla: "No enciende la pantalla", estado: "En Diagnóstico", costo: 0, diagnostico: "" }
-        ];
+    // AQUÍ IRÁ LA LLAMADA A VERCEL EN EL FUTURO
+    // const respuesta = await fetch('https://tu-api-en-vercel.com/api/reparaciones');
+    // const reparaciones = await respuesta.json();
+
+    // ----------------------------------------------------
+    // DATOS SIMULADOS (Borrar cuando conectes la API real)
+    fetch("https://tu-api-en-vercel.com/api/registros")
+      .then((resultado) => resultado.json())
+      .then((data) => {
+        const reparaciones = data;
         // ----------------------------------------------------
 
         // Limpiar el mensaje de carga
-        contenedor.innerHTML = '';
+        contenedor.innerHTML = "";
 
         // Si no hay datos
         if (reparaciones.length === 0) {
-            contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No hay reparaciones registradas.</td></tr>`;
-            return;
+          contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No hay reparaciones registradas.</td></tr>`;
+          return;
         }
 
         // Construir e inyectar cada fila
-        reparaciones.forEach(rep => {
-            const filaHTML = `
+        reparaciones.forEach((rep) => {
+          const filaHTML = `
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-4 py-4 align-top">
                         <span class="bg-gray-200 text-gray-800 font-black px-2 py-1 rounded text-sm">#${rep.idFolio}</span>
@@ -107,17 +112,18 @@ async function cargarReparaciones() {
                     </td>
                 </tr>
             `;
-            contenedor.innerHTML += filaHTML;
+          contenedor.innerHTML += filaHTML;
         });
-
-    } catch (error) {
-        console.error("Error al cargar reparaciones:", error);
-        contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-500">Error al conectar con el servidor.</td></tr>`;
-    }
+      })
+      .catch((err) => console.error("Error al cargar datos:", err));
+  } catch (error) {
+    console.error("Error al cargar reparaciones:", error);
+    contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-500">Error al conectar con el servidor.</td></tr>`;
+  }
 }
 
 //  llamar la función cuando cargue la página
-document.addEventListener('DOMContentLoaded', () => {
-    cargarComponentesAdmin();
-    cargarReparaciones(); 
+document.addEventListener("DOMContentLoaded", () => {
+  cargarComponentesAdmin();
+  cargarReparaciones();
 });
