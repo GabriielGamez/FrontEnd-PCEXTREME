@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panel de Control — Admin PC EXTREME</title>
+    
+    <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-[#f4f6f9] text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <header id="encabezado-admin"></header>
+
+    <main class="flex-grow w-full max-w-[1400px] mx-auto px-6 py-8">
+        
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Panel de Control</h1>
+            <a href="/FrontEnd-PCEXTREME/index.html" target="_blank" class="bg-[#2a2a2a] hover:bg-black text-white text-sm font-semibold py-2 px-4 rounded-md transition duration-300 shadow-sm flex items-center gap-2">
+                Ver Sitio Web <span class="text-xs">↗</span>
+            </a>
+        </div>
+
+        <div id="alerta-stock" class="bg-[#fff8e1] border border-[#ffecb3] text-[#856404] p-6 rounded-lg shadow-sm mb-8 block transition-all">
+            <h4 class="font-bold text-lg mb-3 flex items-center gap-2">
+                ⚠️ Atención: Productos con Stock Bajo
+            </h4>
+            
+            <ul id="lista-stock-bajo" class="list-disc list-inside space-y-1 ml-2 text-sm text-[#856404]/90 mb-4">
+                <li><strong>Kit de limpieza</strong> (Quedan: 0)</li>
+                <li><strong>Disipador Líquido Asus ROG Ryujin III 360</strong> (Quedan: 3)</li>
+                <li><strong>Mouse Razer DeathAdder V3 Pro Faker Edition</strong> (Quedan: 5)</li>
+                <li><strong>Volante Logitech G29 Driving Force</strong> (Quedan: 3)</li>
+                <li><strong>Monitor Dell UltraSharp U2723QE 4K</strong> (Quedan: 4)</li>
+            </ul>
+
+            <a href="/FrontEnd-PCEXTREME/admin/admin_productos.html" class="text-[#856404] font-bold text-sm hover:underline decoration-2 underline-offset-2 transition">
+                Ir a reabastecer →
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-[#7ed957] hover:shadow-md transition">
+                <h3 class="text-gray-600 font-bold text-lg">Productos</h3>
+                <p id="stat-productos" class="text-4xl font-extrabold text-gray-900 my-2">54</p>
+                <span class="text-sm text-gray-500">En catálogo</span>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-blue-600 hover:shadow-md transition">
+                <h3 class="text-gray-600 font-bold text-lg">Clientes</h3>
+                <p id="stat-clientes" class="text-4xl font-extrabold text-gray-900 my-2">62</p>
+                <span class="text-sm text-gray-500">Registrados</span>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-t-4 border-t-red-500 hover:shadow-md transition">
+                <h3 class="text-gray-600 font-bold text-lg">Reparaciones</h3>
+                <p id="stat-reparaciones" class="text-4xl font-extrabold text-gray-900 my-2">61</p>
+                <span class="text-sm text-gray-500">Histórico total</span>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer id="pie-admin" class="mt-auto"></footer>
+
+    <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
+</body>
+</html>
