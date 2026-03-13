@@ -115,8 +115,9 @@ async function cargarServicios() {
     }
 }
 
+/* Función asíncrona para consultar el estado del equipo por folio usando peticiones encadenadas */
 async function consultarEquipo(evento) {
-    evento.preventDefault(); // Evitamos que el formulario recargue la página
+    evento.preventDefault(); 
 
     const inputFolio = document.getElementById('input-folio');
     const mensajeError = document.getElementById('mensaje-error');
@@ -126,10 +127,10 @@ async function consultarEquipo(evento) {
 
     const folio = inputFolio.value.trim();
 
-    // 1. Resetear estados visuales (ocultar errores y resultados previos)
+    // 1. Resetear estados visuales
     mensajeError.classList.add('hidden');
     resultadoConsulta.classList.add('opacity-0');
-    setTimeout(() => resultadoConsulta.classList.add('hidden'), 500); // Respetar la transición de Tailwind
+    setTimeout(() => resultadoConsulta.classList.add('hidden'), 500); 
 
     if (!folio) {
         mostrarErrorConsulta("Por favor ingresa un número de folio.");
@@ -137,48 +138,65 @@ async function consultarEquipo(evento) {
     }
 
     try {
-        // 2. Consumo de la API (Asumiendo un endpoint tipo /consulta/{folio})
-        const respuesta = await fetch(`${API_BASE_URL}/registros/${folio}`);
+        // 2. Primer consumo: Obtener los datos del registro (Orden de servicio)
+        const respuestaRegistro = await fetch(`${API_BASE_URL}/registros/${folio}`);
 
-        if (!respuesta.ok) {
-            // Manejo del caso donde el folio no existe (equivalente al num_rows == 0 en PHP)
-            if (respuesta.status === 404) {
+        if (!respuestaRegistro.ok) {
+            if (respuestaRegistro.status === 404) {
                 throw new Error(`No encontramos ninguna orden con el folio #${folio}. Verifica el número.`);
             }
-            throw new Error("Error en el servidor al consultar el equipo.");
+            throw new Error("Error en el servidor al consultar el registro.");
         }
 
-        const datos = await respuesta.json();
+        const datosRegistro = await respuestaRegistro.json();
 
-        // 3. Inyección de datos en el DOM
-        // Formateo del folio (Agrega ceros a la izquierda, ej: 00105)
-        document.getElementById('resultado-folio').innerText = `#${String(datos.idFolio).padStart(5, '0')}`;
-        document.getElementById('resultado-estado').innerText = datos.estadoEquipo;
+        // Validación de seguridad: Asegurarnos de que el registro traiga el ID del dispositivo
+        if (!datosRegistro.idDispositivo) {
+            throw new Error("El registro encontrado no tiene un dispositivo asociado.");
+        }
+
+        // 3. Segundo consumo: Obtener los detalles del dispositivo usando el idDispositivo
+        const respuestaDispositivo = await fetch(`${API_BASE_URL}/dispositivos/${datosRegistro.idDispositivo}`);
+
+        if (!respuestaDispositivo.ok) {
+            throw new Error("No se pudieron cargar los detalles técnicos del dispositivo.");
+        }
+
+        const datosDispositivo = await respuestaDispositivo.json();
+
+        // 4. Inyección de datos en el DOM combinando ambas respuestas
         
-        // Concatenación de Marca y Modelo
-        document.getElementById('resultado-equipo').innerText = `${datos.marca} ${datos.modelo}`;
-        document.getElementById('resultado-serie').innerText = datos.numSerie;
+        // Datos del Registro
+        document.getElementById('resultado-folio').innerText = `#${String(datosRegistro.idFolio || folio).padStart(5, '0')}`;
+        document.getElementById('resultado-estado').innerText = datosRegistro.estadoEquipo || "Sin Estado";
+        
+        document.getElementById('resultado-problema').innerText = datosRegistro.detalles || "--";
+        document.getElementById('resultado-diagnostico').innerText = datosRegistro.diagnostico || "--";
 
-        // Formateo de fecha (Convierte "YYYY-MM-DD" a "DD/MM/YYYY")
-        const fecha = new Date(datos.fechaIngreso);
-        // Ajuste para evitar desfases de zona horaria al instanciar la fecha
-        const fechaFormateada = `${String(fecha.getDate() + 1).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}/${fecha.getFullYear()}`;
-        document.getElementById('resultado-fecha').innerText = fechaFormateada;
+        // Formateo de fecha 
+        if (datosRegistro.fechaIngreso) {
+            const fecha = new Date(datosRegistro.fechaIngreso);
+            const fechaFormateada = `${String(fecha.getDate() + 1).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}/${fecha.getFullYear()}`;
+            document.getElementById('resultado-fecha').innerText = fechaFormateada;
+        } else {
+            document.getElementById('resultado-fecha').innerText = "--/--/----";
+        }
 
-        document.getElementById('resultado-problema').innerText = datos.detalles;
-        document.getElementById('resultado-diagnostico').innerText = datos.diagnostico;
-
-        // Formateo de moneda para el costo (ej: 1500.5 -> 1,500.50)
-        const costoFormateado = parseFloat(datos.costo).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        // Formateo de moneda para el costo
+        const costoNumerico = parseFloat(datosRegistro.costo) || 0;
+        const costoFormateado = costoNumerico.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         document.getElementById('resultado-costo').innerText = `$${costoFormateado}`;
 
-        // 4. Mostrar la tarjeta de resultados con transición
+        // Datos del Dispositivo (obtenidos de la segunda petición)
+        document.getElementById('resultado-equipo').innerText = `${datosDispositivo.marca || ''} ${datosDispositivo.modelo || ''}`.trim() || "--";
+        document.getElementById('resultado-serie').innerText = datosDispositivo.numSerie || "--";
+
+        // 5. Mostrar la tarjeta de resultados con transición
         resultadoConsulta.classList.remove('hidden');
-        // Pequeño retardo para que la clase opacity-0 se elimine después de quitar el display:none
         setTimeout(() => resultadoConsulta.classList.remove('opacity-0'), 50);
 
     } catch (error) {
-        console.error("Error en la consulta de equipo:", error);
+        console.error("Error en la consulta encadenada:", error);
         mostrarErrorConsulta(error.message);
     }
 }
