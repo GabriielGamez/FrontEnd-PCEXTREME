@@ -138,7 +138,7 @@ async function consultarEquipo(evento) {
 
     try {
         // 2. Consumo de la API (Asumiendo un endpoint tipo /consulta/{folio})
-        const respuesta = await fetch(`${API_BASE_URL}/consulta/${folio}`);
+        const respuesta = await fetch(`${API_BASE_URL}/registros/${folio}`);
 
         if (!respuesta.ok) {
             // Manejo del caso donde el folio no existe (equivalente al num_rows == 0 en PHP)
@@ -187,7 +187,7 @@ async function consultarEquipo(evento) {
 function mostrarErrorConsulta(mensaje) {
     const mensajeError = document.getElementById('mensaje-error');
     if (mensajeError) {
-        mensajeError.innerText = `⚠️ ${mensaje}`;
+        mensajeError.innerText = ` ${mensaje}`;
         mensajeError.classList.remove('hidden');
     }
 }
