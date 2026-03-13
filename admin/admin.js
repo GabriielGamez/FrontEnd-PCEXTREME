@@ -47,11 +47,12 @@ async function cargarComponentesAdmin() {
  * y pintar las filas en la tabla del administrador de forma optimizada.
  */
 // ==========================================
-// VARIABLES GLOBALES PARA PAGINACIÓN
+// VARIABLES GLOBALES
 // ==========================================
-let registrosGlobales = []; // Aquí guardaremos todos los datos
+let registrosGlobales = []; // Todos los datos originales
+let registrosFiltrados = []; // Los datos que se muestran (filtrados)
 let paginaActual = 1;
-const registrosPorPagina = 20; // Límite por página
+const registrosPorPagina = 20;
 
 // ==========================================
 // 1. DESCARGAR DATOS DE LA API
@@ -63,14 +64,13 @@ async function cargarReparaciones() {
   try {
     contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
 
-    const respuesta = await fetch("https://app-web-java.vercel.app/api/registros");
+    const respuesta = await fetch("http://localhost:3000/api/registro");
     if (!respuesta.ok) throw new Error("Error en la respuesta de la API");
 
-    // Guardamos todos los registros en la variable global
     registrosGlobales = await respuesta.json();
-    paginaActual = 1; // Reiniciamos a la página 1 por si acaso
+    registrosFiltrados = [...registrosGlobales]; // Al inicio, los filtrados son TODOS
+    paginaActual = 1; 
 
-    // Llamamos a la función que pinta solo los 20 correspondientes
     mostrarPagina();
 
   } catch (error) {
@@ -80,21 +80,48 @@ async function cargarReparaciones() {
 }
 
 // ==========================================
-// 2. DIBUJAR SOLO 20 REGISTROS
+// LÓGICA DEL BUSCADOR
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    // Escuchar cuando el usuario escribe en el buscador
+    const buscador = document.getElementById("buscador-reparaciones");
+    if (buscador) {
+        buscador.addEventListener("input", (e) => {
+            const textoBusqueda = e.target.value.toLowerCase().trim();
+
+            // Filtrar el arreglo global
+            registrosFiltrados = registrosGlobales.filter(rep => {
+                // Convertimos los IDs a texto para poder buscar coincidencias parciales
+                const folioStr = String(rep.idFolio).toLowerCase();
+                const equipoStr = String(rep.idDispositivo).toLowerCase();
+
+                // Retorna true si el texto escrito coincide con el folio o el equipo
+                return folioStr.includes(textoBusqueda) || equipoStr.includes(textoBusqueda);
+            });
+
+            // Cada vez que buscamos, regresamos a la página 1
+            paginaActual = 1; 
+            mostrarPagina();
+        });
+    }
+});
+// ==========================================
+// 2. DIBUJAR SOLO 20 REGISTROS (Ajustada)
 // ==========================================
 function mostrarPagina() {
   const contenedor = document.getElementById("lista-reparaciones");
 
-  if (registrosGlobales.length === 0) {
-    contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No hay reparaciones registradas.</td></tr>`;
-    actualizarControlesPaginacion(); // Ocultamos la paginación si no hay datos
+  // CAMBIO: Ahora validamos registrosFiltrados en lugar de registrosGlobales
+  if (registrosFiltrados.length === 0) {
+    contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No se encontraron reparaciones con esa búsqueda.</td></tr>`;
+    actualizarControlesPaginacion(); 
     return;
   }
 
-  // Matemáticas de paginación: Cortamos el arreglo de 20 en 20
   const inicio = (paginaActual - 1) * registrosPorPagina;
   const fin = inicio + registrosPorPagina;
-  const registrosPagina = registrosGlobales.slice(inicio, fin);
+  // CAMBIO: Cortamos el arreglo filtrado
+  const registrosPagina = registrosFiltrados.slice(inicio, fin);
 
   let htmlAcumulado = "";
 
@@ -139,14 +166,15 @@ function mostrarPagina() {
   });
 
   contenedor.innerHTML = htmlAcumulado;
-  actualizarControlesPaginacion(); // Actualizamos los botones de Siguiente/Anterior
+  actualizarControlesPaginacion(); 
 }
 
 // ==========================================
-// 3. CAMBIAR DE PÁGINA
+// 3. CAMBIAR DE PÁGINA (Ajustada)
 // ==========================================
 function cambiarPagina(direccion) {
-  const totalPaginas = Math.ceil(registrosGlobales.length / registrosPorPagina);
+  // CAMBIO: Usamos la longitud de registrosFiltrados
+  const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
   
   if (direccion === 'siguiente' && paginaActual < totalPaginas) {
     paginaActual++;
@@ -154,19 +182,16 @@ function cambiarPagina(direccion) {
     paginaActual--;
   }
   
-  // Volvemos a dibujar la tabla con la nueva página (es instantáneo)
   mostrarPagina(); 
 }
 
 // ==========================================
-// 4. DIBUJAR BOTONES DE PAGINACIÓN (Estilo Tailwind)
+// 4. DIBUJAR BOTONES DE PAGINACIÓN (Ajustada)
 // ==========================================
 function actualizarControlesPaginacion() {
   let controles = document.getElementById("controles-paginacion");
   
-  // Si no existe el contenedor de los botones, lo creamos justo debajo de la tabla
   if (!controles) {
-    // Buscamos la tabla envolvente (asegúrate de que tu <tbody> esté dentro de un <table>)
     const tabla = document.querySelector("table").parentNode; 
     controles = document.createElement("div");
     controles.id = "controles-paginacion";
@@ -174,19 +199,19 @@ function actualizarControlesPaginacion() {
     tabla.appendChild(controles);
   }
 
-  const totalPaginas = Math.ceil(registrosGlobales.length / registrosPorPagina);
+  // CAMBIO: Usamos la longitud de registrosFiltrados
+  const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
 
-  if (totalPaginas === 0) {
+  if (totalPaginas <= 1) {
     controles.innerHTML = "";
     return;
   }
 
-  // Generamos los botones con Tailwind
   controles.innerHTML = `
     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
             <p class="text-sm text-gray-700">
-                Mostrando <span class="font-medium">${(paginaActual - 1) * registrosPorPagina + 1}</span> a <span class="font-medium">${Math.min(paginaActual * registrosPorPagina, registrosGlobales.length)}</span> de <span class="font-medium">${registrosGlobales.length}</span> registros
+                Mostrando <span class="font-medium">${(paginaActual - 1) * registrosPorPagina + 1}</span> a <span class="font-medium">${Math.min(paginaActual * registrosPorPagina, registrosFiltrados.length)}</span> de <span class="font-medium">${registrosFiltrados.length}</span> resultados
             </p>
         </div>
         <div>
