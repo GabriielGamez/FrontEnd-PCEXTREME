@@ -4,7 +4,7 @@
  */
 
 // CONFIGURACIÓN GLOBAL
-const API_BASE_URL = 'http://https://app-web-java.vercel.app/api';
+const API_BASE_URL = 'https://app-web-java.vercel.app/api';
 
 // 1. CARGA DE COMPONENTES ESTÁTICOS
 async function cargarComponentes() {
