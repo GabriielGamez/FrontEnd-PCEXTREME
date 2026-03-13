@@ -34,8 +34,16 @@
 
     <main class="flex-grow w-full max-w-[1400px] mx-auto px-6 py-8">
 
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h1 class="text-2xl font-bold text-gray-900">Gestión de Reparaciones</h1>
+
+            <div class="relative w-full sm:w-72">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">🔍</span>
+                </div>
+                <input type="text" id="buscador-reparaciones" placeholder="Buscar Folio o ID Equipo..."
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out">
+            </div>
         </div>
 
         <div id="alerta-sistema"
@@ -45,24 +53,18 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm">
-                                <thead
-                                    class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-xs uppercase tracking-wider">
-                                    <tr>
-                                        <th class="px-4 py-4 w-24">Folio</th>
-                                        <th class="px-4 py-4 w-48">Equipo</th>
-                                        <th class="px-4 py-4">Falla Reportada</th>
-                                        <th class="px-4 py-4 w-[350px]">Actualizar Estado / Inventario</th>
-                                        <th class="px-4 py-4 w-24 text-center">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="lista-reparaciones" class="divide-y divide-gray-100">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <thead
+                        class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-4 w-24">Folio</th>
+                            <th class="px-4 py-4 w-48">Equipo</th>
+                            <th class="px-4 py-4">Falla Reportada</th>
+                            <th class="px-4 py-4 w-[350px]">Actualizar Estado / Inventario</th>
+                            <th class="px-4 py-4 w-24 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-reparaciones" class="divide-y divide-gray-100">
+                    </tbody>
                 </table>
             </div>
         </div>
