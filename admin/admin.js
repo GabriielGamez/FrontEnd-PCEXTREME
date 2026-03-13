@@ -39,7 +39,7 @@ async function iniciarModuloReparaciones() {
 
     try {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
-        const respuesta = await fetch("http://localhost:3000/api/registro");
+        const respuesta = await fetch("https://app-web-java.vercel.app/api/registros");
         if (!respuesta.ok) throw new Error("Error en la API");
         
         repGlobales = await respuesta.json();
@@ -165,7 +165,7 @@ async function iniciarModuloClientes() {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando clientes...</td></tr>`;
         
         // Llamada a tu API de clientes
-        const respuesta = await fetch("http://localhost:3000/api/clientes");
+        const respuesta = await fetch("https://app-web-java.vercel.app/api/clientes");
         if (!respuesta.ok) throw new Error("Error en la API de clientes");
         
         cliGlobales = await respuesta.json();
