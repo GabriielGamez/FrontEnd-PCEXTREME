@@ -63,7 +63,7 @@ async function cargarReparaciones() {
   try {
     contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
 
-    const respuesta = await fetch("http://localhost:3000/api/registro");
+    const respuesta = await fetch("https://app-web-java.vercel.app/api/registros");
     if (!respuesta.ok) throw new Error("Error en la respuesta de la API");
 
     // Guardamos todos los registros en la variable global
