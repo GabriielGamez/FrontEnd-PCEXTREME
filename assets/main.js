@@ -10,13 +10,13 @@ const API_BASE_URL = 'http://https://app-web-java.vercel.app/api';
 async function cargarComponentes() {
     try {
         // Rutas absolutas 
-        const resHeader = await fetch('/ForntEnd-PCEXTREME/components/header.html');
+        const resHeader = await fetch('/FrontEnd-PCEXTREME/components/header.html');
         if (!resHeader.ok) throw new Error('Error al cargar header');
         document.getElementById('encabezado-principal').innerHTML = await resHeader.text();
 
         inicializarMenuCuenta();
 
-        const resFooter = await fetch('/ForntEnd-PCEXTREME/components/footer.html');
+        const resFooter = await fetch('/FrontEnd-PCEXTREME/components/footer.html');
         if (!resFooter.ok) throw new Error('Error al cargar footer');
         document.getElementById('pie-de-pagina').innerHTML = await resFooter.text();
 
@@ -69,7 +69,7 @@ async function cargarPortada() {
 
         // Si la API trae la ruta del video, la inyectamos en el DOM
         if (datos.enlace_video && video) {
-            video.innerHTML = `<source src="/ForntEnd-PCEXTREME/${datos.enlace_video}" type="video/mp4">`;
+            video.innerHTML = `<source src="/FrontEnd-PCEXTREME/${datos.enlace_video}" type="video/mp4">`;
             video.load(); // Fuerza al navegador a cargar el nuevo archivo inyectado
         }
 
