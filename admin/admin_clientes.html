@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100 font-sans">
 
     <nav class="bg-[#1a1c20] text-white px-6 py-3 flex items-center justify-between shadow-lg">
@@ -26,7 +28,7 @@
                 <a href="#" class="hover:text-white transition">Personal</a>
             </div>
         </div>
-        
+
         <div class="flex items-center space-x-4">
             <span class="bg-green-500 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Administrador</span>
             <span class="text-sm hidden sm:inline text-gray-300">Administrador</span>
@@ -37,15 +39,15 @@
     </nav>
 
     <main class="max-w-7xl mx-auto p-6 md:p-10">
-        
+
         <h2 class="text-3xl font-bold text-gray-800 mb-8">Gestión de Clientes</h2>
 
         <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
             <div class="flex flex-wrap gap-2">
-                <input type="text" 
-                       placeholder="Buscar cliente por nombre, correo..." 
-                       class="flex-1 min-w-[300px] border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                <button class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-md transition shadow-md">
+                <input type="text" id="buscador-clientes" placeholder="Buscar cliente por nombre, correo..."
+                    class="flex-1 min-w-[300px] border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <button
+                    class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-md transition shadow-md">
                     Buscar
                 </button>
             </div>
@@ -63,77 +65,7 @@
                             <th class="px-6 py-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-50">
-                        
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-5">
-                                <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded text-sm border border-gray-200">#62</span>
-                            </td>
-                            <td class="px-6 py-5 font-bold text-gray-800">
-                                Cliente_50 Gomez Perez
-                            </td>
-                            <td class="px-6 py-5">
-                                <div class="flex flex-col space-y-1 text-sm text-gray-600">
-                                    <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> usuario50@pcextreme.com</span>
-                                    <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> 7713128665</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 text-sm text-gray-500 max-w-xs">
-                                Colonia Centro, Huejutla de Reyes, Hgo.
-                            </td>
-                            <td class="px-6 py-5 text-center">
-                                <a href="#" class="inline-flex items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow-sm">
-                                    <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Chat WhatsApp
-                                </a>
-                            </td>
-                        </tr>
-
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-5">
-                                <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded text-sm border border-gray-200">#61</span>
-                            </td>
-                            <td class="px-6 py-5 font-bold text-gray-800">
-                                Cliente_40 Gomez Perez
-                            </td>
-                            <td class="px-6 py-5">
-                                <div class="flex flex-col space-y-1 text-sm text-gray-600">
-                                    <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> usuario40@pcextreme.com</span>
-                                    <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> 7717008407</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 text-sm text-gray-500 max-w-xs">
-                                Colonia Centro, Huejutla de Reyes, Hgo.
-                            </td>
-                            <td class="px-6 py-5 text-center">
-                                <a href="#" class="inline-flex items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow-sm">
-                                    <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Chat WhatsApp
-                                </a>
-                            </td>
-                        </tr>
-
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-5">
-                                <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded text-sm border border-gray-200">#60</span>
-                            </td>
-                            <td class="px-6 py-5 font-bold text-gray-800">
-                                Cliente_30 Gomez Perez
-                            </td>
-                            <td class="px-6 py-5">
-                                <div class="flex flex-col space-y-1 text-sm text-gray-600">
-                                    <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> usuario30@pcextreme.com</span>
-                                    <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> 7717304458</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 text-sm text-gray-500 max-w-xs">
-                                Colonia Centro, Huejutla de Reyes, Hgo.
-                            </td>
-                            <td class="px-6 py-5 text-center">
-                                <a href="#" class="inline-flex items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow-sm">
-                                    <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Chat WhatsApp
-                                </a>
-                            </td>
-                        </tr>
-
+                    <tbody id="lista-clientes" class="divide-y divide-gray-50">
                     </tbody>
                 </table>
             </div>
@@ -141,4 +73,5 @@
     </main>
 
 </body>
+
 </html>
