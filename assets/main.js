@@ -115,12 +115,94 @@ async function cargarServicios() {
     }
 }
 
-// INICIALIZACIÓN GLOBAL
+async function consultarEquipo(evento) {
+    evento.preventDefault(); // Evitamos que el formulario recargue la página
+
+    const inputFolio = document.getElementById('input-folio');
+    const mensajeError = document.getElementById('mensaje-error');
+    const resultadoConsulta = document.getElementById('resultado-consulta');
+
+    if (!inputFolio || !mensajeError || !resultadoConsulta) return;
+
+    const folio = inputFolio.value.trim();
+
+    // 1. Resetear estados visuales (ocultar errores y resultados previos)
+    mensajeError.classList.add('hidden');
+    resultadoConsulta.classList.add('opacity-0');
+    setTimeout(() => resultadoConsulta.classList.add('hidden'), 500); // Respetar la transición de Tailwind
+
+    if (!folio) {
+        mostrarErrorConsulta("Por favor ingresa un número de folio.");
+        return;
+    }
+
+    try {
+        // 2. Consumo de la API (Asumiendo un endpoint tipo /consulta/{folio})
+        const respuesta = await fetch(`${API_BASE_URL}/consulta/${folio}`);
+
+        if (!respuesta.ok) {
+            // Manejo del caso donde el folio no existe (equivalente al num_rows == 0 en PHP)
+            if (respuesta.status === 404) {
+                throw new Error(`No encontramos ninguna orden con el folio #${folio}. Verifica el número.`);
+            }
+            throw new Error("Error en el servidor al consultar el equipo.");
+        }
+
+        const datos = await respuesta.json();
+
+        // 3. Inyección de datos en el DOM
+        // Formateo del folio (Agrega ceros a la izquierda, ej: 00105)
+        document.getElementById('resultado-folio').innerText = `#${String(datos.idFolio).padStart(5, '0')}`;
+        document.getElementById('resultado-estado').innerText = datos.estadoEquipo;
+        
+        // Concatenación de Marca y Modelo
+        document.getElementById('resultado-equipo').innerText = `${datos.marca} ${datos.modelo}`;
+        document.getElementById('resultado-serie').innerText = datos.numSerie;
+
+        // Formateo de fecha (Convierte "YYYY-MM-DD" a "DD/MM/YYYY")
+        const fecha = new Date(datos.fechaIngreso);
+        // Ajuste para evitar desfases de zona horaria al instanciar la fecha
+        const fechaFormateada = `${String(fecha.getDate() + 1).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}/${fecha.getFullYear()}`;
+        document.getElementById('resultado-fecha').innerText = fechaFormateada;
+
+        document.getElementById('resultado-problema').innerText = datos.detalles;
+        document.getElementById('resultado-diagnostico').innerText = datos.diagnostico;
+
+        // Formateo de moneda para el costo (ej: 1500.5 -> 1,500.50)
+        const costoFormateado = parseFloat(datos.costo).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('resultado-costo').innerText = `$${costoFormateado}`;
+
+        // 4. Mostrar la tarjeta de resultados con transición
+        resultadoConsulta.classList.remove('hidden');
+        // Pequeño retardo para que la clase opacity-0 se elimine después de quitar el display:none
+        setTimeout(() => resultadoConsulta.classList.remove('opacity-0'), 50);
+
+    } catch (error) {
+        console.error("Error en la consulta de equipo:", error);
+        mostrarErrorConsulta(error.message);
+    }
+}
+
+/* Función auxiliar para mostrar mensajes de error en la vista de consulta */
+function mostrarErrorConsulta(mensaje) {
+    const mensajeError = document.getElementById('mensaje-error');
+    if (mensajeError) {
+        mensajeError.innerText = `⚠️ ${mensaje}`;
+        mensajeError.classList.remove('hidden');
+    }
+}
+
+// MODIFICACIÓN DE LA INICIALIZACIÓN GLOBAL
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Cargar la estructura (Nav y Footer)
     cargarComponentes();
     
-    // 2. Consumir las APIs para llenar el contenido
+    // 2. Consumir las APIs para llenar el contenido de Inicio
     cargarPortada();
     cargarServicios();
+
+    const formularioConsulta = document.getElementById('formulario-consulta');
+    if (formularioConsulta) {
+        formularioConsulta.addEventListener('submit', consultarEquipo);
+    }
 });
