@@ -10,35 +10,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans flex flex-col min-h-screen">
 
-    <nav class="bg-[#1a1c20] text-white px-6 py-3 flex items-center justify-between shadow-lg">
-        <div class="flex items-center space-x-8">
-            <div class="flex items-center space-x-2">
-                <img src="https://cdn-icons-png.flaticon.com/512/2004/2004699.png" alt="Logo" class="h-8 invert">
-                <span class="font-black text-xl tracking-tighter">PC EXTREME</span>
-            </div>
-            <div class="hidden md:flex space-x-6 text-sm font-medium text-gray-400">
-                <a href="#" class="hover:text-white transition">Inicio</a>
-                <a href="#" class="hover:text-white transition">Reparaciones</a>
-                <a href="#" class="text-white bg-[#2d3035] px-3 py-1 rounded-md">Clientes</a>
-                <a href="#" class="hover:text-white transition">Mensajes</a>
-                <a href="#" class="hover:text-white transition">Productos</a>
-                <a href="#" class="hover:text-white transition">Gestionar Web</a>
-                <a href="#" class="hover:text-white transition">Personal</a>
-            </div>
-        </div>
-
-        <div class="flex items-center space-x-4">
-            <span class="bg-green-500 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Administrador</span>
-            <span class="text-sm hidden sm:inline text-gray-300">Administrador</span>
-            <button class="bg-[#5c2424] hover:bg-red-900 text-white text-xs font-bold py-2 px-4 rounded-md transition">
-                Cerrar Sesión
-            </button>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto p-6 md:p-10">
+    <header id="encabezado-admin"></header>
+    
+    <main class="max-w-7xl mx-auto p-6 md:p-10 flex-grow">
 
         <h2 class="text-3xl font-bold text-gray-800 mb-8">Gestión de Clientes</h2>
 
@@ -71,7 +47,8 @@
             </div>
         </div>
     </main>
-
+    <footer id="pie-admin" class="mt-auto"></footer>
+<script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
 </body>
 
 </html>
