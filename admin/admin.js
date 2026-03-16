@@ -601,13 +601,137 @@ window.guardarContacto = async function (evento) {
         boton.disabled = false;
     }
 };
+// ==========================================
+// 8. MÓDULO: GESTIÓN DE PERSONAL
+// ==========================================
+let personalGlobal = [];
+let rolesGlobales = [];
+
+async function iniciarModuloPersonal() {
+    const contenedor = document.getElementById("lista-personal");
+    if (!contenedor) return;
+
+    try {
+        contenedor.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">⏳ Cargando personal...</td></tr>`;
+
+        // Llamamos a las dos APIs al mismo tiempo para mayor velocidad
+        const [resRoles, resPersonal] = await Promise.all([
+            fetch(`${baseUrl}/roles`),
+            fetch(`${baseUrl}/trabajadores`) // Ajusta esta ruta si tu endpoint se llama diferente (ej: /personal)
+        ]);
+
+        if (!resRoles.ok || !resPersonal.ok) throw new Error("Error al cargar las APIs");
+
+        rolesGlobales = await resRoles.json();
+        personalGlobal = await resPersonal.json();
+
+        mostrarListaPersonal();
+    } catch (error) {
+        console.error("Error al cargar personal:", error);
+        contenedor.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500">❌ Error al conectar con la base de datos de personal.</td></tr>`;
+    }
+}
+
+function mostrarListaPersonal() {
+    const contenedor = document.getElementById("lista-personal");
+    if (!contenedor) return;
+
+    if (personalGlobal.length === 0) {
+        contenedor.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">No hay personal registrado.</td></tr>`;
+        return;
+    }
+
+    // 1. Creamos un "diccionario" de roles para cambiar el ID por el Nombre fácilmente
+    const mapaRoles = {};
+    rolesGlobales.forEach(rol => {
+        // Ajusta "idRol" y "nombreRol" según cómo vengan en tu JSON
+        mapaRoles[rol.idRol || rol.id] = rol.nombreRol || rol.nombre || "Desconocido";
+    });
+
+    // 2. Construimos la tabla
+    let html = "";
+    personalGlobal.forEach((emp) => {
+        // Ajusta los nombres de las variables según tu JSON de la BD
+        const idEmp = emp.idTrabajador || emp.id || emp.idEmpleado;
+        const nombreRol = mapaRoles[emp.idRol] || "Sin Rol";
+        const correo = emp.email || emp.correo || "Sin correo";
+        const tel = emp.telefono || "Sin teléfono";
+
+        // 3. Lógica para pintar las "pastillas" de colores según el rol
+        let colorRol = "bg-gray-900 text-gray-300 border-gray-700"; // Por defecto
+        if (nombreRol.toLowerCase().includes("admin")) {
+            colorRol = "bg-green-900 text-green-300 border-green-700";
+        } else if (nombreRol.toLowerCase().includes("recep")) {
+            colorRol = "bg-purple-900 text-purple-300 border-purple-700";
+        } else if (nombreRol.toLowerCase().includes("téc") || nombreRol.toLowerCase().includes("tec")) {
+            colorRol = "bg-blue-900 text-blue-300 border-blue-700";
+        }
+
+        html += `
+            <tr class="hover:bg-[#1a1a1a] transition duration-200">
+                <td class="p-4 align-top">
+                    <strong class="text-white text-base block">${emp.nombre} ${emp.aPaterno} ${emp.aMaterno || ''}</strong>
+                    <span class="text-gray-500 text-xs mt-1">ID: ${idEmp}</span>
+                </td>
+                <td class="p-4 align-top">
+                    <span class="${colorRol} border py-1 px-3 rounded-full text-xs font-bold tracking-wide">
+                        ${nombreRol}
+                    </span>
+                </td>
+                <td class="p-4 text-gray-300 align-top">
+                    <div class="mb-1">✉️ ${correo}</div>
+                    <div>📞 ${tel}</div>
+                </td>
+                <td class="p-4 text-right space-x-3 align-top">
+                    <button onclick="abrirModalPersonal(${idEmp})" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
+                    <button onclick="confirmarEliminacionPersonal(${idEmp})" class="text-red-500 hover:text-red-400 transition font-semibold">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    contenedor.innerHTML = html;
+}
 
 // ==========================================
-// 8. INICIALIZADOR GENERAL
+// FUNCIONES DEL MODAL DE PERSONAL
+// ==========================================
+window.abrirModalPersonal = function(id = null) {
+    const modal = document.getElementById("modal-personal");
+    const form = document.getElementById("formulario-personal");
+    if (!modal) return;
+    
+    if (form) form.reset(); // Limpia el formulario cada vez que se abre
+
+    if (id) {
+        console.log("Modo Edición para el ID:", id);
+        // Aquí conectaremos los inputs cuando les pongamos ID en tu HTML
+    } else {
+        console.log("Modo Nuevo Empleado");
+    }
+
+    modal.classList.remove("hidden");
+};
+
+window.cerrarModalPersonal = function() {
+    const modal = document.getElementById("modal-personal");
+    if (modal) modal.classList.add("hidden");
+};
+
+window.confirmarEliminacionPersonal = function(id) {
+    if(confirm("¿Estás seguro de que deseas eliminar a este empleado del sistema?")) {
+        alert("Simulación: Empleado con ID " + id + " eliminado.");
+        // Aquí agregaremos el fetch con method: 'DELETE'
+    }
+};
+
+// ==========================================
+// INICIALIZADOR GENERAL
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     cargarComponentesAdmin();
     iniciarModuloReparaciones();
     iniciarModuloClientes();
-    iniciarModuloWeb(); // Carga por defecto la Portada
+    iniciarModuloWeb();
+    iniciarModuloPersonal();
 });
