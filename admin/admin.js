@@ -3,6 +3,7 @@
  * Archivo principal unificado para PC EXTREME.
  * Contiene la lógica compartida, módulo de reparaciones y módulo de clientes.
  */
+const baseUrl="https://app-web-java.vercel.app/api";
 
 // ==========================================
 // 1. CARGA DE COMPONENTES GLOBALES (Header/Footer)
@@ -39,7 +40,7 @@ async function iniciarModuloReparaciones() {
 
     try {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
-        const respuesta = await fetch("https://app-web-java.vercel.app/api/registros");
+        const respuesta = await fetch(baseUrl+"/registros");
         if (!respuesta.ok) throw new Error("Error en la API");
         
         repGlobales = await respuesta.json();
@@ -165,7 +166,7 @@ async function iniciarModuloClientes() {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando clientes...</td></tr>`;
         
         // Llamada a tu API de clientes
-        const respuesta = await fetch("https://app-web-java.vercel.app/api/clientes");
+        const respuesta = await fetch(baseUrl+"/clientes");
         if (!respuesta.ok) throw new Error("Error en la API de clientes");
         
         cliGlobales = await respuesta.json();
@@ -311,7 +312,7 @@ async function iniciarModuloWeb() {
     if (!formPortada) return;
 
     try {
-        const respuesta = await fetch("https://app-web-java.vercel.app/api/inicio");
+        const respuesta = await fetch(baseUrl+"/inicio");
         if (!respuesta.ok) throw new Error("Error al cargar la información de inicio");
         
         const datos = await respuesta.json();
@@ -402,7 +403,7 @@ async function cargarPestanaNosotros() {
         contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">Cargando información...</td></tr>`;
 
         // Petición a tu API (ajusta la ruta si tu endpoint se llama diferente)
-        const respuesta = await fetch("http://localhost:3000/api/nosotros");
+        const respuesta = await fetch(baseUrl+"/nosotros");
         if (!respuesta.ok) throw new Error("Error al cargar la información de nosotros");
         
         const datos = await respuesta.json();
