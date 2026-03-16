@@ -1,9 +1,9 @@
 /**
  * admin.js
  * Archivo principal unificado para PC EXTREME.
- * Contiene la lógica compartida, módulo de reparaciones y módulo de clientes.
+ * Contiene la lógica compartida, módulo de reparaciones, clientes y gestor web.
  */
-const baseUrl="https://app-web-java.vercel.app/api";
+const baseUrl = "https://app-web-java.vercel.app/api";
 
 // ==========================================
 // 1. CARGA DE COMPONENTES GLOBALES (Header/Footer)
@@ -27,7 +27,38 @@ async function cargarComponentesAdmin() {
 }
 
 // ==========================================
-// 2. MÓDULO: GESTIÓN DE REPARACIONES
+// 2. CONTROLADOR DE PESTAÑAS (GESTOR WEB)
+// ==========================================
+window.abrirPestana = function(evento, nombrePestana) {
+    // 1. Ocultar todo el contenido de las pestañas
+    const contenidos = document.querySelectorAll('.contenido-pestana');
+    contenidos.forEach(contenido => {
+        contenido.classList.add('hidden');
+        contenido.classList.remove('block');
+    });
+
+    // 2. Resetear el estilo de todos los botones
+    const botones = document.querySelectorAll('.boton-pestana');
+    botones.forEach(boton => {
+        boton.classList.remove('text-[#7ed957]', 'border-[#7ed957]');
+        boton.classList.add('text-gray-500', 'border-transparent');
+    });
+
+    // 3. Mostrar el contenido de la pestaña actual
+    const pestanaDestino = document.getElementById(nombrePestana);
+    if (pestanaDestino) {
+        pestanaDestino.classList.remove('hidden');
+        pestanaDestino.classList.add('block');
+    }
+
+    // 4. Aplicar estilo activo al botón clickeado
+    const botonActual = evento.currentTarget;
+    botonActual.classList.remove('text-gray-500', 'border-transparent');
+    botonActual.classList.add('text-[#7ed957]', 'border-[#7ed957]');
+};
+
+// ==========================================
+// 3. MÓDULO: GESTIÓN DE REPARACIONES
 // ==========================================
 let repGlobales = [];
 let repFiltradas = [];
@@ -36,11 +67,11 @@ const repPorPagina = 20;
 
 async function iniciarModuloReparaciones() {
     const contenedor = document.getElementById("lista-reparaciones");
-    if (!contenedor) return; // Si no estamos en la página de reparaciones, ignoramos este código
+    if (!contenedor) return;
 
     try {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
-        const respuesta = await fetch(baseUrl+"/registros");
+        const respuesta = await fetch(`${baseUrl}/registros`);
         if (!respuesta.ok) throw new Error("Error en la API");
         
         repGlobales = await respuesta.json();
@@ -48,7 +79,6 @@ async function iniciarModuloReparaciones() {
         repPaginaActual = 1;
         mostrarPaginaReparaciones();
 
-        // Configurar buscador
         const buscador = document.getElementById("buscador-reparaciones");
         if (buscador) {
             buscador.addEventListener("input", (e) => {
@@ -151,7 +181,7 @@ function actualizarPaginacionReparaciones() {
 }
 
 // ==========================================
-// 3. MÓDULO: GESTIÓN DE CLIENTES
+// 4. MÓDULO: GESTIÓN DE CLIENTES
 // ==========================================
 let cliGlobales = [];
 let cliFiltrados = [];
@@ -160,13 +190,12 @@ const cliPorPagina = 20;
 
 async function iniciarModuloClientes() {
     const contenedor = document.getElementById("lista-clientes");
-    if (!contenedor) return; // Si no estamos en la página de clientes, ignoramos este bloque
+    if (!contenedor) return; 
 
     try {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando clientes...</td></tr>`;
         
-        // Llamada a tu API de clientes
-        const respuesta = await fetch(baseUrl+"/clientes");
+        const respuesta = await fetch(`${baseUrl}/clientes`);
         if (!respuesta.ok) throw new Error("Error en la API de clientes");
         
         cliGlobales = await respuesta.json();
@@ -174,7 +203,6 @@ async function iniciarModuloClientes() {
         cliPaginaActual = 1;
         mostrarPaginaClientes();
 
-        // Configurar buscador de clientes
         const buscador = document.getElementById("buscador-clientes");
         if (buscador) {
             buscador.addEventListener("input", (e) => {
@@ -209,7 +237,6 @@ function mostrarPaginaClientes() {
     let html = "";
 
     cliPagina.forEach((cli) => {
-        // Formatear el enlace de WhatsApp (quitamos espacios del teléfono por si acaso)
         const phone = cli.telefono ? cli.telefono.replace(/\D/g, '') : '';
         const whatsappLink = phone ? `https://wa.me/52${phone}` : '#';
 
@@ -275,23 +302,16 @@ function actualizarPaginacionClientes() {
 }
 
 // ==========================================
-// 4. MÓDULO: GESTOR WEB (PORTADA INICIO Y CLOUDINARY)
+// 5. MÓDULO: GESTOR WEB (PORTADA INICIO Y CLOUDINARY)
 // ==========================================
-
-// Credenciales de Cloudinary
 const CLOUD_NAME = "dbkqbazp7";
-const PRESET = "Pc Extreme Web"; // Asegúrate de que este preset en Cloudinary permita subidas "Unsigned"
+const PRESET = "Pc Extreme Web"; 
 
-/**
- * Función auxiliar para subir cualquier archivo (Imagen o Video) a Cloudinary
- * Retorna la URL segura (secure_url) si tiene éxito.
- */
 async function subirACloudinary(archivo) {
     const formData = new FormData(); 
     formData.append("file", archivo);
     formData.append("upload_preset", PRESET);
 
-    // IMPORTANTE: Usamos /auto/upload en lugar de /image/upload
     const respuesta = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
         method: 'POST',
         body: formData
@@ -306,13 +326,12 @@ async function subirACloudinary(archivo) {
     return data.secure_url; 
 }
 
-// Cargar los datos actuales de la portada al entrar a la página
 async function iniciarModuloWeb() {
     const formPortada = document.getElementById("formulario-portada");
     if (!formPortada) return;
 
     try {
-        const respuesta = await fetch(baseUrl+"/inicio");
+        const respuesta = await fetch(`${baseUrl}/inicio`);
         if (!respuesta.ok) throw new Error("Error al cargar la información de inicio");
         
         const datos = await respuesta.json();
@@ -322,33 +341,26 @@ async function iniciarModuloWeb() {
             document.getElementById("input-titulo-portada").value = portada.titulo || "";
             document.getElementById("input-desc-portada").value = portada.descripcion || "";
             document.getElementById("input-boton-portada").value = portada.texto_boton || "";
-            // Nota: Aquí podrías actualizar un <img> o <video> de vista previa si quisieras, usando portada.imagen_fondo o portada.video_url
         }
     } catch (error) {
         console.error("Error al cargar configuración web:", error);
     }
 }
 
-// Guardar textos y archivos multimedia
-async function guardarPortada(evento) {
+window.guardarPortada = async function(evento) {
     evento.preventDefault();
 
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
-    // Cambiamos el texto porque los videos pueden tardar un poco en subir
     boton.innerHTML = "⏳ Subiendo archivos y guardando..."; 
     boton.disabled = true;
 
-    // 1. Obtenemos los textos
     const titulo = document.getElementById("input-titulo-portada").value;
     const descripcion = document.getElementById("input-desc-portada").value;
     const texto_boton = document.getElementById("input-boton-portada").value;
-
-    // 2. Obtenemos los archivos de los inputs
     const inputVideo = document.getElementById("input-video-portada");
     const inputImagen = document.getElementById("input-imagen-portada");
 
-    // Preparamos el objeto para enviar a la base de datos MySQL
     const datosParaBD = {
         titulo,
         descripcion,
@@ -358,18 +370,15 @@ async function guardarPortada(evento) {
     };
 
     try {
-        // 3. Subir Video a Cloudinary (Si el usuario seleccionó uno)
-        if (inputVideo.files.length > 0) {
+        if (inputVideo && inputVideo.files.length > 0) {
             datosParaBD.video_url = await subirACloudinary(inputVideo.files[0]);
         }
 
-        // 4. Subir Imagen a Cloudinary (Si el usuario seleccionó una)
-        if (inputImagen.files.length > 0) {
+        if (inputImagen && inputImagen.files.length > 0) {
             datosParaBD.imagen_fondo = await subirACloudinary(inputImagen.files[0]);
         }
 
-        // 5. Guardar todo en la Base de Datos (API de Express)
-        const respuesta = await fetch("https://app-web-java.vercel.app/api/inicio/1", {
+        const respuesta = await fetch(`${baseUrl}/inicio/1`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datosParaBD)
@@ -377,9 +386,8 @@ async function guardarPortada(evento) {
 
         if (!respuesta.ok) throw new Error("Error al actualizar la base de datos");
 
-        // Limpiamos los inputs de archivos para que no se resuban por accidente
-        inputVideo.value = "";
-        inputImagen.value = "";
+        if (inputVideo) inputVideo.value = "";
+        if (inputImagen) inputImagen.value = "";
 
         alert("✅ ¡Portada actualizada correctamente con éxito!");
 
@@ -390,11 +398,11 @@ async function guardarPortada(evento) {
         boton.innerHTML = textoOriginal;
         boton.disabled = false;
     }
-}
-// ==========================================
-// MÓDULO: GESTOR WEB (SOBRE NOSOTROS)
-// ==========================================
+};
 
+// ==========================================
+// 6. MÓDULO: GESTOR WEB (SOBRE NOSOTROS)
+// ==========================================
 async function cargarPestanaNosotros() {
     const contenedor = document.getElementById("lista-nosotros");
     if (!contenedor) return;
@@ -402,8 +410,7 @@ async function cargarPestanaNosotros() {
     try {
         contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">Cargando información...</td></tr>`;
 
-        // Petición a tu API (ajusta la ruta si tu endpoint se llama diferente)
-        const respuesta = await fetch(baseUrl+"/nosotros");
+        const respuesta = await fetch(`${baseUrl}/nosotros`);
         if (!respuesta.ok) throw new Error("Error al cargar la información de nosotros");
         
         const datos = await respuesta.json();
@@ -415,7 +422,6 @@ async function cargarPestanaNosotros() {
 
         let html = "";
         datos.forEach((item) => {
-            // Verificamos si hay imagen, de lo contrario ponemos un cuadrito gris por defecto
             const imagenSegura = item.imagen_url || item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
 
             html += `
@@ -444,19 +450,15 @@ async function cargarPestanaNosotros() {
     }
 }
 
-// Función vacía temporal para que no marque error el botón "EDITAR"
 window.abrirModalEditarNosotros = function(id) {
     alert("Pronto abriremos una ventanita para editar el registro con ID: " + id);
-}
+};
+
 // ==========================================
-// INICIALIZADOR GENERAL
+// 7. INICIALIZADOR GENERAL
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     cargarComponentesAdmin();
-    
-    // El navegador intentará encender ambos módulos. 
-    // Gracias a los "if" que pusimos arriba, solo se ejecutará el módulo 
-    // de la página en la que estés actualmente, evitando errores.
     iniciarModuloReparaciones();
     iniciarModuloClientes();
     iniciarModuloWeb();
