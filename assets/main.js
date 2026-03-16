@@ -210,6 +210,102 @@ function mostrarErrorConsulta(mensaje) {
     }
 }
 
+// ==========================================
+// 9. MÓDULO: ANÁLISIS DE CRECIMIENTO (ED)
+// ==========================================
+// Variables globales del problema matemático
+const P0 = 12;          // Clientes iniciales (Enero 2024, t=0)
+const t_actual = 2.2;   // Años transcurridos hasta hoy (Marzo 2026)
+const P_actual = 975;   // Clientes actuales
+const k = Math.log(P_actual / P0) / t_actual; // Tasa de crecimiento continuo
+let miGraficoCrecimiento;
+
+// Función principal que se activa con el botón
+window.calcularCrecimiento = function() {
+    const inputTiempo = document.getElementById('input-tiempo');
+    if (!inputTiempo) return; // Si no estamos en la página, ignoramos
+
+    const t_futuro = parseFloat(inputTiempo.value);
+    
+    if(isNaN(t_futuro) || t_futuro < 0) {
+        alert("Por favor ingresa un tiempo válido mayor o igual a 0.");
+        return;
+    }
+
+    // Mostramos la tasa k en pantalla
+    document.getElementById('resultado-k').innerText = k.toFixed(4);
+
+    // Calculamos la proyección: P(t) = P0 * e^(k * t)
+    const clientesProyectados = P0 * Math.exp(k * t_futuro);
+    
+    document.getElementById('resultado-p').innerText = Math.round(clientesProyectados).toLocaleString();
+
+    // Llamamos a la gráfica
+    dibujarGraficaCrecimiento(t_futuro);
+};
+
+// Función para renderizar Chart.js
+function dibujarGraficaCrecimiento(t_max) {
+    const canvas = document.getElementById('graficaCrecimiento');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // Destruimos el gráfico anterior si el usuario vuelve a calcular
+    if (miGraficoCrecimiento) {
+        miGraficoCrecimiento.destroy();
+    }
+
+    let etiquetasTiempo = [];
+    let datosClientes = [];
+    
+    const pasos = 20;
+    for (let i = 0; i <= pasos; i++) {
+        let t_punto = (t_max / pasos) * i;
+        let clientes_punto = P0 * Math.exp(k * t_punto);
+        
+        etiquetasTiempo.push("Año " + t_punto.toFixed(1));
+        datosClientes.push(Math.round(clientes_punto));
+    }
+
+    miGraficoCrecimiento = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: etiquetasTiempo,
+            datasets: [{
+                label: 'Número de Clientes Registrados',
+                data: datosClientes,
+                borderColor: '#7ed957',
+                backgroundColor: 'rgba(126, 217, 87, 0.1)',
+                borderWidth: 3,
+                pointBackgroundColor: '#3f51b5',
+                pointBorderColor: '#fff',
+                pointRadius: 4,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#a1a1aa' } }
+            },
+            scales: {
+                x: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' } },
+                y: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' } }
+            }
+        }
+    });
+}
+
+// Función de arranque (solo se activa si el canvas existe en el HTML actual)
+function iniciarModuloCrecimiento() {
+    const canvas = document.getElementById('graficaCrecimiento');
+    if (canvas) {
+        window.calcularCrecimiento(); // Hace el primer cálculo por defecto al entrar a la página
+    }
+}
+
 // MODIFICACIÓN DE LA INICIALIZACIÓN GLOBAL
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Cargar la estructura (Nav y Footer)
@@ -218,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Consumir las APIs para llenar el contenido de Inicio
     cargarPortada();
     cargarServicios();
+    iniciarModuloCrecimiento();
 
     const formularioConsulta = document.getElementById('formulario-consulta');
     if (formularioConsulta) {
