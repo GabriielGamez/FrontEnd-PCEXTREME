@@ -453,6 +453,76 @@ async function cargarPestanaNosotros() {
 window.abrirModalEditarNosotros = function(id) {
     alert("Pronto abriremos una ventanita para editar el registro con ID: " + id);
 };
+// NUEVO: GESTOR WEB (CONTACTO Y MAPA)
+// ==========================================
+
+// 1. FUNCION PARA CONSULTAR (Se activa al darle clic a la pestaña Contacto)
+window.cargarPestanaContacto = async function(evento, nombrePestana) {
+    // Primero, hacemos el cambio visual de la pestaña
+    abrirPestana(evento, nombrePestana);
+
+    try {
+        // Consultamos la API solo en este momento
+        const resContacto = await fetch(`${baseUrl}/contacto`);
+        if (!resContacto.ok) throw new Error("Error al cargar datos de contacto");
+
+        const datosContacto = await resContacto.json();
+
+        if (datosContacto) {
+            // Validamos si tu backend devuelve un arreglo o el objeto directo
+            const contacto = Array.isArray(datosContacto) ? datosContacto[0] : datosContacto;
+            
+            // Llenamos los inputs
+            document.getElementById("input-email").value = contacto.email || "";
+            document.getElementById("input-telefono").value = contacto.telefono || "";
+            document.getElementById("input-whatsapp").value = contacto.whatsapp || "";
+            document.getElementById("input-direccion").value = contacto.direccion || "";
+            document.getElementById("input-mapa").value = contacto.mapa_url || "";
+        }
+    } catch (error) {
+        console.error("Error al cargar la pestaña de contacto:", error);
+    }
+};
+
+// 2. FUNCION PARA ACTUALIZAR (Se activa al darle clic al botón de Guardar)
+window.guardarContacto = async function(evento) {
+    evento.preventDefault(); // Evita que se recargue la página
+
+    const boton = evento.target.querySelector('button[type="submit"]');
+    const textoOriginal = boton.innerHTML;
+    boton.innerHTML = "⏳ Guardando datos..."; 
+    boton.disabled = true;
+
+    // Recolectamos lo que escribiste
+    const datosContacto = {
+        email: document.getElementById("input-email").value,
+        telefono: document.getElementById("input-telefono").value,
+        whatsapp: document.getElementById("input-whatsapp").value,
+        direccion: document.getElementById("input-direccion").value,
+        mapa_url: document.getElementById("input-mapa").value
+    };
+
+    try {
+        // Enviamos el PUT a la API (asumiendo que es el ID 1)
+        const respuesta = await fetch(`${baseUrl}/contacto/1`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datosContacto)
+        });
+
+        if (!respuesta.ok) throw new Error("Error al actualizar la base de datos de contacto");
+
+        alert("✅ ¡Datos de contacto y mapa actualizados con éxito!");
+
+    } catch (error) {
+        console.error("Error al guardar contacto:", error);
+        alert("❌ Hubo un error: " + error.message);
+    } finally {
+        // Regresamos el botón a su estado normal
+        boton.innerHTML = textoOriginal;
+        boton.disabled = false;
+    }
+};
 
 // ==========================================
 // 7. INICIALIZADOR GENERAL

@@ -43,9 +43,9 @@
             <button id="boton-nosotros" class="boton-pestana py-3 px-6 text-gray-500 hover:text-gray-300 font-bold border-b-2 border-transparent transition duration-300" onclick="abrirPestana(event, 'pestana-nosotros')">
     🏢 Sobre Nosotros
 </button>
-            <button id="boton-contacto" class="boton-pestana py-3 px-6 text-gray-500 hover:text-gray-300 font-bold border-b-2 border-transparent transition duration-300" onclick="abrirPestana(event, 'pestana-contacto')">
-                📞 Contacto y Mapa
-            </button>
+            <button id="boton-contacto" class="boton-pestana py-3 px-6 text-gray-500 hover:text-gray-300 font-bold border-b-2 border-transparent transition duration-300" onclick="cargarPestanaContacto(event, 'pestana-contacto')">
+    📞 Contacto y Mapa
+</button>
         </div>
 
         <div id="contenedor-pestanas" class="bg-[#111] border border-gray-800 rounded-xl p-8 shadow-lg">
@@ -117,7 +117,7 @@
             </div>
 
             <div id="pestana-contacto" class="contenido-pestana hidden animation-fade-in">
-                <form id="formulario-contacto" onsubmit="event.preventDefault(); alert('Simulación: Datos de contacto guardados.');">
+                <form id="formulario-contacto" onsubmit="guardarContacto(event)">
                     
                     <div class="mb-10">
                         <h4 class="text-xl font-bold text-[#7ed957] border-b border-gray-800 pb-2 mb-6">Información de Contacto Directo</h4>
