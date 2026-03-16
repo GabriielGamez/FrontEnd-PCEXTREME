@@ -40,7 +40,7 @@
 
         <div id="navegacion-pestanas" class="flex flex-wrap gap-2 border-b border-gray-800 mb-8">
             <button id="boton-portada"
-                class="boton-pestana py-3 px-6 text-[#7ed957] border-b-2 border-[#7ed957] font-bold transition duration-300"
+                class="boton-pestana py-3 px-6 text-gray-500 hover:text-gray-300 font-bold border-b-2 border-transparent transition duration-300"
                 onclick="abrirPestana(event, 'pestana-portada')">
                 🏠 Portada Inicio
             </button>
@@ -111,28 +111,64 @@
                 </form>
             </div>
 
-            <div id="pestana-nosotros"
-                class="contenido-pestana hidden animation-fade-in bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900">Secciones Informativas</h3>
-                        <p class="text-gray-500 text-sm mt-1">Edita el contenido de Misión, Visión y Quiénes Somos.</p>
-                    </div>
+            <div id="pestana-nosotros" class="contenido-pestana hidden animation-fade-in bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+                
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Gestión de "Sobre Nosotros"</h3>
+                    <p class="text-gray-500 text-sm mt-1">Edita las tarjetas de Quiénes Somos, Misión y Visión.</p>
                 </div>
 
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr
-                                class="bg-gray-50 text-gray-600 uppercase text-xs font-bold tracking-wider border-b border-gray-200">
-                                <th class="p-4 w-32">Imagen</th>
-                                <th class="p-4">Título y Descripción</th>
-                                <th class="p-4 text-center w-32">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-nosotros" class="divide-y divide-gray-100 bg-white">
-                        </tbody>
-                    </table>
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    
+                    <div class="w-full lg:w-1/2 overflow-x-auto rounded-lg border border-gray-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 uppercase text-xs font-bold tracking-wider border-b border-gray-200">
+                                    <th class="p-4 w-24">Imagen</th>
+                                    <th class="p-4">Título</th>
+                                    <th class="p-4 text-center w-24">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-nosotros" class="divide-y divide-gray-100 bg-white">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    <div id="panel-edicion-nosotros" class="hidden w-full lg:w-1/2 bg-white rounded-lg border-t-4 border-[#7ed957] shadow-lg p-6 border-x border-b border-gray-200">
+                        <h4 class="text-lg font-bold text-gray-800 mb-4" id="titulo-editando">Editando:</h4>
+                        
+                        <form id="form-editar-nosotros" onsubmit="guardarEdicionNosotros(event)">
+                            <input type="hidden" id="edit-id-nosotros">
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Título:</label>
+                                <input type="text" id="edit-titulo-nosotros" required class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+                                <textarea id="edit-desc-nosotros" rows="4" required class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Imagen Actual:</label>
+                                <img id="edit-preview-nosotros" src="" class="h-24 object-cover rounded shadow-sm border border-gray-200 mb-2">
+                                
+                                <label class="block text-gray-700 text-sm font-bold mb-1">Cambiar Imagen (Opcional):</label>
+                                <input type="file" id="edit-img-nosotros" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
+                            </div>
+
+                            <div class="flex gap-3 mt-6">
+                                <button type="submit" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-6 rounded text-sm transition">
+                                    Guardar Cambios
+                                </button>
+                                <button type="button" onclick="cerrarEdicionNosotros()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded text-sm transition">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
 
