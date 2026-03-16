@@ -29,32 +29,32 @@ async function cargarComponentesAdmin() {
 // ==========================================
 // 2. CONTROLADOR DE PESTAÑAS (GESTOR WEB)
 // ==========================================
-window.abrirPestana = function(evento, nombrePestana) {
+window.abrirPestana = function (evento, nombrePestana) {
     // 1. Ocultar todo el contenido de las pestañas
-    const contenidos = document.querySelectorAll('.contenido-pestana');
-    contenidos.forEach(contenido => {
-        contenido.classList.add('hidden');
-        contenido.classList.remove('block');
+    const contenidos = document.querySelectorAll(".contenido-pestana");
+    contenidos.forEach((contenido) => {
+        contenido.classList.add("hidden");
+        contenido.classList.remove("block");
     });
 
     // 2. Resetear el estilo de todos los botones
-    const botones = document.querySelectorAll('.boton-pestana');
-    botones.forEach(boton => {
-        boton.classList.remove('text-[#7ed957]', 'border-[#7ed957]');
-        boton.classList.add('text-gray-500', 'border-transparent');
+    const botones = document.querySelectorAll(".boton-pestana");
+    botones.forEach((boton) => {
+        boton.classList.remove("text-[#7ed957]", "border-[#7ed957]");
+        boton.classList.add("text-gray-500", "border-transparent");
     });
 
     // 3. Mostrar el contenido de la pestaña actual
     const pestanaDestino = document.getElementById(nombrePestana);
     if (pestanaDestino) {
-        pestanaDestino.classList.remove('hidden');
-        pestanaDestino.classList.add('block');
+        pestanaDestino.classList.remove("hidden");
+        pestanaDestino.classList.add("block");
     }
 
     // 4. Aplicar estilo activo al botón clickeado
     const botonActual = evento.currentTarget;
-    botonActual.classList.remove('text-gray-500', 'border-transparent');
-    botonActual.classList.add('text-[#7ed957]', 'border-[#7ed957]');
+    botonActual.classList.remove("text-gray-500", "border-transparent");
+    botonActual.classList.add("text-[#7ed957]", "border-[#7ed957]");
 };
 
 // ==========================================
@@ -73,7 +73,7 @@ async function iniciarModuloReparaciones() {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
         const respuesta = await fetch(`${baseUrl}/registros`);
         if (!respuesta.ok) throw new Error("Error en la API");
-        
+
         repGlobales = await respuesta.json();
         repFiltradas = [...repGlobales];
         repPaginaActual = 1;
@@ -83,9 +83,10 @@ async function iniciarModuloReparaciones() {
         if (buscador) {
             buscador.addEventListener("input", (e) => {
                 const texto = e.target.value.toLowerCase().trim();
-                repFiltradas = repGlobales.filter(rep => 
-                    String(rep.idFolio).toLowerCase().includes(texto) || 
-                    String(rep.idDispositivo).toLowerCase().includes(texto)
+                repFiltradas = repGlobales.filter(
+                    (rep) =>
+                        String(rep.idFolio).toLowerCase().includes(texto) ||
+                        String(rep.idDispositivo).toLowerCase().includes(texto)
                 );
                 repPaginaActual = 1;
                 mostrarPaginaReparaciones();
@@ -114,33 +115,41 @@ function mostrarPaginaReparaciones() {
         html += `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
                 <td class="px-4 py-4 align-top">
-                    <span class="bg-gray-200 text-gray-800 font-black px-2 py-1 rounded text-sm">#${rep.idFolio}</span>
+                    <span class="bg-gray-200 text-gray-800 font-black px-2 py-1 rounded text-sm">#${rep.idFolio
+            }</span>
                 </td>
                 <td class="px-4 py-4 align-top">
-                    <strong class="text-gray-900 block">Disp. ID: ${rep.idDispositivo}</strong>
+                    <strong class="text-gray-900 block">Disp. ID: ${rep.idDispositivo
+            }</strong>
                 </td>
-                <td class="px-4 py-4 align-top text-gray-600">${rep.detalles}</td>
+                <td class="px-4 py-4 align-top text-gray-600">${rep.detalles
+            }</td>
                 <td class="px-4 py-4 align-top">
-                    <form class="flex items-end gap-2" onsubmit="actualizarReparacion(event, ${rep.idFolio})">
+                    <form class="flex items-end gap-2" onsubmit="actualizarReparacion(event, ${rep.idFolio
+            })">
                         <div class="flex flex-col gap-2 w-full">
                             <select class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm bg-white">
-                                <option value="${rep.estadoEquipo}" selected hidden>${rep.estadoEquipo}</option>
+                                <option value="${rep.estadoEquipo
+            }" selected hidden>${rep.estadoEquipo}</option>
                                 <option value="En Diagnóstico">🔵 En Diagnóstico</option>
                                 <option value="En Reparación">🟠 En Reparación</option>
                                 <option value="Listo para entregar">🟢 Listo para entregar</option>
                                 <option value="Entregado">⚫ Entregado</option>
                             </select>
-                            <textarea rows="1" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm resize-none" placeholder="Diagnóstico...">${rep.diagnostico || ''}</textarea>
+                            <textarea rows="1" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm resize-none" placeholder="Diagnóstico...">${rep.diagnostico || ""
+            }</textarea>
                             <div class="flex items-center gap-2">
                                 <span class="text-gray-500 font-bold">$</span>
-                                <input type="number" value="${rep.costo || 0}" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm no-spinners">
+                                <input type="number" value="${rep.costo || 0
+            }" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm no-spinners">
                             </div>
                         </div>
                         <button type="submit" class="text-2xl hover:scale-110 transition pb-1" title="Guardar">💾</button>
                     </form>
                 </td>
                 <td class="px-4 py-4 align-top text-center">
-                    <button onclick="verTicket(${rep.idFolio})" type="button" class="text-gray-400 hover:text-blue-600 transition p-2 border border-gray-200 rounded-md hover:bg-blue-50">📄</button>
+                    <button onclick="verTicket(${rep.idFolio
+            })" type="button" class="text-gray-400 hover:text-blue-600 transition p-2 border border-gray-200 rounded-md hover:bg-blue-50">📄</button>
                 </td>
             </tr>
         `;
@@ -149,33 +158,47 @@ function mostrarPaginaReparaciones() {
     actualizarPaginacionReparaciones();
 }
 
-window.cambiarPaginaReparaciones = function(dir) {
+window.cambiarPaginaReparaciones = function (dir) {
     const total = Math.ceil(repFiltradas.length / repPorPagina);
-    if (dir === 'siguiente' && repPaginaActual < total) repPaginaActual++;
-    else if (dir === 'anterior' && repPaginaActual > 1) repPaginaActual--;
+    if (dir === "siguiente" && repPaginaActual < total) repPaginaActual++;
+    else if (dir === "anterior" && repPaginaActual > 1) repPaginaActual--;
     mostrarPaginaReparaciones();
 };
 
 function actualizarPaginacionReparaciones() {
     let controles = document.getElementById("paginacion-reparaciones");
     if (!controles) {
-        const tabla = document.querySelector("#lista-reparaciones").closest("table").parentNode;
+        const tabla = document
+            .querySelector("#lista-reparaciones")
+            .closest("table").parentNode;
         controles = document.createElement("div");
         controles.id = "paginacion-reparaciones";
-        controles.className = "flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 rounded-b-lg mt-2";
+        controles.className =
+            "flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 rounded-b-lg mt-2";
         tabla.appendChild(controles);
     }
 
     const total = Math.ceil(repFiltradas.length / repPorPagina);
-    if (total <= 1) { controles.innerHTML = ""; return; }
+    if (total <= 1) {
+        controles.innerHTML = "";
+        return;
+    }
 
     controles.innerHTML = `
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-700">Mostrando ${(repPaginaActual - 1) * repPorPagina + 1} a ${Math.min(repPaginaActual * repPorPagina, repFiltradas.length)} de ${repFiltradas.length}</p>
+            <p class="text-sm text-gray-700">Mostrando ${(repPaginaActual - 1) * repPorPagina + 1
+        } a ${Math.min(
+            repPaginaActual * repPorPagina,
+            repFiltradas.length
+        )} de ${repFiltradas.length}</p>
             <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaReparaciones('anterior')" ${repPaginaActual === 1 ? 'disabled' : ''} class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${repPaginaActual === 1 ? 'opacity-50 cursor-not-allowed' : ''}">Anterior</button>
+                <button onclick="cambiarPaginaReparaciones('anterior')" ${repPaginaActual === 1 ? "disabled" : ""
+        } class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${repPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""
+        }">Anterior</button>
                 <span class="px-4 py-2 border border-gray-300 bg-white text-sm">Página ${repPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaReparaciones('siguiente')" ${repPaginaActual === total ? 'disabled' : ''} class="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${repPaginaActual === total ? 'opacity-50 cursor-not-allowed' : ''}">Siguiente</button>
+                <button onclick="cambiarPaginaReparaciones('siguiente')" ${repPaginaActual === total ? "disabled" : ""
+        } class="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${repPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""
+        }">Siguiente</button>
             </nav>
         </div>`;
 }
@@ -190,14 +213,14 @@ const cliPorPagina = 20;
 
 async function iniciarModuloClientes() {
     const contenedor = document.getElementById("lista-clientes");
-    if (!contenedor) return; 
+    if (!contenedor) return;
 
     try {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando clientes...</td></tr>`;
-        
+
         const respuesta = await fetch(`${baseUrl}/clientes`);
         if (!respuesta.ok) throw new Error("Error en la API de clientes");
-        
+
         cliGlobales = await respuesta.json();
         cliFiltrados = [...cliGlobales];
         cliPaginaActual = 1;
@@ -207,9 +230,10 @@ async function iniciarModuloClientes() {
         if (buscador) {
             buscador.addEventListener("input", (e) => {
                 const texto = e.target.value.toLowerCase().trim();
-                cliFiltrados = cliGlobales.filter(cli => {
-                    const nombreCompleto = `${cli.nombre} ${cli.aPaterno} ${cli.aMaterno}`.toLowerCase();
-                    const correo = String(cli.email || '').toLowerCase();
+                cliFiltrados = cliGlobales.filter((cli) => {
+                    const nombreCompleto =
+                        `${cli.nombre} ${cli.aPaterno} ${cli.aMaterno}`.toLowerCase();
+                    const correo = String(cli.email || "").toLowerCase();
                     return nombreCompleto.includes(texto) || correo.includes(texto);
                 });
                 cliPaginaActual = 1;
@@ -237,25 +261,28 @@ function mostrarPaginaClientes() {
     let html = "";
 
     cliPagina.forEach((cli) => {
-        const phone = cli.telefono ? cli.telefono.replace(/\D/g, '') : '';
-        const whatsappLink = phone ? `https://wa.me/52${phone}` : '#';
+        const phone = cli.telefono ? cli.telefono.replace(/\D/g, "") : "";
+        const whatsappLink = phone ? `https://wa.me/52${phone}` : "#";
 
         html += `
             <tr class="hover:bg-gray-50 transition">
                 <td class="px-6 py-5">
-                    <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded text-sm border border-gray-200">#${cli.idCliente}</span>
+                    <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded text-sm border border-gray-200">#${cli.idCliente
+            }</span>
                 </td>
                 <td class="px-6 py-5 font-bold text-gray-800">
-                    ${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ''}
+                    ${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ""}
                 </td>
                 <td class="px-6 py-5">
                     <div class="flex flex-col space-y-1 text-sm text-gray-600">
-                        <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> ${cli.email || 'Sin correo'}</span>
-                        <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> ${cli.telefono || 'Sin teléfono'}</span>
+                        <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> ${cli.email || "Sin correo"
+            }</span>
+                        <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> ${cli.telefono || "Sin teléfono"
+            }</span>
                     </div>
                 </td>
                 <td class="px-6 py-5 text-sm text-gray-500 max-w-xs">
-                    ${cli.direccion || 'Sin dirección registrada'}
+                    ${cli.direccion || "Sin dirección registrada"}
                 </td>
                 <td class="px-6 py-5 text-center">
                     <a href="${whatsappLink}" target="_blank" class="inline-flex items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow-sm">
@@ -270,33 +297,47 @@ function mostrarPaginaClientes() {
     actualizarPaginacionClientes();
 }
 
-window.cambiarPaginaClientes = function(dir) {
+window.cambiarPaginaClientes = function (dir) {
     const total = Math.ceil(cliFiltrados.length / cliPorPagina);
-    if (dir === 'siguiente' && cliPaginaActual < total) cliPaginaActual++;
-    else if (dir === 'anterior' && cliPaginaActual > 1) cliPaginaActual--;
+    if (dir === "siguiente" && cliPaginaActual < total) cliPaginaActual++;
+    else if (dir === "anterior" && cliPaginaActual > 1) cliPaginaActual--;
     mostrarPaginaClientes();
 };
 
 function actualizarPaginacionClientes() {
     let controles = document.getElementById("paginacion-clientes");
     if (!controles) {
-        const tabla = document.querySelector("#lista-clientes").closest("table").parentNode;
+        const tabla = document
+            .querySelector("#lista-clientes")
+            .closest("table").parentNode;
         controles = document.createElement("div");
         controles.id = "paginacion-clientes";
-        controles.className = "flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 rounded-b-lg mt-2";
+        controles.className =
+            "flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 rounded-b-lg mt-2";
         tabla.appendChild(controles);
     }
 
     const total = Math.ceil(cliFiltrados.length / cliPorPagina);
-    if (total <= 1) { controles.innerHTML = ""; return; }
+    if (total <= 1) {
+        controles.innerHTML = "";
+        return;
+    }
 
     controles.innerHTML = `
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-700">Mostrando ${(cliPaginaActual - 1) * cliPorPagina + 1} a ${Math.min(cliPaginaActual * cliPorPagina, cliFiltrados.length)} de ${cliFiltrados.length}</p>
+            <p class="text-sm text-gray-700">Mostrando ${(cliPaginaActual - 1) * cliPorPagina + 1
+        } a ${Math.min(
+            cliPaginaActual * cliPorPagina,
+            cliFiltrados.length
+        )} de ${cliFiltrados.length}</p>
             <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaClientes('anterior')" ${cliPaginaActual === 1 ? 'disabled' : ''} class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${cliPaginaActual === 1 ? 'opacity-50 cursor-not-allowed' : ''}">Anterior</button>
+                <button onclick="cambiarPaginaClientes('anterior')" ${cliPaginaActual === 1 ? "disabled" : ""
+        } class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${cliPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""
+        }">Anterior</button>
                 <span class="px-4 py-2 border border-gray-300 bg-white text-sm">Página ${cliPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaClientes('siguiente')" ${cliPaginaActual === total ? 'disabled' : ''} class="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${cliPaginaActual === total ? 'opacity-50 cursor-not-allowed' : ''}">Siguiente</button>
+                <button onclick="cambiarPaginaClientes('siguiente')" ${cliPaginaActual === total ? "disabled" : ""
+        } class="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${cliPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""
+        }">Siguiente</button>
             </nav>
         </div>`;
 }
@@ -305,25 +346,30 @@ function actualizarPaginacionClientes() {
 // 5. MÓDULO: GESTOR WEB (PORTADA INICIO Y CLOUDINARY)
 // ==========================================
 const CLOUD_NAME = "dbkqbazp7";
-const PRESET = "Pc Extreme Web"; 
+const PRESET = "Pc Extreme Web";
 
 async function subirACloudinary(archivo) {
-    const formData = new FormData(); 
+    const formData = new FormData();
     formData.append("file", archivo);
     formData.append("upload_preset", PRESET);
 
-    const respuesta = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
-        method: 'POST',
-        body: formData
-    });
+    const respuesta = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+        {
+            method: "POST",
+            body: formData,
+        }
+    );
 
     if (!respuesta.ok) {
         const errorData = await respuesta.json();
-        throw new Error(errorData.error.message || "Error al subir el archivo a Cloudinary");
+        throw new Error(
+            errorData.error.message || "Error al subir el archivo a Cloudinary"
+        );
     }
 
     const data = await respuesta.json();
-    return data.secure_url; 
+    return data.secure_url;
 }
 
 async function iniciarModuloWeb() {
@@ -332,27 +378,31 @@ async function iniciarModuloWeb() {
 
     try {
         const respuesta = await fetch(`${baseUrl}/inicio`);
-        if (!respuesta.ok) throw new Error("Error al cargar la información de inicio");
-        
+        if (!respuesta.ok)
+            throw new Error("Error al cargar la información de inicio");
+
         const datos = await respuesta.json();
-        
+
         if (datos && datos.length > 0) {
-            const portada = datos[0]; 
-            document.getElementById("input-titulo-portada").value = portada.titulo || "";
-            document.getElementById("input-desc-portada").value = portada.descripcion || "";
-            document.getElementById("input-boton-portada").value = portada.texto_boton || "";
+            const portada = datos[0];
+            document.getElementById("input-titulo-portada").value =
+                portada.titulo || "";
+            document.getElementById("input-desc-portada").value =
+                portada.descripcion || "";
+            document.getElementById("input-boton-portada").value =
+                portada.texto_boton || "";
         }
     } catch (error) {
         console.error("Error al cargar configuración web:", error);
     }
 }
 
-window.guardarPortada = async function(evento) {
+window.guardarPortada = async function (evento) {
     evento.preventDefault();
 
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = "⏳ Subiendo archivos y guardando..."; 
+    boton.innerHTML = "⏳ Subiendo archivos y guardando...";
     boton.disabled = true;
 
     const titulo = document.getElementById("input-titulo-portada").value;
@@ -366,7 +416,7 @@ window.guardarPortada = async function(evento) {
         descripcion,
         texto_boton,
         video_url: null,
-        imagen_fondo: null
+        imagen_fondo: null,
     };
 
     try {
@@ -381,7 +431,7 @@ window.guardarPortada = async function(evento) {
         const respuesta = await fetch(`${baseUrl}/inicio/1`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datosParaBD)
+            body: JSON.stringify(datosParaBD),
         });
 
         if (!respuesta.ok) throw new Error("Error al actualizar la base de datos");
@@ -390,7 +440,6 @@ window.guardarPortada = async function(evento) {
         if (inputImagen) inputImagen.value = "";
 
         alert("✅ ¡Portada actualizada correctamente con éxito!");
-
     } catch (error) {
         console.error("Error al guardar:", error);
         alert("❌ Hubo un error: " + error.message);
@@ -403,38 +452,54 @@ window.guardarPortada = async function(evento) {
 // ==========================================
 // 6. MÓDULO: GESTOR WEB (SOBRE NOSOTROS)
 // ==========================================
-async function cargarPestanaNosotros() {
+
+window.cargarPestanaNosotros = async function (evento, nombrePestana) {
+    // 1. Primero hacemos el cambio visual de la pestaña al instante
+    abrirPestana(evento, nombrePestana);
+
     const contenedor = document.getElementById("lista-nosotros");
     if (!contenedor) return;
 
     try {
-        contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">Cargando información...</td></tr>`;
+        // Mostramos el mensaje de carga mientras va a la base de datos
+        contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">⏳ Cargando información...</td></tr>`;
 
+        // 2. Hacemos la petición a la API de forma dinámica
         const respuesta = await fetch(`${baseUrl}/nosotros`);
-        if (!respuesta.ok) throw new Error("Error al cargar la información de nosotros");
-        
+        if (!respuesta.ok)
+            throw new Error("Error al cargar la información de nosotros");
+
         const datos = await respuesta.json();
 
+        // Si no hay datos, mostramos un aviso
         if (datos.length === 0) {
             contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">No hay secciones registradas en la base de datos.</td></tr>`;
             return;
         }
 
+        // 3. Construimos y pintamos las filas de la tabla
         let html = "";
         datos.forEach((item) => {
-            const imagenSegura = item.imagen_url || item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
+            const imagenSegura =
+                item.imagen_url ||
+                item.imagen ||
+                "https://via.placeholder.com/150?text=Sin+Imagen";
 
             html += `
                 <tr class="hover:bg-gray-50 transition duration-200">
                     <td class="p-4 align-top">
-                        <img src="${imagenSegura}" alt="${item.titulo}" class="w-24 h-16 object-cover rounded shadow-sm border border-gray-200">
+                        <img src="${imagenSegura}" alt="${item.titulo
+                }" class="w-24 h-16 object-cover rounded shadow-sm border border-gray-200">
                     </td>
                     <td class="p-4 align-top">
-                        <strong class="text-gray-900 text-lg block mb-1">${item.titulo}</strong>
-                        <p class="text-gray-500 text-sm line-clamp-2">${item.descripcion}</p>
+                        <strong class="text-gray-900 text-lg block mb-1">${item.titulo
+                }</strong>
+                        <p class="text-gray-500 text-sm line-clamp-2">${item.descripcion
+                }</p>
                     </td>
                     <td class="p-4 align-middle text-center">
-                        <button onclick="abrirModalEditarNosotros(${item.id || item.idNosotros})" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-6 rounded text-xs tracking-wider uppercase transition shadow-sm">
+                        <button onclick="abrirModalEditarNosotros(${item.id || item.idNosotros
+                })" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-6 rounded text-xs tracking-wider uppercase transition shadow-sm">
                             Editar
                         </button>
                     </td>
@@ -443,21 +508,24 @@ async function cargarPestanaNosotros() {
         });
 
         contenedor.innerHTML = html;
-
     } catch (error) {
         console.error("Error en la pestaña Nosotros:", error);
-        contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-red-500">Error al conectar con el servidor.</td></tr>`;
+        contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-red-500">❌ Error al conectar con el servidor.</td></tr>`;
     }
-}
+};
 
-window.abrirModalEditarNosotros = function(id) {
+window.abrirModalEditarNosotros = function (id) {
+    alert("Pronto abriremos una ventanita para editar el registro con ID: " + id);
+};
+
+window.abrirModalEditarNosotros = function (id) {
     alert("Pronto abriremos una ventanita para editar el registro con ID: " + id);
 };
 // NUEVO: GESTOR WEB (CONTACTO Y MAPA)
 // ==========================================
 
 // 1. FUNCION PARA CONSULTAR (Se activa al darle clic a la pestaña Contacto)
-window.cargarPestanaContacto = async function(evento, nombrePestana) {
+window.cargarPestanaContacto = async function (evento, nombrePestana) {
     // Primero, hacemos el cambio visual de la pestaña
     abrirPestana(evento, nombrePestana);
 
@@ -470,13 +538,16 @@ window.cargarPestanaContacto = async function(evento, nombrePestana) {
 
         if (datosContacto) {
             // Validamos si tu backend devuelve un arreglo o el objeto directo
-            const contacto = Array.isArray(datosContacto) ? datosContacto[0] : datosContacto;
-            
+            const contacto = Array.isArray(datosContacto)
+                ? datosContacto[0]
+                : datosContacto;
+
             // Llenamos los inputs
             document.getElementById("input-email").value = contacto.email || "";
             document.getElementById("input-telefono").value = contacto.telefono || "";
             document.getElementById("input-whatsapp").value = contacto.whatsapp || "";
-            document.getElementById("input-direccion").value = contacto.direccion || "";
+            document.getElementById("input-direccion").value =
+                contacto.direccion || "";
             document.getElementById("input-mapa").value = contacto.mapa_url || "";
         }
     } catch (error) {
@@ -485,12 +556,12 @@ window.cargarPestanaContacto = async function(evento, nombrePestana) {
 };
 
 // 2. FUNCION PARA ACTUALIZAR (Se activa al darle clic al botón de Guardar)
-window.guardarContacto = async function(evento) {
+window.guardarContacto = async function (evento) {
     evento.preventDefault(); // Evita que se recargue la página
 
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = "⏳ Guardando datos..."; 
+    boton.innerHTML = "⏳ Guardando datos...";
     boton.disabled = true;
 
     // Recolectamos lo que escribiste
@@ -499,7 +570,7 @@ window.guardarContacto = async function(evento) {
         telefono: document.getElementById("input-telefono").value,
         whatsapp: document.getElementById("input-whatsapp").value,
         direccion: document.getElementById("input-direccion").value,
-        mapa_url: document.getElementById("input-mapa").value
+        mapa_url: document.getElementById("input-mapa").value,
     };
 
     try {
@@ -507,13 +578,13 @@ window.guardarContacto = async function(evento) {
         const respuesta = await fetch(`${baseUrl}/contacto/1`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datosContacto)
+            body: JSON.stringify(datosContacto),
         });
 
-        if (!respuesta.ok) throw new Error("Error al actualizar la base de datos de contacto");
+        if (!respuesta.ok)
+            throw new Error("Error al actualizar la base de datos de contacto");
 
         alert("✅ ¡Datos de contacto y mapa actualizados con éxito!");
-
     } catch (error) {
         console.error("Error al guardar contacto:", error);
         alert("❌ Hubo un error: " + error.message);
@@ -532,5 +603,4 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloReparaciones();
     iniciarModuloClientes();
     iniciarModuloWeb();
-    cargarPestanaNosotros();
 });
