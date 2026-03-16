@@ -311,7 +311,7 @@ async function iniciarModuloWeb() {
     if (!formPortada) return;
 
     try {
-        const respuesta = await fetch("http://localhost:3000/api/inicio");
+        const respuesta = await fetch("https://app-web-java.vercel.app/api/inicio");
         if (!respuesta.ok) throw new Error("Error al cargar la información de inicio");
         
         const datos = await respuesta.json();
@@ -368,7 +368,7 @@ async function guardarPortada(evento) {
         }
 
         // 5. Guardar todo en la Base de Datos (API de Express)
-        const respuesta = await fetch("http://localhost:3000/api/inicio/1", {
+        const respuesta = await fetch("https://app-web-java.vercel.app/api/inicio/1", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datosParaBD)
