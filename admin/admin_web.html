@@ -40,7 +40,7 @@
 
         <div id="navegacion-pestanas" class="flex flex-wrap gap-2 border-b border-gray-800 mb-8">
             <button id="boton-portada"
-                class="boton-pestana py-3 px-6 text-gray-500 hover:text-gray-300 font-bold border-b-2 border-transparent transition duration-300"
+                class="boton-pestana py-3 px-6 text-[#7ed957] border-b-2 border-[#7ed957] font-bold transition duration-300"
                 onclick="abrirPestana(event, 'pestana-portada')">
                 🏠 Portada Inicio
             </button>
@@ -111,11 +111,13 @@
                 </form>
             </div>
 
-            <div id="pestana-nosotros" class="contenido-pestana hidden animation-fade-in bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                
-                <div class="mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Gestión de "Sobre Nosotros"</h3>
-                    <p class="text-gray-500 text-sm mt-1">Edita las tarjetas de Quiénes Somos, Misión y Visión.</p>
+            <div id="pestana-nosotros"
+                class="contenido-pestana hidden animation-fade-in bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Secciones Informativas</h3>
+                        <p class="text-gray-500 text-sm mt-1">Edita el contenido de Misión, Visión y Quiénes Somos.</p>
+                    </div>
                 </div>
 
                 <div class="flex flex-col lg:flex-row gap-8 items-start">
@@ -132,7 +134,7 @@
                             <tbody id="lista-nosotros" class="divide-y divide-gray-100 bg-white">
                                 </tbody>
                         </table>
-                    </div> 
+                    </div>
 
                     <div id="panel-edicion-nosotros" class="hidden w-full lg:w-1/2 bg-white rounded-lg border-t-4 border-[#7ed957] shadow-lg p-6 border-x border-b border-gray-200">
                         <h4 class="text-lg font-bold text-gray-800 mb-4" id="titulo-editando">Editando:</h4>
