@@ -489,12 +489,12 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
             }
 
             html += `
-                <tr class="hover:bg-gray-50 transition duration-200">
+                <tr class="hover:bg-[#252830] transition duration-200 border-b border-gray-800">
                     <td class="p-4 align-top w-24">
-                        <img src="${imagenSegura}" alt="${item.titulo}" class="w-20 h-16 object-cover rounded shadow-sm border border-gray-200">
+                        <img src="${imagenSegura}" alt="${item.titulo}" class="w-20 h-16 object-cover rounded shadow-sm border border-gray-700">
                     </td>
                     <td class="p-4 align-top">
-                        <strong class="text-gray-900 text-sm md:text-base block">${item.titulo}</strong>
+                        <strong class="text-gray-200 text-sm md:text-base block">${item.titulo}</strong>
                     </td>
                     <td class="p-4 align-middle text-center w-24">
                         <button onclick="abrirModalEditarNosotros('${idCorrecto}')" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded text-xs tracking-wider transition shadow-sm">
