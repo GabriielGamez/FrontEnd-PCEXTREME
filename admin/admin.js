@@ -455,7 +455,6 @@ window.guardarPortada = async function (evento) {
 let nosotrosGlobales = []; // Aquí guardaremos la información de la tabla
 
 window.cargarPestanaNosotros = async function(evento, nombrePestana) {
-    // Solo hacemos el cambio visual si venimos de darle click a la pestaña
     if (evento && nombrePestana) {
         abrirPestana(evento, nombrePestana);
     }
@@ -469,7 +468,7 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
         const respuesta = await fetch(`${baseUrl}/nosotros`);
         if (!respuesta.ok) throw new Error("Error al cargar la información de nosotros");
         
-        nosotrosGlobales = await respuesta.json(); // Guardamos los datos globalmente
+        nosotrosGlobales = await respuesta.json();
 
         if (nosotrosGlobales.length === 0) {
             contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">No hay secciones registradas en la base de datos.</td></tr>`;
@@ -478,7 +477,16 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
 
         let html = "";
         nosotrosGlobales.forEach((item) => {
-            const imagenSegura = item.imagen_url || item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
+            // 1. Usamos exactamente "idInfo" como viene en tu JSON
+            const idCorrecto = item.idInfo;
+
+            // 2. Arreglamos la imagen: Si es de Cloudinary (empieza con http) la usa, 
+            // si no, asume que está en tu carpeta de assets local.
+            let imagenSegura = item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
+            if (imagenSegura && !imagenSegura.startsWith('http')) {
+                // Ajusta esta ruta a la carpeta donde realmente guardas "mision.png" y "vision.png"
+                imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`; 
+            }
 
             html += `
                 <tr class="hover:bg-gray-50 transition duration-200">
@@ -489,7 +497,7 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
                         <strong class="text-gray-900 text-sm md:text-base block">${item.titulo}</strong>
                     </td>
                     <td class="p-4 align-middle text-center w-24">
-                        <button onclick="abrirModalEditarNosotros(${item.id || item.idNosotros})" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded text-xs tracking-wider transition shadow-sm">
+                        <button onclick="abrirModalEditarNosotros('${idCorrecto}')" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded text-xs tracking-wider transition shadow-sm">
                             Editar
                         </button>
                     </td>
@@ -505,25 +513,28 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
     }
 };
 
-// Abre el panel lateral y llena los datos
-window.abrirModalEditarNosotros = function(id) {
-    // 1. Buscamos el elemento en nuestra variable global usando el ID
-    const item = nosotrosGlobales.find(n => n.id === id || n.idNosotros === id);
-    if (!item) return;
+window.abrirModalEditarNosotros = function(idBuscado) {
+    // Buscamos específicamente por idInfo
+    const item = nosotrosGlobales.find(n => String(n.idInfo) === String(idBuscado));
 
-    // 2. Llenamos los inputs del formulario derecho
-    document.getElementById("edit-id-nosotros").value = id;
+    if (!item) {
+        console.error("No se encontró el registro con ID:", idBuscado);
+        return;
+    }
+
+    document.getElementById("edit-id-nosotros").value = idBuscado;
     document.getElementById("titulo-editando").innerText = "Editando: " + item.titulo;
     document.getElementById("edit-titulo-nosotros").value = item.titulo;
     document.getElementById("edit-desc-nosotros").value = item.descripcion;
     
-    const imagenSegura = item.imagen_url || item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
+    // Aplicamos la misma lógica para la imagen en el panel de edición
+    let imagenSegura = item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
+    if (imagenSegura && !imagenSegura.startsWith('http')) {
+        imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`; 
+    }
     document.getElementById("edit-preview-nosotros").src = imagenSegura;
     
-    // Limpiamos el input de archivo por si había algo antes
     document.getElementById("edit-img-nosotros").value = "";
-
-    // 3. Mostramos el panel de edición
     document.getElementById("panel-edicion-nosotros").classList.remove("hidden");
 };
 
