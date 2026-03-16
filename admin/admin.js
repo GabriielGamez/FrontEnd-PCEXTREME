@@ -391,6 +391,63 @@ async function guardarPortada(evento) {
     }
 }
 // ==========================================
+// MÓDULO: GESTOR WEB (SOBRE NOSOTROS)
+// ==========================================
+
+async function cargarPestanaNosotros() {
+    const contenedor = document.getElementById("lista-nosotros");
+    if (!contenedor) return;
+
+    try {
+        contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">Cargando información...</td></tr>`;
+
+        // Petición a tu API (ajusta la ruta si tu endpoint se llama diferente)
+        const respuesta = await fetch("http://localhost:3000/api/nosotros");
+        if (!respuesta.ok) throw new Error("Error al cargar la información de nosotros");
+        
+        const datos = await respuesta.json();
+
+        if (datos.length === 0) {
+            contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">No hay secciones registradas en la base de datos.</td></tr>`;
+            return;
+        }
+
+        let html = "";
+        datos.forEach((item) => {
+            // Verificamos si hay imagen, de lo contrario ponemos un cuadrito gris por defecto
+            const imagenSegura = item.imagen_url || item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
+
+            html += `
+                <tr class="hover:bg-gray-50 transition duration-200">
+                    <td class="p-4 align-top">
+                        <img src="${imagenSegura}" alt="${item.titulo}" class="w-24 h-16 object-cover rounded shadow-sm border border-gray-200">
+                    </td>
+                    <td class="p-4 align-top">
+                        <strong class="text-gray-900 text-lg block mb-1">${item.titulo}</strong>
+                        <p class="text-gray-500 text-sm line-clamp-2">${item.descripcion}</p>
+                    </td>
+                    <td class="p-4 align-middle text-center">
+                        <button onclick="abrirModalEditarNosotros(${item.id || item.idNosotros})" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-6 rounded text-xs tracking-wider uppercase transition shadow-sm">
+                            Editar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        contenedor.innerHTML = html;
+
+    } catch (error) {
+        console.error("Error en la pestaña Nosotros:", error);
+        contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-red-500">Error al conectar con el servidor.</td></tr>`;
+    }
+}
+
+// Función vacía temporal para que no marque error el botón "EDITAR"
+window.abrirModalEditarNosotros = function(id) {
+    alert("Pronto abriremos una ventanita para editar el registro con ID: " + id);
+}
+// ==========================================
 // INICIALIZADOR GENERAL
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -402,4 +459,5 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloReparaciones();
     iniciarModuloClientes();
     iniciarModuloWeb();
+    cargarPestanaNosotros();
 });

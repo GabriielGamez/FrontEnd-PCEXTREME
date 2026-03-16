@@ -93,55 +93,27 @@
                 </form>
             </div>
 
-            <div id="pestana-nosotros" class="contenido-pestana hidden animation-fade-in">
+            <div id="pestana-nosotros" class="contenido-pestana hidden animation-fade-in bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                     <div>
-                        <h3 class="text-2xl font-bold text-[#7ed957]">Secciones Informativas</h3>
-                        <p class="text-gray-400 text-sm mt-1">Edita el contenido de Misión, Visión y Quiénes Somos.</p>
+                        <h3 class="text-2xl font-bold text-gray-900">Secciones Informativas</h3>
+                        <p class="text-gray-500 text-sm mt-1">Edita el contenido de Misión, Visión y Quiénes Somos.</p>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto bg-[#1a1a1a] rounded-xl border border-gray-800">
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-black text-gray-400 uppercase text-xs tracking-wider border-b border-gray-800">
+                            <tr class="bg-gray-50 text-gray-600 uppercase text-xs font-bold tracking-wider border-b border-gray-200">
                                 <th class="p-4 w-32">Imagen</th>
                                 <th class="p-4">Título y Descripción</th>
                                 <th class="p-4 text-center w-32">Acción</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-800">
-                            
-                            <tr class="hover:bg-[#222] transition duration-200">
-                                <td class="p-4">
-                                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=150&q=80" alt="Misión" class="w-24 h-16 object-cover rounded border border-gray-700">
-                                </td>
-                                <td class="p-4">
-                                    <strong class="text-white text-lg block mb-1">Nuestra Misión</strong>
-                                    <p class="text-gray-400 text-sm line-clamp-2">Brindar el mejor servicio de mantenimiento y optimización para equipos de cómputo, asegurando la máxima calidad...</p>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <a href="#" class="inline-block bg-gray-800 hover:bg-gray-700 text-blue-400 py-2 px-4 rounded transition text-sm font-semibold w-full text-center">Editar</a>
-                                </td>
-                            </tr>
-
-                            <tr class="hover:bg-[#222] transition duration-200">
-                                <td class="p-4">
-                                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=150&q=80" alt="Visión" class="w-24 h-16 object-cover rounded border border-gray-700">
-                                </td>
-                                <td class="p-4">
-                                    <strong class="text-white text-lg block mb-1">Nuestra Visión</strong>
-                                    <p class="text-gray-400 text-sm line-clamp-2">Convertirnos en la empresa líder en soluciones tecnológicas de nuestra región para el año 2028...</p>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <a href="#" class="inline-block bg-gray-800 hover:bg-gray-700 text-blue-400 py-2 px-4 rounded transition text-sm font-semibold w-full text-center">Editar</a>
-                                </td>
-                            </tr>
-
-                        </tbody>
+                        <tbody id="lista-nosotros" class="divide-y divide-gray-100 bg-white">
+                            </tbody>
                     </table>
                 </div>
-                <p class="mt-4 text-xs text-gray-500 text-center">* Para agregar más secciones, contacta al equipo de desarrollo.</p>
             </div>
 
             <div id="pestana-contacto" class="contenido-pestana hidden animation-fade-in">
