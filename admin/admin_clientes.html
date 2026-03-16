@@ -5,35 +5,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Clientes - PC EXTREME</title>
+    <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
 
-<body class="bg-gray-100 font-sans flex flex-col min-h-screen">
+<body class="bg-[#0f1115] text-gray-200 font-sans flex flex-col min-h-screen antialiased">
 
     <header id="encabezado-admin"></header>
     
-    <main class="max-w-7xl mx-auto p-6 md:p-10 flex-grow">
+    <main class="max-w-7xl mx-auto p-6 md:p-10 flex-grow w-full">
 
-        <h2 class="text-3xl font-bold text-gray-800 mb-8">Gestión de Clientes</h2>
+        <h2 class="text-3xl font-bold text-white mb-8">Gestión de Clientes</h2>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+        <div class="bg-[#1a1c20] p-6 rounded-xl shadow-lg border border-gray-800 mb-6">
             <div class="flex flex-wrap gap-2">
-                <input type="text" id="buscador-clientes" placeholder="Buscar cliente por nombre, correo..."
-                    class="flex-1 min-w-[300px] border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                <button
-                    class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-md transition shadow-md">
+                <div class="relative flex-1 min-w-[300px]">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500">🔍</span>
+                    </div>
+                    <input type="text" id="buscador-clientes" placeholder="Buscar cliente por nombre, correo..."
+                        class="block w-full pl-10 pr-4 py-2 border border-gray-700 rounded-md leading-5 bg-[#0f1115] text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#7ed957] focus:border-[#7ed957] sm:text-sm transition duration-150 ease-in-out">
+                </div>
+                <button class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded-md transition shadow-md">
                     Buscar
                 </button>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-[#1a1c20] rounded-xl shadow-xl border border-gray-800 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-gray-500 uppercase text-xs font-bold border-b border-gray-100">
+                    <thead class="bg-gray-900 text-gray-400 uppercase text-xs font-bold border-b border-gray-800 tracking-wider">
+                        <tr>
                             <th class="px-6 py-4 w-20">ID</th>
                             <th class="px-6 py-4">Nombre Completo</th>
                             <th class="px-6 py-4">Contacto</th>
@@ -41,14 +51,17 @@
                             <th class="px-6 py-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-clientes" class="divide-y divide-gray-50">
-                    </tbody>
+                    <tbody id="lista-clientes" class="divide-y divide-gray-800">
+                        </tbody>
                 </table>
             </div>
         </div>
+
     </main>
-    <footer id="pie-admin" class="mt-auto"></footer>
-<script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
+
+    <footer id="admin-piePagina" class="mt-auto"></footer>
+
+    <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
 </body>
 
 </html>

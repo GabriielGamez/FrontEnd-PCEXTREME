@@ -16,7 +16,7 @@ async function cargarComponentesAdmin() {
             if (resH.ok) headerEl.innerHTML = await resH.text();
         }
 
-        const footerEl = document.getElementById("pie-admin");
+        const footerEl = document.getElementById("admin-piePagina");
         if (footerEl) {
             const resF = await fetch("/FrontEnd-PCEXTREME/admin/admin_footer.html");
             if (resF.ok) footerEl.innerHTML = await resF.text();
@@ -27,7 +27,7 @@ async function cargarComponentesAdmin() {
 }
 
 // ==========================================
-// 2. CONTROLADOR DE PESTAÑAS (GESTOR WEB)
+// 2. CONTROLADOR DE PESTAÑAS GLOBALES
 // ==========================================
 window.abrirPestana = function (evento, nombrePestana) {
     // 1. Ocultar todo el contenido de las pestañas
@@ -83,10 +83,9 @@ async function iniciarModuloReparaciones() {
         if (buscador) {
             buscador.addEventListener("input", (e) => {
                 const texto = e.target.value.toLowerCase().trim();
-                repFiltradas = repGlobales.filter(
-                    (rep) =>
-                        String(rep.idFolio).toLowerCase().includes(texto) ||
-                        String(rep.idDispositivo).toLowerCase().includes(texto)
+                repFiltradas = repGlobales.filter((rep) =>
+                    String(rep.idFolio).toLowerCase().includes(texto) ||
+                    String(rep.idDispositivo).toLowerCase().includes(texto)
                 );
                 repPaginaActual = 1;
                 mostrarPaginaReparaciones();
@@ -112,44 +111,37 @@ function mostrarPaginaReparaciones() {
     let html = "";
 
     repPagina.forEach((rep) => {
+        // ACTUALIZADO: Colores oscuros para las filas, inputs y textarea
         html += `
-            <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
                 <td class="px-4 py-4 align-top">
-                    <span class="bg-gray-200 text-gray-800 font-black px-2 py-1 rounded text-sm">#${rep.idFolio
-            }</span>
+                    <span class="bg-gray-800 text-gray-300 font-black px-2 py-1 rounded text-sm">#${rep.idFolio}</span>
                 </td>
                 <td class="px-4 py-4 align-top">
-                    <strong class="text-gray-900 block">Disp. ID: ${rep.idDispositivo
-            }</strong>
+                    <strong class="text-gray-200 block">Disp. ID: ${rep.idDispositivo}</strong>
                 </td>
-                <td class="px-4 py-4 align-top text-gray-600">${rep.detalles
-            }</td>
+                <td class="px-4 py-4 align-top text-gray-400">${rep.detalles}</td>
                 <td class="px-4 py-4 align-top">
-                    <form class="flex items-end gap-2" onsubmit="actualizarReparacion(event, ${rep.idFolio
-            })">
+                    <form class="flex items-end gap-2" onsubmit="actualizarReparacion(event, ${rep.idFolio})">
                         <div class="flex flex-col gap-2 w-full">
-                            <select class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm bg-white">
-                                <option value="${rep.estadoEquipo
-            }" selected hidden>${rep.estadoEquipo}</option>
+                            <select class="w-full border border-gray-700 rounded px-3 py-1.5 text-sm bg-[#0f1115] text-gray-200 focus:outline-none focus:border-[#7ed957]">
+                                <option value="${rep.estadoEquipo}" selected hidden>${rep.estadoEquipo}</option>
                                 <option value="En Diagnóstico">🔵 En Diagnóstico</option>
                                 <option value="En Reparación">🟠 En Reparación</option>
                                 <option value="Listo para entregar">🟢 Listo para entregar</option>
                                 <option value="Entregado">⚫ Entregado</option>
                             </select>
-                            <textarea rows="1" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm resize-none" placeholder="Diagnóstico...">${rep.diagnostico || ""
-            }</textarea>
+                            <textarea rows="1" class="w-full border border-gray-700 rounded px-3 py-1.5 text-sm bg-[#0f1115] text-gray-200 resize-none focus:outline-none focus:border-[#7ed957]" placeholder="Diagnóstico...">${rep.diagnostico || ""}</textarea>
                             <div class="flex items-center gap-2">
                                 <span class="text-gray-500 font-bold">$</span>
-                                <input type="number" value="${rep.costo || 0
-            }" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm no-spinners">
+                                <input type="number" value="${rep.costo || 0}" class="w-full border border-gray-700 rounded px-3 py-1.5 text-sm bg-[#0f1115] text-gray-200 no-spinners focus:outline-none focus:border-[#7ed957]">
                             </div>
                         </div>
                         <button type="submit" class="text-2xl hover:scale-110 transition pb-1" title="Guardar">💾</button>
                     </form>
                 </td>
                 <td class="px-4 py-4 align-top text-center">
-                    <button onclick="verTicket(${rep.idFolio
-            })" type="button" class="text-gray-400 hover:text-blue-600 transition p-2 border border-gray-200 rounded-md hover:bg-blue-50">📄</button>
+                    <button onclick="verTicket(${rep.idFolio})" type="button" class="text-gray-400 hover:text-[#7ed957] transition p-2 border border-gray-700 rounded-md hover:bg-gray-800">📄</button>
                 </td>
             </tr>
         `;
@@ -158,23 +150,14 @@ function mostrarPaginaReparaciones() {
     actualizarPaginacionReparaciones();
 }
 
-window.cambiarPaginaReparaciones = function (dir) {
-    const total = Math.ceil(repFiltradas.length / repPorPagina);
-    if (dir === "siguiente" && repPaginaActual < total) repPaginaActual++;
-    else if (dir === "anterior" && repPaginaActual > 1) repPaginaActual--;
-    mostrarPaginaReparaciones();
-};
-
 function actualizarPaginacionReparaciones() {
     let controles = document.getElementById("paginacion-reparaciones");
     if (!controles) {
-        const tabla = document
-            .querySelector("#lista-reparaciones")
-            .closest("table").parentNode;
+        const tabla = document.querySelector("#lista-reparaciones").closest("table").parentNode;
         controles = document.createElement("div");
         controles.id = "paginacion-reparaciones";
-        controles.className =
-            "flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 rounded-b-lg mt-2";
+        // ACTUALIZADO: Fondo oscuro para la barra de paginación
+        controles.className = "flex items-center justify-between px-4 py-3 bg-gray-900 border-t border-gray-800 sm:px-6 rounded-b-lg mt-2";
         tabla.appendChild(controles);
     }
 
@@ -184,25 +167,24 @@ function actualizarPaginacionReparaciones() {
         return;
     }
 
+    // ACTUALIZADO: Botones oscuros para "Anterior" y "Siguiente"
     controles.innerHTML = `
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-700">Mostrando ${(repPaginaActual - 1) * repPorPagina + 1
-        } a ${Math.min(
-            repPaginaActual * repPorPagina,
-            repFiltradas.length
-        )} de ${repFiltradas.length}</p>
+            <p class="text-sm text-gray-400">Mostrando ${(repPaginaActual - 1) * repPorPagina + 1} a ${Math.min(repPaginaActual * repPorPagina, repFiltradas.length)} de ${repFiltradas.length}</p>
             <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaReparaciones('anterior')" ${repPaginaActual === 1 ? "disabled" : ""
-        } class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${repPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""
-        }">Anterior</button>
-                <span class="px-4 py-2 border border-gray-300 bg-white text-sm">Página ${repPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaReparaciones('siguiente')" ${repPaginaActual === total ? "disabled" : ""
-        } class="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${repPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""
-        }">Siguiente</button>
+                <button onclick="cambiarPaginaReparaciones('anterior')" ${repPaginaActual === 1 ? "disabled" : ""} class="px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${repPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">Anterior</button>
+                <span class="px-4 py-2 border border-gray-700 bg-[#0f1115] text-gray-200 text-sm">Página ${repPaginaActual} de ${total}</span>
+                <button onclick="cambiarPaginaReparaciones('siguiente')" ${repPaginaActual === total ? "disabled" : ""} class="px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${repPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">Siguiente</button>
             </nav>
         </div>`;
 }
 
+window.cambiarPaginaReparaciones = function (dir) {
+    const total = Math.ceil(repFiltradas.length / repPorPagina);
+    if (dir === "siguiente" && repPaginaActual < total) repPaginaActual++;
+    else if (dir === "anterior" && repPaginaActual > 1) repPaginaActual--;
+    mostrarPaginaReparaciones();
+};
 // ==========================================
 // 4. MÓDULO: GESTIÓN DE CLIENTES
 // ==========================================
@@ -231,8 +213,7 @@ async function iniciarModuloClientes() {
             buscador.addEventListener("input", (e) => {
                 const texto = e.target.value.toLowerCase().trim();
                 cliFiltrados = cliGlobales.filter((cli) => {
-                    const nombreCompleto =
-                        `${cli.nombre} ${cli.aPaterno} ${cli.aMaterno}`.toLowerCase();
+                    const nombreCompleto = `${cli.nombre} ${cli.aPaterno} ${cli.aMaterno}`.toLowerCase();
                     const correo = String(cli.email || "").toLowerCase();
                     return nombreCompleto.includes(texto) || correo.includes(texto);
                 });
@@ -264,27 +245,25 @@ function mostrarPaginaClientes() {
         const phone = cli.telefono ? cli.telefono.replace(/\D/g, "") : "";
         const whatsappLink = phone ? `https://wa.me/52${phone}` : "#";
 
+        // ACTUALIZADO: Colores oscuros para el hover de las filas y textos
         html += `
-            <tr class="hover:bg-gray-50 transition">
-                <td class="px-6 py-5">
-                    <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded text-sm border border-gray-200">#${cli.idCliente
-            }</span>
+            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
+                <td class="px-6 py-5 align-top">
+                    <span class="bg-gray-800 text-gray-300 font-bold px-3 py-1 rounded text-sm border border-gray-700">#${cli.idCliente}</span>
                 </td>
-                <td class="px-6 py-5 font-bold text-gray-800">
+                <td class="px-6 py-5 font-bold text-gray-200 align-top">
                     ${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ""}
                 </td>
-                <td class="px-6 py-5">
-                    <div class="flex flex-col space-y-1 text-sm text-gray-600">
-                        <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> ${cli.email || "Sin correo"
-            }</span>
-                        <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> ${cli.telefono || "Sin teléfono"
-            }</span>
+                <td class="px-6 py-5 align-top">
+                    <div class="flex flex-col space-y-1 text-sm text-gray-400">
+                        <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> ${cli.email || "Sin correo"}</span>
+                        <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> ${cli.telefono || "Sin teléfono"}</span>
                     </div>
                 </td>
-                <td class="px-6 py-5 text-sm text-gray-500 max-w-xs">
+                <td class="px-6 py-5 text-sm text-gray-400 max-w-xs align-top">
                     ${cli.direccion || "Sin dirección registrada"}
                 </td>
-                <td class="px-6 py-5 text-center">
+                <td class="px-6 py-5 text-center align-top">
                     <a href="${whatsappLink}" target="_blank" class="inline-flex items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow-sm">
                         <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Chat WhatsApp
                     </a>
@@ -297,23 +276,14 @@ function mostrarPaginaClientes() {
     actualizarPaginacionClientes();
 }
 
-window.cambiarPaginaClientes = function (dir) {
-    const total = Math.ceil(cliFiltrados.length / cliPorPagina);
-    if (dir === "siguiente" && cliPaginaActual < total) cliPaginaActual++;
-    else if (dir === "anterior" && cliPaginaActual > 1) cliPaginaActual--;
-    mostrarPaginaClientes();
-};
-
 function actualizarPaginacionClientes() {
     let controles = document.getElementById("paginacion-clientes");
     if (!controles) {
-        const tabla = document
-            .querySelector("#lista-clientes")
-            .closest("table").parentNode;
+        const tabla = document.querySelector("#lista-clientes").closest("table").parentNode;
         controles = document.createElement("div");
         controles.id = "paginacion-clientes";
-        controles.className =
-            "flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 rounded-b-lg mt-2";
+        // ACTUALIZADO: Fondo oscuro para la barra de paginación
+        controles.className = "flex items-center justify-between px-6 py-3 bg-gray-900 border-t border-gray-800 sm:px-6 rounded-b-lg mt-2";
         tabla.appendChild(controles);
     }
 
@@ -323,25 +293,23 @@ function actualizarPaginacionClientes() {
         return;
     }
 
+    // ACTUALIZADO: Botones oscuros para "Anterior" y "Siguiente"
     controles.innerHTML = `
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-700">Mostrando ${(cliPaginaActual - 1) * cliPorPagina + 1
-        } a ${Math.min(
-            cliPaginaActual * cliPorPagina,
-            cliFiltrados.length
-        )} de ${cliFiltrados.length}</p>
+            <p class="text-sm text-gray-400">Mostrando ${(cliPaginaActual - 1) * cliPorPagina + 1} a ${Math.min(cliPaginaActual * cliPorPagina, cliFiltrados.length)} de ${cliFiltrados.length}</p>
             <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaClientes('anterior')" ${cliPaginaActual === 1 ? "disabled" : ""
-        } class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${cliPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""
-        }">Anterior</button>
-                <span class="px-4 py-2 border border-gray-300 bg-white text-sm">Página ${cliPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaClientes('siguiente')" ${cliPaginaActual === total ? "disabled" : ""
-        } class="px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm hover:bg-gray-100 ${cliPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""
-        }">Siguiente</button>
+                <button onclick="cambiarPaginaClientes('anterior')" ${cliPaginaActual === 1 ? "disabled" : ""} class="px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${cliPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">Anterior</button>
+                <span class="px-4 py-2 border border-gray-700 bg-[#0f1115] text-gray-200 text-sm">Página ${cliPaginaActual} de ${total}</span>
+                <button onclick="cambiarPaginaClientes('siguiente')" ${cliPaginaActual === total ? "disabled" : ""} class="px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${cliPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">Siguiente</button>
             </nav>
         </div>`;
 }
-
+window.cambiarPaginaClientes = function (dir) {
+    const total = Math.ceil(cliFiltrados.length / cliPorPagina);
+    if (dir === "siguiente" && cliPaginaActual < total) cliPaginaActual++;
+    else if (dir === "anterior" && cliPaginaActual > 1) cliPaginaActual--;
+    mostrarPaginaClientes();
+};
 // ==========================================
 // 5. MÓDULO: GESTOR WEB (PORTADA INICIO Y CLOUDINARY)
 // ==========================================
@@ -353,50 +321,43 @@ async function subirACloudinary(archivo) {
     formData.append("file", archivo);
     formData.append("upload_preset", PRESET);
 
-    const respuesta = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
-        {
-            method: "POST",
-            body: formData,
-        }
-    );
+    const respuesta = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+        method: "POST",
+        body: formData,
+    });
 
     if (!respuesta.ok) {
         const errorData = await respuesta.json();
-        throw new Error(
-            errorData.error.message || "Error al subir el archivo a Cloudinary"
-        );
+        throw new Error(errorData.error.message || "Error al subir el archivo a Cloudinary");
     }
 
     const data = await respuesta.json();
     return data.secure_url;
 }
 
+// Se ejecuta al cargar la página del Gestor (Solo carga Inicio)
 async function iniciarModuloWeb() {
     const formPortada = document.getElementById("formulario-portada");
     if (!formPortada) return;
 
     try {
         const respuesta = await fetch(`${baseUrl}/inicio`);
-        if (!respuesta.ok)
-            throw new Error("Error al cargar la información de inicio");
+        if (!respuesta.ok) throw new Error("Error al cargar la información de inicio");
 
         const datos = await respuesta.json();
 
         if (datos && datos.length > 0) {
             const portada = datos[0];
-            document.getElementById("input-titulo-portada").value =
-                portada.titulo || "";
-            document.getElementById("input-desc-portada").value =
-                portada.descripcion || "";
-            document.getElementById("input-boton-portada").value =
-                portada.texto_boton || "";
+            document.getElementById("input-titulo-portada").value = portada.titulo || "";
+            document.getElementById("input-desc-portada").value = portada.descripcion || "";
+            document.getElementById("input-boton-portada").value = portada.texto_boton || "";
         }
     } catch (error) {
         console.error("Error al cargar configuración web:", error);
     }
 }
 
+// Guardar textos y archivos de la Portada
 window.guardarPortada = async function (evento) {
     evento.preventDefault();
 
@@ -452,9 +413,9 @@ window.guardarPortada = async function (evento) {
 // ==========================================
 // 6. MÓDULO: GESTOR WEB (SOBRE NOSOTROS)
 // ==========================================
-let nosotrosGlobales = []; // Aquí guardaremos la información de la tabla
+let nosotrosGlobales = [];
 
-window.cargarPestanaNosotros = async function(evento, nombrePestana) {
+window.cargarPestanaNosotros = async function (evento, nombrePestana) {
     if (evento && nombrePestana) {
         abrirPestana(evento, nombrePestana);
     }
@@ -467,7 +428,7 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
 
         const respuesta = await fetch(`${baseUrl}/nosotros`);
         if (!respuesta.ok) throw new Error("Error al cargar la información de nosotros");
-        
+
         nosotrosGlobales = await respuesta.json();
 
         if (nosotrosGlobales.length === 0) {
@@ -477,15 +438,11 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
 
         let html = "";
         nosotrosGlobales.forEach((item) => {
-            // 1. Usamos exactamente "idInfo" como viene en tu JSON
             const idCorrecto = item.idInfo;
 
-            // 2. Arreglamos la imagen: Si es de Cloudinary (empieza con http) la usa, 
-            // si no, asume que está en tu carpeta de assets local.
             let imagenSegura = item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
             if (imagenSegura && !imagenSegura.startsWith('http')) {
-                // Ajusta esta ruta a la carpeta donde realmente guardas "mision.png" y "vision.png"
-                imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`; 
+                imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`;
             }
 
             html += `
@@ -513,8 +470,7 @@ window.cargarPestanaNosotros = async function(evento, nombrePestana) {
     }
 };
 
-window.abrirModalEditarNosotros = function(idBuscado) {
-    // Buscamos específicamente por idInfo
+window.abrirModalEditarNosotros = function (idBuscado) {
     const item = nosotrosGlobales.find(n => String(n.idInfo) === String(idBuscado));
 
     if (!item) {
@@ -526,27 +482,24 @@ window.abrirModalEditarNosotros = function(idBuscado) {
     document.getElementById("titulo-editando").innerText = "Editando: " + item.titulo;
     document.getElementById("edit-titulo-nosotros").value = item.titulo;
     document.getElementById("edit-desc-nosotros").value = item.descripcion;
-    
-    // Aplicamos la misma lógica para la imagen en el panel de edición
+
     let imagenSegura = item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
     if (imagenSegura && !imagenSegura.startsWith('http')) {
-        imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`; 
+        imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`;
     }
     document.getElementById("edit-preview-nosotros").src = imagenSegura;
-    
+
     document.getElementById("edit-img-nosotros").value = "";
     document.getElementById("panel-edicion-nosotros").classList.remove("hidden");
 };
 
-// Oculta el panel lateral
-window.cerrarEdicionNosotros = function() {
+window.cerrarEdicionNosotros = function () {
     document.getElementById("panel-edicion-nosotros").classList.add("hidden");
 };
 
-// Guarda los cambios en la Base de Datos
-window.guardarEdicionNosotros = async function(evento) {
+window.guardarEdicionNosotros = async function (evento) {
     evento.preventDefault();
-    
+
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
     boton.innerHTML = "⏳ Guardando...";
@@ -560,12 +513,11 @@ window.guardarEdicionNosotros = async function(evento) {
     const datosBD = { titulo, descripcion };
 
     try {
-        // Si el usuario subió una nueva imagen, usamos la función de Cloudinary que ya creaste arriba
         if (inputImagen.files.length > 0) {
+            // Nota: Aquí el backend puede estar esperando "imagen" o "imagen_url", lo enviamos como imagen_url
             datosBD.imagen_url = await subirACloudinary(inputImagen.files[0]);
         }
 
-        // Enviamos la petición PUT a tu API
         const respuesta = await fetch(`${baseUrl}/nosotros/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -575,8 +527,8 @@ window.guardarEdicionNosotros = async function(evento) {
         if (!respuesta.ok) throw new Error("Error al actualizar la base de datos");
 
         alert("✅ ¡Sección actualizada correctamente!");
-        cerrarEdicionNosotros(); // Ocultamos el panel
-        cargarPestanaNosotros(); // Refrescamos la tabla para ver los cambios de inmediato
+        cerrarEdicionNosotros();
+        cargarPestanaNosotros();
 
     } catch (error) {
         console.error("Error al guardar:", error);
@@ -586,33 +538,28 @@ window.guardarEdicionNosotros = async function(evento) {
         boton.disabled = false;
     }
 };
-// NUEVO: GESTOR WEB (CONTACTO Y MAPA)
-// ==========================================
 
-// 1. FUNCION PARA CONSULTAR (Se activa al darle clic a la pestaña Contacto)
+// ==========================================
+// 7. MÓDULO: GESTOR WEB (CONTACTO Y MAPA)
+// ==========================================
 window.cargarPestanaContacto = async function (evento, nombrePestana) {
-    // Primero, hacemos el cambio visual de la pestaña
-    abrirPestana(evento, nombrePestana);
+    if (evento && nombrePestana) {
+        abrirPestana(evento, nombrePestana);
+    }
 
     try {
-        // Consultamos la API solo en este momento
         const resContacto = await fetch(`${baseUrl}/contacto`);
         if (!resContacto.ok) throw new Error("Error al cargar datos de contacto");
 
         const datosContacto = await resContacto.json();
 
         if (datosContacto) {
-            // Validamos si tu backend devuelve un arreglo o el objeto directo
-            const contacto = Array.isArray(datosContacto)
-                ? datosContacto[0]
-                : datosContacto;
+            const contacto = Array.isArray(datosContacto) ? datosContacto[0] : datosContacto;
 
-            // Llenamos los inputs
             document.getElementById("input-email").value = contacto.email || "";
             document.getElementById("input-telefono").value = contacto.telefono || "";
             document.getElementById("input-whatsapp").value = contacto.whatsapp || "";
-            document.getElementById("input-direccion").value =
-                contacto.direccion || "";
+            document.getElementById("input-direccion").value = contacto.direccion || "";
             document.getElementById("input-mapa").value = contacto.mapa_url || "";
         }
     } catch (error) {
@@ -620,16 +567,14 @@ window.cargarPestanaContacto = async function (evento, nombrePestana) {
     }
 };
 
-// 2. FUNCION PARA ACTUALIZAR (Se activa al darle clic al botón de Guardar)
 window.guardarContacto = async function (evento) {
-    evento.preventDefault(); // Evita que se recargue la página
+    evento.preventDefault();
 
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
     boton.innerHTML = "⏳ Guardando datos...";
     boton.disabled = true;
 
-    // Recolectamos lo que escribiste
     const datosContacto = {
         email: document.getElementById("input-email").value,
         telefono: document.getElementById("input-telefono").value,
@@ -639,33 +584,30 @@ window.guardarContacto = async function (evento) {
     };
 
     try {
-        // Enviamos el PUT a la API (asumiendo que es el ID 1)
         const respuesta = await fetch(`${baseUrl}/contacto/1`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datosContacto),
         });
 
-        if (!respuesta.ok)
-            throw new Error("Error al actualizar la base de datos de contacto");
+        if (!respuesta.ok) throw new Error("Error al actualizar la base de datos de contacto");
 
         alert("✅ ¡Datos de contacto y mapa actualizados con éxito!");
     } catch (error) {
         console.error("Error al guardar contacto:", error);
         alert("❌ Hubo un error: " + error.message);
     } finally {
-        // Regresamos el botón a su estado normal
         boton.innerHTML = textoOriginal;
         boton.disabled = false;
     }
 };
 
 // ==========================================
-// 7. INICIALIZADOR GENERAL
+// 8. INICIALIZADOR GENERAL
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     cargarComponentesAdmin();
     iniciarModuloReparaciones();
     iniciarModuloClientes();
-    iniciarModuloWeb();
+    iniciarModuloWeb(); // Carga por defecto la Portada
 });
