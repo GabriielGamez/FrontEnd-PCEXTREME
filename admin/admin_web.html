@@ -43,53 +43,7 @@
         <div id="contenedor-pestanas" class="bg-[#111] border border-gray-800 rounded-xl p-8 shadow-lg">
             
             <div id="pestana-portada" class="contenido-pestana block animation-fade-in">
-                <form id="formulario-portada" onsubmit="event.preventDefault(); alert('Simulación: Datos de la portada guardados.');">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        
-                        <div class="space-y-6">
-                            <h4 class="text-xl font-bold text-[#7ed957] border-b border-gray-800 pb-2">Textos Principales</h4>
-                            
-                            <div>
-                                <label class="block text-gray-400 text-sm font-bold mb-2" for="input-titulo-portada">Título Principal (H1)</label>
-                                <input type="text" id="input-titulo-portada" value="¿Tu PC necesita mantenimiento?" required class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-gray-400 text-sm font-bold mb-2" for="input-desc-portada">Descripción / Subtítulo</label>
-                                <textarea id="input-desc-portada" rows="4" required class="w-full bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">¡Recupérala al máximo rendimiento! En PC EXTREME diagnosticamos, limpiamos y optimizamos tu computadora para que rinda como en el primer día.</textarea>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-gray-400 text-sm font-bold mb-2" for="input-boton-portada">Texto del Botón</label>
-                                <input type="text" id="input-boton-portada" value="Contáctanos" required class="w-full md:w-1/2 bg-[#1e1e1e] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
-                            </div>
-
-                            <button type="submit" class="w-full mt-4 bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-3 px-6 rounded-lg transition duration-300 shadow-[0_0_10px_rgba(126,217,87,0.2)]">
-                                💾 Guardar Cambios Portada
-                            </button>
-                        </div>
-
-                        <div class="space-y-8">
-                            <div class="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800">
-                                <h4 class="text-lg font-bold text-white mb-4">Video de Fondo (Prioridad)</h4>
-                                <div class="bg-black aspect-video rounded flex items-center justify-center text-gray-600 mb-4 border border-dashed border-gray-600">
-                                    <span class="text-sm">Vista previa del video actual</span>
-                                </div>
-                                <div class="text-xs text-blue-400 mb-2">Archivo actual: tu-video.mp4</div>
-                                <input type="file" id="input-video-portada" accept="video/mp4" class="w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer">
-                            </div>
-
-                            <div class="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800">
-                                <h4 class="text-lg font-bold text-white mb-4">Imagen de Respaldo</h4>
-                                <div class="bg-black h-32 rounded flex items-center justify-center text-gray-600 mb-4 border border-dashed border-gray-600">
-                                    <span class="text-sm">Vista previa imagen</span>
-                                </div>
-                                <input type="file" id="input-imagen-portada" accept="image/*" class="w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer">
-                            </div>
-                        </div>
-
-                    </div>
-                </form>
+                <form id="formulario-portada" onsubmit="guardarPortada(event)">
             </div>
 
             <div id="pestana-nosotros" class="contenido-pestana hidden animation-fade-in">
