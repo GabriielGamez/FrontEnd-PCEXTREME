@@ -57,7 +57,7 @@ async function cargarPortada() {
         // Se inyecta la información en el contenedor
         contenedor.innerHTML = `
             <h2 class="text-5xl md:text-6xl font-extrabold leading-tight">
-                ${datos.titulo }
+                ${datos.titulo || '¿Tu PC necesita<br>mantenimiento?'}
             </h2>
             <p class="text-gray-300 text-lg max-w-lg">
                 ${datos.descripcion || '¡Recupérala al máximo rendimiento!'}
