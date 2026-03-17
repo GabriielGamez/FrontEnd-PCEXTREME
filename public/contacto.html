@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contáctanos — PC EXTREME</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Fondo con imagen de teclado y overlay oscuro para legibilidad */
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+                url('https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
+
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
+    </header>
+
+    <aside class="fixed left-6 bottom-32 flex flex-col gap-3 z-50">
+        <button
+            class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold text-xs shadow-lg hover:bg-gray-200 transition">A+</button>
+        <button
+            class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition shadow-lg">
+            <i class="fa-solid fa-rotate-right text-xs"></i>
+        </button>
+        <button
+            class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold text-xs hover:bg-gray-200 transition shadow-lg">A-</button>
+        <button class="w-10 h-10 bg-white text-black rounded-full p-1 shadow-lg border-2 border-white">
+            <div class="w-full h-full rounded-full bg-gradient-to-tr from-orange-400 via-purple-500 to-blue-500"></div>
+        </button>
+    </aside>
+
+    <main class="flex-grow flex flex-col items-center justify-center p-6 mb-20">
+
+        <h1 class="text-5xl font-extrabold mb-10 tracking-tight">Contáctanos</h1>
+
+        <div class="glass-container w-full max-w-6xl rounded-[2.5rem] p-10 md:p-14 shadow-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+                <div class="bg-white rounded-2xl p-8 text-gray-800 shadow-xl">
+                    <h3 class="text-center text-xl font-bold text-gray-600 mb-8">Envíanos un mensaje</h3>
+
+                    <form action="#" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Tu Correo
+                                Electrónico:</label>
+                            <input type="email" placeholder="ejemplo@correo.com"
+                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Asunto:</label>
+                            <input type="text" placeholder="Ej: Cotización de PC"
+                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Detalles del
+                                Mensaje:</label>
+                            <textarea rows="4" placeholder="Escribe aquí tus dudas..."
+                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-[#333] hover:bg-black text-white font-bold py-4 rounded-xl transition shadow-lg uppercase tracking-widest text-sm">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+
+                <div class="flex flex-col justify-center space-y-6">
+
+                    <div class="bg-white rounded-xl p-6 flex items-center gap-6 text-gray-800 shadow-lg">
+                        <div class="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-lg">
+                            <i class="fa-solid fa-envelope text-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-lg">Email:</span>
+                            <a href="mailto:pcextremepcextreme@gmail.com"
+                                class="block text-blue-600 font-semibold underline">pcextremepcextreme@gmail.com</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 flex items-center gap-6 text-gray-800 shadow-lg">
+                        <div
+                            class="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-lg transform -rotate-12">
+                            <i class="fa-solid fa-phone text-2xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-lg">Teléfono:</span>
+                            <a href="tel:7711784044" class="block text-blue-600 font-semibold underline">7711784044</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 flex items-center justify-between text-gray-800 shadow-lg">
+                        <div class="flex items-center gap-6">
+                            <i class="fa-brands fa-whatsapp text-3xl text-[#25D366]"></i>
+                            <span class="font-bold text-lg">WhatsApp:</span>
+                        </div>
+                        <a href="#"
+                            class="bg-[#25D366] hover:bg-green-600 text-white px-6 py-2 rounded-full font-bold text-sm transition">
+                            Enviar mensaje
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <section class="bg-[#111111] py-8 border-t border-b border-gray-800">
+            <div class="w-full px-8 md:px-16 lg:px-24 overflow-hidden">
+                <div id="carrusel-marcas"
+                    class="flex justify-between items-center opacity-40 grayscale hover:grayscale-0 transition duration-500 gap-8">
+                    <span class="text-xl font-bold">INTEL</span>
+                    <span class="text-xl font-bold">NVIDIA</span>
+                    <span class="text-xl font-bold">ASUS</span>
+                    <span class="text-xl font-bold">DELL</span>
+                    <span class="text-xl font-bold">HP</span>
+                </div>
+            </div>
+        </section>
+    </main>
+ 
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+
+    <script src="/FrontEnd-PCEXTREME/assets/main.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+<header id="admin-encabezado" class="bg-[#1e1e1e] text-white w-full sticky top-0 z-50 shadow-md">
+    <div class="flex items-center justify-between px-6 h-16">
+        
+        <div class="flex items-center gap-3">
+            <img src="/FrontEnd-PCEXTREME/assets/logo.png" alt="PC Extreme" class="h-8 object-contain">
+            <span class="font-bold text-lg uppercase tracking-wide">PC Extreme</span>
+        </div>
+
+        <nav class="hidden lg:flex gap-1 text-sm font-medium">
+            <a href="/FrontEnd-PCEXTREME/admin/dashboard.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Inicio</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_reparaciones.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Reparaciones</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_clientes.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Clientes</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_mensajes.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Mensajes</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_productos.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Productos</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_web.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Gestionar Web</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_personal.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Personal</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <span class="bg-[#7ed957] text-black text-xs font-bold px-2 py-1 rounded">Administrador</span>
+            <span class="text-sm hidden md:block" id="admin-nombre-usuario">Administrador</span>
+            <button id="btn-cerrar-sesion" class="bg-red-900/80 hover:bg-red-700 text-red-100 text-sm font-semibold py-1.5 px-4 rounded transition border border-red-700">
+                Cerrar Sesión
+            </button>
+        </div>
+        
+    </div>
+</header>

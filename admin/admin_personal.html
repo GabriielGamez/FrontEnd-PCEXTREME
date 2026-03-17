@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gestión de Personal — Admin PC EXTREME</title>
+
+    <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-[#0f1115] text-gray-200 antialiased flex flex-col min-h-screen">
+
+    <header id="encabezado-admin"></header>
+
+    <main class="flex-grow w-full max-w-[1400px] mx-auto px-6 py-8">
+        
+        <div id="cabecera-pagina" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold text-white">Gestión de Personal</h2>
+                <p class="text-gray-400 mt-2">Administra los accesos y roles de los empleados del sistema.</p>
+            </div>
+            <button onclick="abrirModalPersonal()" class="w-full md:w-auto bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-3 px-6 rounded-lg transition duration-300 shadow-[0_0_10px_rgba(126,217,87,0.2)]">
+                + Nuevo Empleado
+            </button>
+        </div>
+
+        <div id="contenedor-tabla-personal" class="overflow-x-auto bg-[#1a1c20] rounded-xl border border-gray-800 shadow-xl">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-900 text-gray-400 uppercase text-xs font-bold tracking-wider border-b border-gray-800">
+                        <th class="p-4">Nombre / ID</th>
+                        <th class="p-4">Rol</th>
+                        <th class="p-4">Contacto</th>
+                        <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-personal" class="text-sm divide-y divide-gray-800">
+                    </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <div id="modal-personal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 transition-opacity p-4">
+        <div class="bg-[#1a1c20] border border-gray-800 p-8 rounded-2xl w-full max-w-2xl shadow-[0_0_30px_rgba(0,0,0,0.8)] relative overflow-y-auto max-h-screen">
+            
+            <button onclick="cerrarModalPersonal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl font-bold leading-none">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-[#7ed957] mb-6 border-b border-gray-800 pb-4">
+                Registrar / Editar Empleado
+            </h3>
+            
+            <form id="formulario-personal" onsubmit="event.preventDefault(); cerrarModalPersonal(); alert('Simulación: Empleado guardado correctamente.');" class="space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Nombre(s)</label>
+                        <input type="text" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Paterno</label>
+                        <input type="text" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Materno</label>
+                        <input type="text" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Rol de Acceso</label>
+                        <select required class="w-full bg-[#0f1115] border border-[#7ed957] text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-[#7ed957]">
+                            <option value="" disabled selected>Selecciona rol...</option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Recepcionista</option>
+                            <option value="3">Técnico</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Correo (Usuario de acceso)</label>
+                        <input type="email" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Teléfono</label>
+                        <input type="text" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Dirección</label>
+                        <input type="text" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                    </div>
+
+                    <div class="md:col-span-2 bg-[#0f1115] p-4 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500">
+                        <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
+                        <input type="password" placeholder="Obligatoria para nuevo usuario / Dejar vacío para NO cambiar" class="w-full bg-black border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-500">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-gray-800">
+                    <button type="button" onclick="cerrarModalPersonal()" class="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded font-bold transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-[#7ed957] hover:bg-[#6bc148] text-black rounded font-bold transition shadow-[0_0_10px_rgba(126,217,87,0.2)]">
+                        Guardar Datos
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer id="admin-piePagina" class="mt-auto"></footer>
+
+    <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
+</body>
+
+</html>

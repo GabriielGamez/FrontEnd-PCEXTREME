@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PC EXTREME — Mi Perfil</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070');
+            /* Fondo de teclado gamer difuminado */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .bg-overlay {
+            background-color: rgba(0, 0, 0, 0.85);
+        }
+    </style>
+</head>
+
+<body class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
+
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800"></header>
+   
+
+    <main class="flex-grow bg-overlay py-12 px-4">
+
+        <section
+            class="max-w-5xl mx-auto bg-black/60 border border-gray-800 rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-12 backdrop-blur-sm">
+
+            <div class="md:w-1/3 flex flex-col items-center text-center border-r border-gray-800 pr-0 md:pr-12">
+                <h2 class="text-4xl font-bold mb-8">Mi Perfil</h2>
+                <div class="relative p-1 rounded-full bg-gradient-to-tr from-blue-500 via-green-400 to-purple-500">
+                    <div class="bg-black rounded-full p-2">
+                        <svg class="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="mt-6 text-gray-400 font-medium tracking-wide">Cliente Registrado</p>
+            </div>
+
+            <div class="md:w-2/3 space-y-6">
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#76c838] font-bold text-sm">Identidad Estandarizada (UDF)</label>
+                    <input type="text" disabled value="Esmeralda Barón Hernandez"
+                        class="w-full bg-black/40 border border-[#76c838] rounded-lg px-4 py-3 text-white focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-gray-400 text-xs">Nombre</label>
+                        <input type="text" disabled value="Esmeralda"
+                            class="bg-white/10 border border-gray-700 rounded-lg px-4 py-3">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-gray-400 text-xs">Apellido Paterno</label>
+                        <input type="text" disabled value="Barón"
+                            class="bg-white/10 border border-gray-700 rounded-lg px-4 py-3">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-gray-400 text-xs">Apellido Materno</label>
+                        <input type="text" disabled value="Hernandez"
+                            class="bg-white/10 border border-gray-700 rounded-lg px-4 py-3">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-gray-400 text-xs">Teléfono</label>
+                        <input type="text" disabled value="7711794385"
+                            class="bg-white/10 border border-gray-700 rounded-lg px-4 py-3">
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-gray-400 text-xs">Correo Electrónico</label>
+                    <input type="text" disabled value="esme@gmail.com"
+                        class="w-full bg-white/10 border border-gray-700 rounded-lg px-4 py-3">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-gray-400 text-xs">Dirección</label>
+                    <input type="text" disabled value="s/n, Col. Machetla, Huejutla de reyes hidalgo, Hidalgo, CP 43016"
+                        class="w-full bg-white/10 border border-gray-700 rounded-lg px-4 py-3">
+                </div>
+
+                <div class="pt-4">
+                    <a href="perfileditar.html"
+                        class="inline-block bg-[#3b49df] hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg">
+                        Editar Información
+                    </a>
+                </div>
+
+            </div>
+
+        </section>
+        <section class="bg-[#111111] py-8 border-t border-b border-gray-800">
+            <div class="w-full px-8 md:px-16 lg:px-24 overflow-hidden">
+                <div id="carrusel-marcas"
+                    class="flex justify-between items-center opacity-40 grayscale hover:grayscale-0 transition duration-500 gap-8">
+                    <span class="text-xl font-bold">INTEL</span>
+                    <span class="text-xl font-bold">NVIDIA</span>
+                    <span class="text-xl font-bold">ASUS</span>
+                    <span class="text-xl font-bold">DELL</span>
+                    <span class="text-xl font-bold">HP</span>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+
+    <script src="./assets/main.js"></script>
+
+</body>
+
+</html>
