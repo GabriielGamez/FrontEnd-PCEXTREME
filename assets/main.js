@@ -10,8 +10,8 @@ const API_BASE_URL = 'https://app-web-java.vercel.app/api';
 const CLOUD_NAME = 'dwyx9wxxr';
 
 // Rutas base de Cloudinary
-const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/assets/`;
-const CLOUD_BASE_VID = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/assets/`;
+const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
+const CLOUD_BASE_VID = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/`;
 
 // Rutas específicas por directorio
 const RUTA_ASSETS = `${CLOUD_BASE_IMG}assets/`;
