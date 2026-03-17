@@ -60,11 +60,7 @@ function inicializarMenuCuenta() {
     }
 }
 
-function inicializarEventosLogin() {
-    const btnIrRegistro = document.getElementById('ir-a-registro');
-    const btnIrLogin = document.getElementById('ir-a-login');
-    const bloqueLogin = document.getElementById('bloque-login');
-    const bloqueRegistro = document.getElementById('bloque-registro');
+// 2. CONSUMO DE APIS (LÓGICA DINÁMICA)
 
     if (btnIrRegistro && btnIrLogin && bloqueLogin && bloqueRegistro) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -94,6 +90,10 @@ function inicializarEventosLogin() {
             bloqueLogin.classList.add('block');
             window.history.pushState({}, '', window.location.pathname);
         });
+
+    } catch (error) {
+        console.error("Error al cargar servicios desde la API:", error);
+        contenedor.innerHTML = `<p class="text-red-500 col-span-3 text-center">No se pudieron cargar los servicios.</p>`;
     }
 }
 
@@ -194,6 +194,7 @@ async function cargarMarcas() {
 // INICIALIZACIÓN GLOBAL
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Cargar la estructura (Nav y Footer)
     cargarComponentes();
     cargarPortada();
     cargarServicios();
