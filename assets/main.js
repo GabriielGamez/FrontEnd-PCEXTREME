@@ -10,8 +10,8 @@ const API_BASE_URL = 'https://app-web-java.vercel.app/api';
 const CLOUD_NAME = 'dwyx9wxxr';
 
 // Rutas base de Cloudinary
-const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/PCExtreme/`;
-const CLOUD_BASE_VID = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/PCExtreme/`;
+const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/assets/`;
+const CLOUD_BASE_VID = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/assets/`;
 
 // Rutas específicas por directorio
 const RUTA_ASSETS = `${CLOUD_BASE_IMG}assets/`;
@@ -160,11 +160,10 @@ async function cargarServicios() {
             const tarjeta = `
                 <div class="bg-[#111] border border-gray-800 rounded-2xl p-6 hover:border-[#7ed957] transition duration-300 flex flex-col items-center text-center shadow-lg">
                     <div class="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center mb-4 text-3xl">
-                        <img src="${RUTA_ASSETS}${servicio.icono}" alt="Icono" class="w-8 h-8 object-contain">
+                        <img src="${RUTA_ASSETS}${servicio.imagen}" alt="Icono" class="w-8 h-8 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-2 text-white">${servicio.nombre}</h3>
+                    <h3 class="text-xl font-bold mb-2 text-white">${servicio.titulo}</h3>
                     <p class="text-gray-400 text-sm mb-4">${servicio.descripcion}</p>
-                    <span class="text-[#7ed957] font-bold mt-auto">Desde $${servicio.precio_base}</span>
                 </div>
             `;
             contenedor.innerHTML += tarjeta;
