@@ -131,11 +131,10 @@ async function cargarPortada() {
             </button>
         `;
 
-        if (datos.enlace_video && video) {
-            video.innerHTML = `<source src="${RUTA_VIDEOS}${datos.video_url}" type="video/mp4">`;
+        if (datos.video_url && video) {
+            video.innerHTML = `<source src="${RUTA_VIDEOS}${datos.video_url}.mp4" type="video/mp4">`;
             video.load();
         }
-
     } catch (error) {
         console.error("Error al cargar la portada desde la API:", error);
         contenedor.innerHTML = `<p class="text-red-500">Error al conectar con el servidor.</p>`;
