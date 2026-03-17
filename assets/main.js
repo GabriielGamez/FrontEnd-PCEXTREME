@@ -108,7 +108,9 @@ async function cargarPortada() {
 
     try {
         const respuesta = await fetch(`${API_BASE_URL}/inicio`);
-        const datos = await respuesta.json();
+        const arrayDatos = await respuesta.json();
+        
+        const datos = arrayDatos[0];
 
         contenedor.innerHTML = `
             <h2 class="text-5xl md:text-6xl font-extrabold leading-tight">
