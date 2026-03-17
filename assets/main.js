@@ -14,10 +14,8 @@ const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
 const CLOUD_BASE_VID = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/`;
 
 // Rutas específicas por directorio
-const RUTA_ASSETS = `${CLOUD_BASE_IMG}assets/`;
-const RUTA_MARCAS = `${CLOUD_BASE_IMG}assets/logos-grises/`;
-const RUTA_PRODUCTOS = `${CLOUD_BASE_IMG}assets/productos/`;
-const RUTA_VIDEOS = `${CLOUD_BASE_VID}assets/`;
+const RUTA_MARCAS = `${CLOUD_BASE_IMG}logos-grises/`;
+const RUTA_PRODUCTOS = `${CLOUD_BASE_IMG}productos/`;
 
 // ==========================================
 // CARGA DE COMPONENTES ESTÁTICOS
