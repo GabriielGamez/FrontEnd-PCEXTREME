@@ -7,17 +7,17 @@
 // CONFIGURACIÓN GLOBAL
 // ==========================================
 const API_BASE_URL = 'https://app-web-java.vercel.app/api';
-const CLOUD_NAME = 'dwyx9wxxr'; 
+const CLOUD_NAME = 'dwyx9wxxr';
 
 // Rutas base de Cloudinary
 const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/PCExtreme/`;
 const CLOUD_BASE_VID = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/PCExtreme/`;
 
 // Rutas específicas por directorio
-const RUTA_ASSETS    = `${CLOUD_BASE_IMG}assets/`;
-const RUTA_MARCAS    = `${CLOUD_BASE_IMG}assets/logos-grises/`;
+const RUTA_ASSETS = `${CLOUD_BASE_IMG}assets/`;
+const RUTA_MARCAS = `${CLOUD_BASE_IMG}assets/logos-grises/`;
 const RUTA_PRODUCTOS = `${CLOUD_BASE_IMG}assets/productos/`;
-const RUTA_VIDEOS    = `${CLOUD_BASE_VID}assets/`;
+const RUTA_VIDEOS = `${CLOUD_BASE_VID}assets/`;
 
 // ==========================================
 // CARGA DE COMPONENTES ESTÁTICOS
@@ -45,13 +45,13 @@ async function cargarComponentes() {
 function inicializarMenuCuenta() {
     const authButton = document.getElementById('authButton');
     const authMenu = document.getElementById('authMenu');
-    
+
     if (authButton && authMenu) {
         authButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             authMenu.classList.toggle('hidden');
         });
-        
+
         window.addEventListener('click', (e) => {
             if (!authButton.contains(e.target) && !authMenu.contains(e.target)) {
                 authMenu.classList.add('hidden');
@@ -61,7 +61,7 @@ function inicializarMenuCuenta() {
 }
 
 // 2. CONSUMO DE APIS (LÓGICA DINÁMICA)
-
+try {
     if (btnIrRegistro && btnIrLogin && bloqueLogin && bloqueRegistro) {
         const urlParams = new URLSearchParams(window.location.search);
         const tabActiva = urlParams.get('tab');
@@ -91,11 +91,13 @@ function inicializarMenuCuenta() {
             window.history.pushState({}, '', window.location.pathname);
         });
 
-    } catch (error) {
-        console.error("Error al cargar servicios desde la API:", error);
-        contenedor.innerHTML = `<p class="text-red-500 col-span-3 text-center">No se pudieron cargar los servicios.</p>`;
     }
+
+} catch (error) {
+    console.error("Error al cargar servicios desde la API:", error);
+    contenedor.innerHTML = `<p class="text-red-500 col-span-3 text-center">No se pudieron cargar los servicios.</p>`;
 }
+
 
 // ==========================================
 // CONSUMO DE APIS (LÓGICA DINÁMICA)
@@ -103,7 +105,7 @@ function inicializarMenuCuenta() {
 async function cargarPortada() {
     const contenedor = document.getElementById('portada-contenido');
     const video = document.getElementById('video-portada');
-    
+
     if (!contenedor) return;
 
     try {
@@ -124,7 +126,7 @@ async function cargarPortada() {
 
         if (datos.enlace_video && video) {
             video.innerHTML = `<source src="${RUTA_VIDEOS}${datos.enlace_video}" type="video/mp4">`;
-            video.load(); 
+            video.load();
         }
 
     } catch (error) {
@@ -141,7 +143,7 @@ async function cargarServicios() {
         const respuesta = await fetch(`${API_BASE_URL}/servicios`);
         const servicios = await respuesta.json();
 
-        contenedor.innerHTML = ''; 
+        contenedor.innerHTML = '';
 
         if (servicios.length === 0) {
             contenedor.innerHTML = `<p class="text-gray-400">No hay servicios disponibles por el momento.</p>`;
@@ -168,27 +170,7 @@ async function cargarServicios() {
     }
 }
 
-async function cargarMarcas() {
-    const contenedor = document.getElementById('carrusel-marcas');
-    if (!contenedor) return;
 
-    try {
-        const respuesta = await fetch(`${API_BASE_URL}/marcas`); 
-        if (!respuesta.ok) throw new Error('Endpoint de marcas no disponible');
-        
-        const marcas = await respuesta.json();
-        contenedor.innerHTML = ''; 
-
-        marcas.forEach(marca => {
-            contenedor.innerHTML += `
-                <img src="${RUTA_MARCAS}${marca.logo}" alt="${marca.nombre || 'Marca'}" class="h-12 object-contain">
-            `;
-        });
-
-    } catch (error) {
-        console.warn("Aviso: No se pudieron cargar las marcas dinámicas.", error);
-    }
-}
 
 // ==========================================
 // INICIALIZACIÓN GLOBAL
@@ -198,6 +180,5 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarComponentes();
     cargarPortada();
     cargarServicios();
-    cargarMarcas();
     inicializarEventosLogin();
 });
