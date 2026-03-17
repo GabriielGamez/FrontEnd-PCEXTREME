@@ -109,7 +109,7 @@ function inicializarEventosLogin() {
 // ==========================================
 async function cargarPortada() {
     const contenedor = document.getElementById('portada-contenido');
-    const video = document.getElementById('video-portada');
+    const video = document.getElementById('video-empresa');
 
     if (!contenedor) return;
 
@@ -132,7 +132,7 @@ async function cargarPortada() {
         `;
 
         if (datos.enlace_video && video) {
-            video.innerHTML = `<source src="${RUTA_VIDEOS}${datos.enlace_video}" type="video/mp4">`;
+            video.innerHTML = `<source src="${RUTA_VIDEOS}${datos.video_url}" type="video/mp4">`;
             video.load();
         }
 
