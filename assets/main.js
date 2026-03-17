@@ -61,44 +61,49 @@ function inicializarMenuCuenta() {
 }
 
 // 2. CONSUMO DE APIS (LÓGICA DINÁMICA)
-try {
-    if (btnIrRegistro && btnIrLogin && bloqueLogin && bloqueRegistro) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const tabActiva = urlParams.get('tab');
+function inicializarEventosLogin() {
+    const btnIrRegistro = document.getElementById('ir-a-registro');
+    const btnIrLogin = document.getElementById('ir-a-login');
+    const bloqueLogin = document.getElementById('bloque-login');
+    const bloqueRegistro = document.getElementById('bloque-registro');
+    try {
+        if (btnIrRegistro && btnIrLogin && bloqueLogin && bloqueRegistro) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabActiva = urlParams.get('tab');
 
-        if (tabActiva === 'registro') {
-            bloqueLogin.classList.remove('block');
-            bloqueLogin.classList.add('hidden');
-            bloqueRegistro.classList.remove('hidden');
-            bloqueRegistro.classList.add('block');
+            if (tabActiva === 'registro') {
+                bloqueLogin.classList.remove('block');
+                bloqueLogin.classList.add('hidden');
+                bloqueRegistro.classList.remove('hidden');
+                bloqueRegistro.classList.add('block');
+            }
+
+            btnIrRegistro.addEventListener('click', (e) => {
+                e.preventDefault();
+                bloqueLogin.classList.remove('block');
+                bloqueLogin.classList.add('hidden');
+                bloqueRegistro.classList.remove('hidden');
+                bloqueRegistro.classList.add('block');
+                window.history.pushState({}, '', '?tab=registro');
+            });
+
+            btnIrLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                bloqueRegistro.classList.remove('block');
+                bloqueRegistro.classList.add('hidden');
+                bloqueLogin.classList.remove('hidden');
+                bloqueLogin.classList.add('block');
+                window.history.pushState({}, '', window.location.pathname);
+            });
+
         }
 
-        btnIrRegistro.addEventListener('click', (e) => {
-            e.preventDefault();
-            bloqueLogin.classList.remove('block');
-            bloqueLogin.classList.add('hidden');
-            bloqueRegistro.classList.remove('hidden');
-            bloqueRegistro.classList.add('block');
-            window.history.pushState({}, '', '?tab=registro');
-        });
-
-        btnIrLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            bloqueRegistro.classList.remove('block');
-            bloqueRegistro.classList.add('hidden');
-            bloqueLogin.classList.remove('hidden');
-            bloqueLogin.classList.add('block');
-            window.history.pushState({}, '', window.location.pathname);
-        });
-
+    } catch (error) {
+        console.error("Error al cargar servicios desde la API:", error);
+        contenedor.innerHTML = `<p class="text-red-500 col-span-3 text-center">No se pudieron cargar los servicios.</p>`;
     }
 
-} catch (error) {
-    console.error("Error al cargar servicios desde la API:", error);
-    contenedor.innerHTML = `<p class="text-red-500 col-span-3 text-center">No se pudieron cargar los servicios.</p>`;
 }
-
-
 // ==========================================
 // CONSUMO DE APIS (LÓGICA DINÁMICA)
 // ==========================================
@@ -111,7 +116,7 @@ async function cargarPortada() {
     try {
         const respuesta = await fetch(`${API_BASE_URL}/inicio`);
         const arrayDatos = await respuesta.json();
-        
+
         const datos = arrayDatos[0];
 
         contenedor.innerHTML = `
@@ -183,13 +188,13 @@ const k = Math.log(P_actual / P0) / t_actual; // Tasa de crecimiento continuo
 let miGraficoCrecimiento;
 
 // Función principal que se activa con el botón
-window.calcularCrecimiento = function() {
+window.calcularCrecimiento = function () {
     const inputTiempo = document.getElementById('input-tiempo');
     if (!inputTiempo) return; // Si no estamos en la página, ignoramos
 
     const t_futuro = parseFloat(inputTiempo.value);
-    
-    if(isNaN(t_futuro) || t_futuro < 0) {
+
+    if (isNaN(t_futuro) || t_futuro < 0) {
         alert("Por favor ingresa un tiempo válido mayor o igual a 0.");
         return;
     }
@@ -199,7 +204,7 @@ window.calcularCrecimiento = function() {
 
     // Calculamos la proyección: P(t) = P0 * e^(k * t)
     const clientesProyectados = P0 * Math.exp(k * t_futuro);
-    
+
     document.getElementById('resultado-p').innerText = Math.round(clientesProyectados).toLocaleString();
 
     // Llamamos a la gráfica
@@ -211,7 +216,7 @@ function dibujarGraficaCrecimiento(t_max) {
     const canvas = document.getElementById('graficaCrecimiento');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
+
     // Destruimos el gráfico anterior si el usuario vuelve a calcular
     if (miGraficoCrecimiento) {
         miGraficoCrecimiento.destroy();
@@ -219,12 +224,12 @@ function dibujarGraficaCrecimiento(t_max) {
 
     let etiquetasTiempo = [];
     let datosClientes = [];
-    
+
     const pasos = 20;
     for (let i = 0; i <= pasos; i++) {
         let t_punto = (t_max / pasos) * i;
         let clientes_punto = P0 * Math.exp(k * t_punto);
-        
+
         etiquetasTiempo.push("Año " + t_punto.toFixed(1));
         datosClientes.push(Math.round(clientes_punto));
     }
