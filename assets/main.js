@@ -7,7 +7,7 @@
 // CONFIGURACIÓN GLOBAL
 // ==========================================
 const API_BASE_URL = 'https://app-web-java.vercel.app/api';
-const CLOUD_NAME = 'dwyx9wxxr';
+const CLOUD_NAME = 'dswljrmnu';
 
 // Rutas base de Cloudinary
 const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
