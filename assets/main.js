@@ -158,7 +158,7 @@ async function cargarServicios() {
             const tarjeta = `
                 <div class="bg-[#111] border border-gray-800 rounded-2xl p-6 hover:border-[#7ed957] transition duration-300 flex flex-col items-center text-center shadow-lg">
                     <div class="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center mb-4 text-3xl">
-                        <img src="${RUTA_ASSETS}${servicio.imagen}" alt="Icono" class="w-8 h-8 object-contain">
+                        <img src="${CLOUD_BASE_IMG}${servicio.imagen}" alt="Icono" class="w-8 h-8 object-contain">
                     </div>
                     <h3 class="text-xl font-bold mb-2 text-white">${servicio.titulo}</h3>
                     <p class="text-gray-400 text-sm mb-4">${servicio.descripcion}</p>
