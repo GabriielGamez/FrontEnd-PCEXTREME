@@ -27,6 +27,7 @@ async function cargarComponentes() {
         document.getElementById('encabezado-principal').innerHTML = await resHeader.text();
 
         inicializarMenuCuenta();
+        verificarSesion();
 
         const resFooter = await fetch('/FrontEnd-PCEXTREME/components/footer.html');
         if (!resFooter.ok) throw new Error('Error al cargar footer');
@@ -64,6 +65,76 @@ function inicializarEventosLogin() {
     const btnIrLogin = document.getElementById('ir-a-login');
     const bloqueLogin = document.getElementById('bloque-login');
     const bloqueRegistro = document.getElementById('bloque-registro');
+    
+    // ==========================================
+    // NUEVO: LÓGICA DE PETICIÓN LOGIN
+    // ==========================================
+    const formLogin = document.getElementById('formulario-login');
+    if (formLogin) {
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evitamos que la página se recargue
+            
+            const email = document.getElementById('correo-login').value;
+            const password = document.getElementById('password-login').value;
+            const btnSubmit = formLogin.querySelector('button[type="submit"]');
+            const textoOriginal = btnSubmit.innerText;
+
+            btnSubmit.innerText = "Verificando...";
+            btnSubmit.disabled = true;
+
+            try {
+                // 1. Intentamos loguear como Cliente
+                let respuesta = await fetch(`${API_BASE_URL}/auth/login/cliente`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                let datos = await respuesta.json();
+
+                // 2. Si falla como cliente, intentamos como Trabajador
+                if (!respuesta.ok) {
+                    let resTrabajador = await fetch(`${API_BASE_URL}/auth/login/trabajador`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    let datosTrabajador = await resTrabajador.json();
+                    
+                    if (!resTrabajador.ok) {
+                        // Si falla en ambos, disparamos el error
+                        throw new Error(datosTrabajador.message || datos.message || "Credenciales inválidas");
+                    }
+                    
+                    // Si funcionó, usamos los datos del trabajador
+                    datos = datosTrabajador; 
+                }
+
+                // 3. ¡Login exitoso! Guardamos en memoria
+                localStorage.setItem('token', datos.token);
+                localStorage.setItem('usuario', JSON.stringify(datos.usuario));
+
+                mostrarNotificacion(`¡Bienvenido, ${datos.usuario.nombre}!`, 'exito');
+
+                // 4. Redireccionamos según el tipo de usuario
+                setTimeout(() => {
+                    if (datos.usuario.tipo === 'trabajador') {
+                        window.location.href = '/FrontEnd-PCEXTREME/admin/dashboard.html'; // Redirige al panel de administración
+                    } else {
+                        window.location.href = '/FrontEnd-PCEXTREME/index.html'; // Redirige a la página principal del cliente
+                    }
+                }, 1500);
+
+            } catch (error) {
+                // Mostramos el toast flotante de error
+                mostrarNotificacion(error.message, 'error');
+            } finally {
+                btnSubmit.innerText = textoOriginal;
+                btnSubmit.disabled = false;
+            }
+        });
+    }
+
     try {
         if (btnIrRegistro && btnIrLogin && bloqueLogin && bloqueRegistro) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -668,3 +739,100 @@ document.addEventListener('DOMContentLoaded', () => {
     if(document.getElementById('cuadricula-productos')) cargarCatalogoProductos();
     if(document.getElementById('contenedor-detalle')) cargarDetalleProducto();
 });
+// ==========================================
+// SISTEMA DE NOTIFICACIONES FLOTANTES
+// ==========================================
+function mostrarNotificacion(mensaje, tipo = 'error') {
+    // Verificamos si ya existe el contenedor, si no, lo creamos
+    let contenedor = document.getElementById('toast-container');
+    if (!contenedor) {
+        contenedor = document.createElement('div');
+        contenedor.id = 'toast-container';
+        contenedor.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-3';
+        document.body.appendChild(contenedor);
+    }
+
+    // Colores dependiendo de si es error o éxito
+    const bgClass = tipo === 'error' ? 'bg-red-600' : 'bg-[#7ed957]';
+    const textClass = tipo === 'error' ? 'text-white' : 'text-black';
+
+    const toast = document.createElement('div');
+    toast.className = `${bgClass} ${textClass} px-6 py-3 rounded-lg shadow-lg font-bold flex items-center gap-3 transform transition-all duration-300 translate-y-10 opacity-0`;
+    toast.innerHTML = `
+        <span>${tipo === 'error' ? '❌' : '✅'}</span>
+        <span>${mensaje}</span>
+    `;
+
+    contenedor.appendChild(toast);
+
+    // Animación de entrada
+    setTimeout(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+    }, 10);
+
+    // Desaparecer después de 3 segundos
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-10');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+// ==========================================
+// MANEJO DE SESIÓN Y HEADER
+// ==========================================
+function verificarSesion() {
+    const token = localStorage.getItem('token');
+    const usuarioStr = localStorage.getItem('usuario');
+    
+    if (!token || !usuarioStr) return; // No hay sesión iniciada
+
+    const usuario = JSON.parse(usuarioStr);
+
+    // 1. Si estamos en la página de login y YA hay sesión, lo sacamos de ahí
+    if (window.location.pathname.includes('login.html')) {
+        if (usuario.tipo === 'trabajador') {
+            window.location.href = '#'; // Redirección admin
+        } else {
+            window.location.href = 'index.html'; // Redirección cliente
+        }
+        return;
+    }
+
+    // 2. Si es cliente, modificamos el header
+    if (usuario.tipo === 'cliente') {
+        const authButton = document.getElementById('authButton');
+        if (authButton) {
+            const contenedorPadre = authButton.parentElement;
+            
+            // Reemplazamos el botón original por el Dropdown
+            contenedorPadre.innerHTML = `
+                <div class="relative inline-block text-left">
+                    <button id="userMenuButton" class="border border-[#7ed957] text-white px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-[#7ed957] hover:text-black transition">
+                        Hola, ${usuario.nombre}
+                    </button>
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1f1f1f] rounded-xl shadow-lg border border-gray-700 overflow-hidden z-50">
+                        <button class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mi Perfil</button>
+                        <button class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mis Dispositivos</button>
+                        <button onclick="cerrarSesion()" class="w-full text-left px-4 py-3 text-[#ff4d4d] hover:bg-gray-800 transition font-semibold">Cerrar Sesión</button>
+                    </div>
+                </div>
+            `;
+
+            // Lógica para abrir y cerrar el nuevo dropdown
+            const btn = document.getElementById('userMenuButton');
+            const drop = document.getElementById('userDropdown');
+            btn.addEventListener('click', () => drop.classList.toggle('hidden'));
+            window.addEventListener('click', (e) => {
+                if (!btn.contains(e.target) && !drop.contains(e.target)) {
+                    drop.classList.add('hidden');
+                }
+            });
+        }
+    }
+}
+
+// Función global para cerrar sesión desde el botón
+window.cerrarSesion = function() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = 'index.html'; // Recargamos enviándolo al inicio
+};
