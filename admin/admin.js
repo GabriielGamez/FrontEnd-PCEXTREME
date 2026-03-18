@@ -680,32 +680,50 @@ function mostrarListaPersonal() {
         return;
     }
 
-    // 1. Creamos un "diccionario" de roles para cambiar el ID por el Nombre fácilmente
+    // Creamos el diccionario de roles
     const mapaRoles = {};
     rolesGlobales.forEach(rol => {
-        // Ajusta "idRol" y "nombreRol" según cómo vengan en tu JSON
         mapaRoles[rol.idRol || rol.id] = rol.nombreRol || rol.nombre || "Desconocido";
     });
 
-    // 2. Construimos la tabla
     let html = "";
     personalGlobal.forEach((emp) => {
-        // Ajusta los nombres de las variables según tu JSON de la BD
         const idEmp = emp.idTrabajador || emp.id || emp.idEmpleado;
         const nombreRol = mapaRoles[emp.idRol] || "Sin Rol";
         const correo = emp.email || emp.correo || "Sin correo";
         const tel = emp.telefono || "Sin teléfono";
 
-        // 3. Lógica para pintar las "pastillas" de colores según el rol
-        let colorRol = "bg-gray-900 text-gray-300 border-gray-700"; // Por defecto
+        // Lógica de colores y detección de Admin
+        let colorRol = "bg-gray-900 text-gray-300 border-gray-700";
+        let esAdmin = false; // Variable para saber si es administrador
+
         if (nombreRol.toLowerCase().includes("admin")) {
             colorRol = "bg-green-900 text-green-300 border-green-700";
+            esAdmin = true; // Confirmamos que es admin
         } else if (nombreRol.toLowerCase().includes("recep")) {
             colorRol = "bg-purple-900 text-purple-300 border-purple-700";
         } else if (nombreRol.toLowerCase().includes("téc") || nombreRol.toLowerCase().includes("tec")) {
             colorRol = "bg-blue-900 text-blue-300 border-blue-700";
         }
 
+        // CONDICIONAL PARA LOS BOTONES
+        let botonesAccion = "";
+        if (esAdmin) {
+            // Si es administrador, mostramos un texto de "Protegido" sin botones
+            botonesAccion = `
+                <span class="text-gray-600 text-sm font-semibold flex items-center justify-end gap-1 cursor-not-allowed select-none" title="Cuenta de administrador protegida">
+                    🔒 Protegido
+                </span>
+            `;
+        } else {
+            // Si es recepcionista o técnico, mostramos los botones normales
+            botonesAccion = `
+                <button onclick="abrirModalPersonal(${idEmp})" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
+                <button onclick="confirmarEliminacionPersonal(${idEmp})" class="text-red-500 hover:text-red-400 transition font-semibold ml-3">Eliminar</button>
+            `;
+        }
+
+        // Construimos la fila
         html += `
             <tr class="hover:bg-[#1a1a1a] transition duration-200">
                 <td class="p-4 align-top">
@@ -721,9 +739,8 @@ function mostrarListaPersonal() {
                     <div class="mb-1">✉️ ${correo}</div>
                     <div>📞 ${tel}</div>
                 </td>
-                <td class="p-4 text-right space-x-3 align-top">
-                    <button onclick="abrirModalPersonal(${idEmp})" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
-                    <button onclick="confirmarEliminacionPersonal(${idEmp})" class="text-red-500 hover:text-red-400 transition font-semibold">Eliminar</button>
+                <td class="p-4 text-right align-top">
+                    ${botonesAccion}
                 </td>
             </tr>
         `;
@@ -731,7 +748,6 @@ function mostrarListaPersonal() {
 
     contenedor.innerHTML = html;
 }
-
 // ==========================================
 // FUNCIONES DEL MODAL DE PERSONAL
 // ==========================================
