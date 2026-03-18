@@ -59,27 +59,29 @@
                 Registrar / Editar Empleado
             </h3>
             
-            <form id="formulario-personal" onsubmit="event.preventDefault(); cerrarModalPersonal(); alert('Simulación: Empleado guardado correctamente.');" class="space-y-6">
+            <form id="formulario-personal" onsubmit="guardarEmpleado(event)" class="space-y-6">
                 
+                <input type="hidden" id="emp-id">
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-gray-400 text-sm font-bold mb-2">Nombre(s)</label>
-                        <input type="text" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        <input type="text" id="emp-nombre" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
                     </div>
                     
                     <div>
                         <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Paterno</label>
-                        <input type="text" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        <input type="text" id="emp-ap-paterno" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
                     </div>
 
                     <div>
                         <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Materno</label>
-                        <input type="text" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        <input type="text" id="emp-ap-materno" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
                     </div>
 
                     <div>
                         <label class="block text-gray-400 text-sm font-bold mb-2">Rol de Acceso</label>
-                        <select required class="w-full bg-[#0f1115] border border-[#7ed957] text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-[#7ed957]">
+                        <select id="emp-rol" required class="w-full bg-[#0f1115] border border-[#7ed957] text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-[#7ed957]">
                             <option value="" disabled selected>Selecciona rol...</option>
                             <option value="1">Administrador</option>
                             <option value="2">Recepcionista</option>
@@ -88,23 +90,28 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Correo (Usuario de acceso)</label>
-                        <input type="email" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        <label class="block text-gray-400 text-sm font-bold mb-2">Correo Institucional</label>
+                        <div class="flex">
+                            <input type="text" id="emp-email-user" required placeholder="nombre.apellido" class="w-full bg-[#0f1115] border border-gray-700 border-r-0 text-white px-4 py-2 rounded-l focus:outline-none focus:border-[#7ed957]">
+                            <span class="bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded-r font-semibold select-none flex items-center">
+                                @pcextreme.com
+                            </span>
+                        </div>
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2">Teléfono</label>
-                        <input type="text" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        <input type="text" id="emp-telefono" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-gray-400 text-sm font-bold mb-2">Dirección</label>
-                        <input type="text" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        <input type="text" id="emp-direccion" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
                     </div>
 
                     <div class="md:col-span-2 bg-[#0f1115] p-4 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500">
                         <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
-                        <input type="password" placeholder="Obligatoria para nuevo usuario / Dejar vacío para NO cambiar" class="w-full bg-black border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-500">
+                        <input type="password" id="emp-password" placeholder="Obligatoria para nuevo usuario / Dejar vacío para NO cambiar" class="w-full bg-black border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-500">
                     </div>
                 </div>
 
