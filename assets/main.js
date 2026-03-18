@@ -220,6 +220,96 @@ async function cargarMarcas() {
 */
 
 // ==========================================
+// SECCIÓN: CONSULTA DE EQUIPOS (RASTREO)
+// ==========================================
+async function rastrearEquipo(evento) {
+    // Evita que la página se recargue al enviar el formulario
+    evento.preventDefault();
+
+    const inputFolio = document.getElementById('input-folio');
+    const mensajeError = document.getElementById('mensaje-error');
+    const resultadoContenedor = document.getElementById('resultado-consulta');
+    
+    // Obtenemos el valor del input
+    const folio = inputFolio.value.trim();
+
+    // Ocultamos mensajes o resultados anteriores
+    mensajeError.classList.add('hidden');
+    resultadoContenedor.classList.remove('opacity-100');
+    resultadoContenedor.classList.add('opacity-0');
+    
+    // Pequeño retardo para la animación de salida
+    setTimeout(() => resultadoContenedor.classList.add('hidden'), 500);
+
+    if (!folio) {
+        mostrarError(mensajeError, "Por favor, ingresa un número de folio.");
+        return;
+    }
+
+    try {
+        // Hacemos la petición a la API.
+        const respuesta = await fetch(`${API_BASE_URL}/consultas/${folio}`);
+        
+        if (!respuesta.ok) {
+            throw new Error('Equipo no encontrado. Verifica el folio.');
+        }
+
+        const datos = await respuesta.json();
+        document.getElementById('resultado-folio').innerText = `#${datos.id || folio}`;
+        document.getElementById('resultado-equipo').innerText = datos.equipo || 'No especificado';
+        document.getElementById('resultado-serie').innerText = datos.numero_serie || 'N/A';
+        document.getElementById('resultado-fecha').innerText = formatearFecha(datos.fecha_ingreso);
+        document.getElementById('resultado-problema').innerText = datos.problema || 'Sin detalles';
+        document.getElementById('resultado-diagnostico').innerText = datos.diagnostico || 'Pendiente de revisión';
+        document.getElementById('resultado-costo').innerText = `$${datos.costo_estimado || '0.00'}`;
+        
+        // Actualizamos el estado con colores 
+        actualizarEstadoBadge(datos.estado);
+
+        // Mostramos suave transición
+        resultadoContenedor.classList.remove('hidden');
+        // Pequeño retardo para que el navegador aplique el display:block antes de cambiar la opacidad
+        setTimeout(() => resultadoContenedor.classList.replace('opacity-0', 'opacity-100'), 50);
+
+    } catch (error) {
+        mostrarError(mensajeError, error.message);
+    }
+}
+
+// Funciones Auxiliares para el rastreo
+function mostrarError(elemento, mensaje) {
+    elemento.innerText = mensaje;
+    elemento.classList.remove('hidden');
+}
+
+function formatearFecha(fechaCadena) {
+    if (!fechaCadena) return '--';
+    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(fechaCadena).toLocaleDateString('es-MX', opciones);
+}
+
+function actualizarEstadoBadge(estado) {
+    const badge = document.getElementById('resultado-estado');
+    badge.innerText = estado || 'Desconocido';
+    
+    // Limpiamos 
+    badge.className = "px-4 py-1 rounded-full text-sm font-bold tracking-wide uppercase border";
+
+    // Asignamos colores según el estado (Ajusta estos textos según los que uses en tu BD)
+    const estadoLower = (estado || '').toLowerCase();
+    
+    if (estadoLower.includes('revisión') || estadoLower.includes('pendiente')) {
+        badge.classList.add('bg-blue-600/20', 'text-blue-400', 'border-blue-600/50');
+    } else if (estadoLower.includes('reparación') || estadoLower.includes('proceso')) {
+        badge.classList.add('bg-yellow-600/20', 'text-yellow-400', 'border-yellow-600/50');
+    } else if (estadoLower.includes('listo') || estadoLower.includes('entregado')) {
+        badge.classList.add('bg-green-600/20', 'text-green-400', 'border-green-600/50');
+    } else {
+        badge.classList.add('bg-gray-600/20', 'text-gray-400', 'border-gray-600/50');
+    }
+}
+
+// ==========================================
 // 9. MÓDULO: ANÁLISIS DE CRECIMIENTO (ED)
 // ==========================================
 // Variables globales del problema matemático
@@ -318,10 +408,18 @@ function iniciarModuloCrecimiento() {
 // INICIALIZACIÓN GLOBAL
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Cargar la estructura (Nav y Footer)
+    // Componentes globales
     cargarComponentes();
-    cargarPortada();
-    cargarServicios();
-    iniciarModuloCrecimiento();
     inicializarEventosLogin();
+    
+    // Funciones específicas del Index
+    if(document.getElementById('portada-contenido')) cargarPortada();
+    if(document.getElementById('lista-servicios')) cargarServicios();
+    if(document.getElementById('graficaCrecimiento')) iniciarModuloCrecimiento();
+    
+    // Funciones específicas de Consulta de Equipo
+    const formConsulta = document.getElementById('formulario-consulta');
+    if (formConsulta) {
+        formConsulta.addEventListener('submit', rastrearEquipo);
+    }
 });
