@@ -223,23 +223,19 @@ async function cargarMarcas() {
 // SECCIÓN: CONSULTA DE EQUIPOS (RASTREO)
 // ==========================================
 async function rastrearEquipo(evento) {
-    // Evita que la página se recargue al enviar el formulario
     evento.preventDefault();
 
     const inputFolio = document.getElementById('input-folio');
     const mensajeError = document.getElementById('mensaje-error');
     const resultadoContenedor = document.getElementById('resultado-consulta');
     
-    // Obtenemos el valor del input
     const folio = inputFolio.value.trim();
 
-    // Ocultamos mensajes o resultados anteriores
+    // Reiniciar la interfaz
     mensajeError.classList.add('hidden');
+    resultadoContenedor.classList.add('hidden');
     resultadoContenedor.classList.remove('opacity-100');
     resultadoContenedor.classList.add('opacity-0');
-    
-    // Pequeño retardo para la animación de salida
-    setTimeout(() => resultadoContenedor.classList.add('hidden'), 500);
 
     if (!folio) {
         mostrarError(mensajeError, "Por favor, ingresa un número de folio.");
@@ -247,29 +243,61 @@ async function rastrearEquipo(evento) {
     }
 
     try {
-        // Hacemos la petición a la API.
-        const respuesta = await fetch(`${API_BASE_URL}/registros/${folio}`);
+        // --- 1. PRIMERA CONSULTA: Traer los datos de la orden ---
+        const resConsulta = await fetch(`${API_BASE_URL}/registros/${folio}`);
         
-        if (!respuesta.ok) {
+        if (!resConsulta.ok) {
             throw new Error('Equipo no encontrado. Verifica el folio.');
         }
 
-        const datos = await respuesta.json();
-        document.getElementById('resultado-folio').innerText = `#${datos.id || folio}`;
-        document.getElementById('resultado-equipo').innerText = datos.equipo || 'No especificado';
-        document.getElementById('resultado-serie').innerText = datos.numero_serie || 'N/A';
-        document.getElementById('resultado-fecha').innerText = formatearFecha(datos.fecha_ingreso);
-        document.getElementById('resultado-problema').innerText = datos.problema || 'Sin detalles';
-        document.getElementById('resultado-diagnostico').innerText = datos.diagnostico || 'Pendiente de revisión';
-        document.getElementById('resultado-costo').innerText = `$${datos.costo_estimado || '0.00'}`;
+        let datosConsulta = await resConsulta.json();
         
-        // Actualizamos el estado con colores 
-        actualizarEstadoBadge(datos.estado);
+        if (Array.isArray(datosConsulta)) {
+            if (datosConsulta.length === 0) throw new Error('Equipo no encontrado.');
+            datosConsulta = datosConsulta[0];
+        }
 
-        // Mostramos suave transición
+        // --- 2. SEGUNDA CONSULTA: Traer los detalles del dispositivo ---
+        let nombreEquipo = "Información no disponible";
+        let numeroSerie = "N/A";
+
+        if (datosConsulta.idDispositivo) {
+            try {
+                const resDispositivo = await fetch(`${API_BASE_URL}/dispositivos/${datosConsulta.idDispositivo}`);
+                if (resDispositivo.ok) {
+                    let datosDisp = await resDispositivo.json();
+                    if (Array.isArray(datosDisp)) datosDisp = datosDisp[0];
+
+                    const marca = datosDisp.marca || '';
+                    const modelo = datosDisp.modelo || '';
+                    
+                    nombreEquipo = `${marca} ${modelo}`.trim() || `Dispositivo #${datosConsulta.idDispositivo}`;
+                    numeroSerie = datosDisp.numero_serie || datosDisp.serie || 'N/A';
+                }
+            } catch (errorDisp) {
+                console.warn("Aviso: No se pudo cargar la info detallada del dispositivo.", errorDisp);
+                nombreEquipo = `Dispositivo ID: ${datosConsulta.idDispositivo}`;
+            }
+        }
+
+        // --- 3. INYECCIÓN DE DATOS AL HTML ---
+        document.getElementById('resultado-folio').innerText = `#${datosConsulta.idFolio || folio}`;
+        document.getElementById('resultado-equipo').innerText = nombreEquipo;
+        document.getElementById('resultado-serie').innerText = numeroSerie;
+        document.getElementById('resultado-fecha').innerText = formatearFecha(datosConsulta.fechaIngreso);
+        document.getElementById('resultado-problema').innerText = datosConsulta.detalles || 'Sin detalles';
+        document.getElementById('resultado-diagnostico').innerText = datosConsulta.diagnostico || 'Pendiente de revisión';
+        document.getElementById('resultado-costo').innerText = `$${datosConsulta.costo || '0.00'}`;
+        
+        // Actualizamos la etiqueta de estado
+        actualizarEstadoBadge(datosConsulta.estadoEquipo);
+
+        // --- 4. ANIMACIÓN DE ENTRADA ---
         resultadoContenedor.classList.remove('hidden');
-        // Pequeño retardo para que el navegador aplique el display:block antes de cambiar la opacidad
-        setTimeout(() => resultadoContenedor.classList.replace('opacity-0', 'opacity-100'), 50);
+        setTimeout(() => {
+            resultadoContenedor.classList.remove('opacity-0');
+            resultadoContenedor.classList.add('opacity-100');
+        }, 50);
 
     } catch (error) {
         mostrarError(mensajeError, error.message);
