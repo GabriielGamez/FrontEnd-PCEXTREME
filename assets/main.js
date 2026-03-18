@@ -248,7 +248,7 @@ async function rastrearEquipo(evento) {
 
     try {
         // Hacemos la petición a la API.
-        const respuesta = await fetch(`${API_BASE_URL}/consultas/${folio}`);
+        const respuesta = await fetch(`${API_BASE_URL}/registros/${folio}`);
         
         if (!respuesta.ok) {
             throw new Error('Equipo no encontrado. Verifica el folio.');
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(document.getElementById('portada-contenido')) cargarPortada();
     if(document.getElementById('lista-servicios')) cargarServicios();
     if(document.getElementById('graficaCrecimiento')) iniciarModuloCrecimiento();
-    
+     
     // Funciones específicas de Consulta de Equipo
     const formConsulta = document.getElementById('formulario-consulta');
     if (formConsulta) {
