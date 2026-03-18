@@ -258,8 +258,8 @@ async function rastrearEquipo(evento) {
         }
 
         // --- 2. SEGUNDA CONSULTA: Traer los detalles del dispositivo ---
-        let nombreEquipo = "Información no disponible";
-        let numeroSerie = "N/A";
+        let nombreMarca = "Información no disponible";
+        let nombreModelo = "N/A";
 
         if (datosConsulta.idDispositivo) {
             try {
@@ -271,19 +271,19 @@ async function rastrearEquipo(evento) {
                     const marca = datosDisp.marca || '';
                     const modelo = datosDisp.modelo || '';
                     
-                    nombreEquipo = `${marca} ${modelo}`.trim() || `Dispositivo #${datosConsulta.idDispositivo}`;
-                    numeroSerie = datosDisp.numSerie || 'N/A';
+                    nombreMarca = `${marca} `.trim() || `Dispositivo #${datosConsulta.idDispositivo}`;
+                    nombreModelo = `${modelo} `.trim() || 'N/A';
                 }
             } catch (errorDisp) {
                 console.warn("Aviso: No se pudo cargar la info detallada del dispositivo.", errorDisp);
-                nombreEquipo = `Dispositivo ID: ${datosConsulta.idDispositivo}`;
+                nombreMarca = `Dispositivo ID: ${datosConsulta.idDispositivo}`;
             }
         }
 
         // --- 3. INYECCIÓN DE DATOS AL HTML ---
         document.getElementById('resultado-folio').innerText = `#${datosConsulta.idFolio || folio}`;
-        document.getElementById('resultado-equipo').innerText = nombreEquipo;
-        document.getElementById('resultado-serie').innerText = numeroSerie;
+        document.getElementById('resultado-equipo').innerText = nombreMarca;
+        document.getElementById('resultado-serie').innerText = nombreModelo;
         document.getElementById('resultado-fecha').innerText = formatearFecha(datosConsulta.fechaIngreso);
         document.getElementById('resultado-problema').innerText = datosConsulta.detalles || 'Sin detalles';
         document.getElementById('resultado-diagnostico').innerText = datosConsulta.diagnostico || 'Pendiente de revisión';
