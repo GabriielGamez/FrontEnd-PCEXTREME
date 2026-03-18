@@ -4,122 +4,51 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Productos — PC EXTREME</title>
+    <title>Catálogo de Productos — PC EXTREME</title>
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
-
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dswljrmnu/image/upload/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        /* Ocultar barra de scroll en las categorías para un diseño más limpio */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+
+    <link rel="stylesheet" href="/FrontEnd-PCEXTREME/assets/styles.css" />
 </head>
 
-<body class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
-    
-    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
-    </header>
+<body class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43//FrontEnd-PCEXTREME/assets/stylesbackground.svg')] bg-cover bg-fixed bg-center text-white antialiased flex flex-col min-h-screen">
 
-    <main class="flex-grow bg-overlay py-12 px-8">
-        <h2 class="text-center text-4xl md:text-5xl font-extrabold mb-12 tracking-tight">
-            ¡PC Extreme te ofrece productos de alta calidad!
-        </h2>
+    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800"></header>
 
-        <div class="max-w-7xl mx-auto flex flex-col md:row gap-8">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold mb-4">Catálogo de <span class="text-[#7ed957]">Productos</span></h1>
+            <p class="text-gray-400">Componentes de alta calidad para llevar tu equipo al límite.</p>
+        </div>
 
-            <div class="flex flex-col md:flex-row gap-8 items-start">
-
-                <aside class="w-full md:w-64 bg-black border border-gray-800 rounded-xl p-6 sticky top-24">
-                    <h3 class="text-xl font-bold mb-6 pb-2 border-b border-green-500">Categorías</h3>
-                    <nav class="flex flex-col gap-3">
-                        <button
-                            class="flex items-center justify-between w-full bg-[#76c838] text-black font-bold py-3 px-4 rounded-lg transition transform hover:scale-105">
-                            COMPONENTES <span class="text-xl">›</span>
-                        </button>
-                        <button
-                            class="flex items-center justify-between w-full bg-black border border-gray-800 hover:border-gray-600 py-3 px-4 rounded-lg text-sm font-semibold transition">
-                            LIMPIEZA <span class="text-xl">›</span>
-                        </button>
-                        <button
-                            class="flex items-center justify-between w-full bg-black border border-gray-800 hover:border-gray-600 py-3 px-4 rounded-lg text-sm font-semibold transition">
-                            MONITORES <span class="text-xl">›</span>
-                        </button>
-                        <button
-                            class="flex items-center justify-between w-full bg-black border border-gray-800 hover:border-gray-600 py-3 px-4 rounded-lg text-sm font-semibold transition">
-                            PERIFÉRICOS <span class="text-xl">›</span>
-                        </button>
-                    </nav>
-                </aside>
-
-                <section class="flex-1">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                        <div
-                            class="bg-[#1a1a1a] rounded-xl overflow-hidden border border-transparent hover:border-[#76c838] transition-all group shadow-lg flex flex-col">
-                            <div class="bg-white p-6 flex justify-center items-center h-64">
-                                <img src="/FrontEnd-PCEXTREME/assets/tarjetagrafica1.webp"
-                                    alt="RTX 4060" width="100px"
-                                    class="max-h-full object-contain group-hover:scale-110 transition-transform">
-                            </div>
-                            <div class="p-5 flex flex-col flex-grow text-center">
-                                <h3 class="font-bold text-base leading-tight mb-2">Tarjeta Gráfica Gigabyte GeForce RTX
-                                    4060 Eagle OC 8GB</h3>
-                                <p class="text-gray-400 text-xs mb-4">Ver detalles</p>
-                                <div class="mt-auto">
-                                    <span class="text-[#76c838] text-xl font-extrabold">$7,804.99</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-[#1a1a1a] rounded-xl overflow-hidden border border-transparent hover:border-[#76c838] transition-all group shadow-lg flex flex-col">
-                            <div class="bg-white p-6 flex justify-center items-center h-64">
-                                <img src="/FrontEnd-PCEXTREME/assets/tarjetagraficarx6600.png"
-                                    alt="Ryzen 5" width="100px"
-                                    class="max-h-full object-contain group-hover:scale-110 transition-transform">
-                            </div>
-                            <div class="p-5 flex flex-col flex-grow text-center border-t border-gray-800">
-                                <h3 class="font-bold text-base leading-tight mb-2">Procesador AMD Ryzen 5 5600X</h3>
-                                <p class="text-gray-400 text-xs mb-4">Ver detalles</p>
-                                <div class="mt-auto">
-                                    <span class="text-[#76c838] text-xl font-extrabold">$3,200.00</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#76c838] transition-all group shadow-lg flex flex-col">
-                            <div class="bg-white p-6 flex justify-center items-center h-64">
-                                <img src="/FrontEnd-PCEXTREME/assets/ram3.webp"
-                                    alt="RAM XPG" width="100px"
-                                    class="max-h-full object-contain group-hover:scale-110 transition-transform">
-                            </div>
-                            <div class="p-5 flex flex-col flex-grow text-center">
-                                <h3 class="font-bold text-base leading-tight mb-2">Memoria RAM XPG Spectrix D50 RGB 16GB
-                                    (2x8GB) 3200MHz</h3>
-                                <p class="text-gray-400 text-xs mb-4">Ver detalles</p>
-                                <div class="mt-auto">
-                                    <span class="text-[#76c838] text-xl font-extrabold">$1,181.99</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
+        <div class="w-full overflow-x-auto no-scrollbar mb-10">
+            <div id="contenedor-categorias" class="flex justify-center md:justify-center gap-4 min-w-max px-2">
+                <button class="bg-gray-800 text-gray-400 px-6 py-2 rounded-full text-sm font-semibold animate-pulse">Cargando...</button>
             </div>
         </div>
 
+        <div id="estado-productos" class="text-center w-full hidden">
+            <svg class="animate-spin h-8 w-8 text-[#7ed957] mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-gray-400">Cargando inventario...</p>
+        </div>
+
+        <div id="cuadricula-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            </div>
     </main>
 
-    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+    <footer id="pie-de-pagina" class="bg-black py-12 px-8 mt-auto"></footer>
     <script src="/FrontEnd-PCEXTREME/assets/main.js"></script>
-
-
 </body>
-
 </html>

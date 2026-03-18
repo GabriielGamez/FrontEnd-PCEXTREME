@@ -364,6 +364,181 @@ function actualizarEstadoBadge(estado) {
 }
 
 // ==========================================
+// SECCIÓN: CATÁLOGO DE PRODUCTOS Y DETALLE
+// ==========================================
+let productosGlobales = []; // Guardamos los productos en memoria para no saturar la API
+
+async function cargarCatalogoProductos() {
+    const contenedorCategorias = document.getElementById('contenedor-categorias');
+    const cuadricula = document.getElementById('cuadricula-productos');
+    const estado = document.getElementById('estado-productos');
+
+    if (!contenedorCategorias || !cuadricula) return;
+
+    // Mostrar loader
+    estado.classList.remove('hidden');
+    contenedorCategorias.innerHTML = '';
+    cuadricula.innerHTML = '';
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/productos`);
+        if (!respuesta.ok) throw new Error("Error al cargar los productos");
+        
+        productosGlobales = await respuesta.json();
+        
+        if (!Array.isArray(productosGlobales)) productosGlobales = [productosGlobales];
+
+        // Ocultar loader
+        estado.classList.add('hidden');
+
+        // Extraer categorías únicas usando Set
+        const categoriasSet = new Set(productosGlobales.map(p => p.categoria));
+        const categoriasUnicas = ['Todos', ...Array.from(categoriasSet)];
+
+        // 1. Renderizar Botones de Categorías
+        categoriasUnicas.forEach((categoria, index) => {
+            const btn = document.createElement('button');
+            // Estilos para el botón activo (el primero por defecto)
+            const esActivo = index === 0;
+            btn.className = `px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border ${esActivo ? 'bg-[#7ed957] text-black border-[#7ed957]' : 'bg-transparent text-gray-400 border-gray-700 hover:border-[#7ed957] hover:text-[#7ed957]'}`;
+            btn.innerText = categoria.toUpperCase();
+            
+            btn.addEventListener('click', () => {
+                // Quitar estilo activo a todos y ponérselo al clickeado
+                Array.from(contenedorCategorias.children).forEach(b => {
+                    b.classList.remove('bg-[#7ed957]', 'text-black', 'border-[#7ed957]');
+                    b.classList.add('bg-transparent', 'text-gray-400', 'border-gray-700');
+                });
+                btn.classList.remove('bg-transparent', 'text-gray-400', 'border-gray-700');
+                btn.classList.add('bg-[#7ed957]', 'text-black', 'border-[#7ed957]');
+                
+                // Filtrar cuadrícula
+                renderizarCuadricula(categoria);
+            });
+
+            contenedorCategorias.appendChild(btn);
+        });
+
+        // 2. Renderizar Cuadrícula inicial (Todos)
+        renderizarCuadricula('Todos');
+
+    } catch (error) {
+        console.error(error);
+        estado.innerHTML = `<p class="text-red-500">Error al cargar el inventario. Intenta más tarde.</p>`;
+    }
+}
+
+function renderizarCuadricula(filtroCategoria) {
+    const cuadricula = document.getElementById('cuadricula-productos');
+    cuadricula.innerHTML = ''; // Limpiar
+
+    const productosFiltrados = filtroCategoria === 'Todos' 
+        ? productosGlobales 
+        : productosGlobales.filter(p => p.categoria === filtroCategoria);
+
+    if(productosFiltrados.length === 0) {
+        cuadricula.innerHTML = `<p class="text-gray-500 col-span-full text-center py-10">No hay productos en esta categoría.</p>`;
+        return;
+    }
+
+    productosFiltrados.forEach(prod => {
+        // Uso directo de la ruta Cloudinary + carpeta productos 
+        const imagenUrl = prod.imagen_url ? `${CLOUD_BASE_IMG}productos/${prod.imagen_url}` : `${CLOUD_BASE_IMG}productos/default.webp`;
+        
+        const tarjeta = `
+            <div class="bg-[#151515] border border-gray-800 rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#7ed957] hover:shadow-[0_10px_30px_rgba(126,217,87,0.1)] transition-all duration-300 flex flex-col group cursor-pointer" onclick="window.location.href='detalle.html?id=${prod.idProducto}'">
+                
+                <div class="h-48 w-full bg-black p-4 flex items-center justify-center overflow-hidden">
+                    <img src="${imagenUrl}" alt="${prod.nombre}" class="max-h-full max-w-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                </div>
+                
+                <div class="p-5 flex flex-col flex-grow text-left">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${prod.categoria}</span>
+                    <h3 class="text-white text-md font-semibold mb-3 line-clamp-2 leading-tight">${prod.nombre}</h3>
+                    
+                    <div class="mt-auto flex justify-between items-end">
+                        <div>
+                            <span class="text-xs text-gray-500 block mb-1">Precio</span>
+                            <span class="text-[#7ed957] font-extrabold text-xl">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                        </div>
+                        <span class="text-[#7ed957] font-bold">→</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        cuadricula.innerHTML += tarjeta;
+    });
+}
+
+async function cargarDetalleProducto() {
+    const contenedor = document.getElementById('contenedor-detalle');
+    const estado = document.getElementById('estado-detalle');
+    if (!contenedor) return;
+
+    // Leer el ID de la URL (ej: detalle.html?id=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const idProducto = urlParams.get('id');
+
+    if (!idProducto) {
+        estado.innerHTML = `<p class="text-red-500">Producto no especificado.</p>`;
+        return;
+    }
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/productos/${idProducto}`);
+        if (!respuesta.ok) throw new Error("No se encontró el producto");
+        
+        let datos = await respuesta.json();
+        if (Array.isArray(datos)) datos = datos[0]; // Por si devuelve un array
+
+        estado.classList.add('hidden');
+        contenedor.classList.remove('hidden');
+
+        const imagenUrl = datos.imagen_url ? `${CLOUD_BASE_IMG}productos/${datos.imagen_url}` : `${CLOUD_BASE_IMG}productos/default.webp`;
+        const telefonoEmpresa = datos.telefono_empresa || "7711784044"; 
+        const mensajeWa = encodeURIComponent(`Hola PC EXTREME, me interesa el producto: ${datos.nombre}`);
+
+        contenedor.innerHTML = `
+            <div class="bg-black border border-gray-800 rounded-2xl p-6 flex items-center justify-center">
+                <img src="${imagenUrl}" alt="${datos.nombre}" class="max-w-full max-h-96 object-contain hover:scale-105 transition-transform duration-500">
+            </div>
+
+            <div class="flex flex-col justify-center">
+                <span class="inline-block bg-gray-800 text-gray-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider w-max mb-4">${datos.categoria}</span>
+                
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-6 leading-tight">${datos.nombre}</h1>
+                
+                <div class="text-[#7ed957] text-4xl font-black mb-6">
+                    $${parseFloat(datos.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}
+                </div>
+
+                <div class="bg-[#1a1a1a] border border-gray-800 rounded-xl p-4 mb-8">
+                    <p class="text-gray-400 text-sm mb-2">Estado del stock:</p>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-blue-600/20 text-blue-400 border border-blue-600/50 px-3 py-1 rounded-full text-xs font-bold uppercase">${datos.estado || 'Disponible'}</span>
+                        <span class="text-gray-500 text-sm">(Cantidad: ${datos.stock || 1})</span>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-white font-semibold mb-2 border-b border-gray-800 pb-2">Descripción del producto</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">${datos.descripcion || 'Sin descripción disponible.'}</p>
+                </div>
+
+                <a href="https://wa.me/${telefonoEmpresa}?text=${mensajeWa}" target="_blank" 
+                   class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-black text-center font-bold py-4 px-8 rounded-full transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.2)] flex items-center justify-center gap-3">
+                   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                   Me interesa este artículo
+                </a>
+            </div>
+        `;
+    } catch (error) {
+        console.error(error);
+        estado.innerHTML = `<p class="text-red-500">Error al cargar la información del producto.</p>`;
+    }
+}
+
+// ==========================================
 // 9. MÓDULO: ANÁLISIS DE CRECIMIENTO (ED)
 // ==========================================
 // Variables globales del problema matemático
@@ -488,4 +663,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formConsulta) {
         formConsulta.addEventListener('submit', rastrearEquipo);
     }
+
+    // Funciones para Productos
+    if(document.getElementById('cuadricula-productos')) cargarCatalogoProductos();
+    if(document.getElementById('contenedor-detalle')) cargarDetalleProducto();
 });
