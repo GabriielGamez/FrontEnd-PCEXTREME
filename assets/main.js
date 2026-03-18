@@ -443,10 +443,10 @@ function renderizarCuadricula(filtroCategoria) {
 
     productosFiltrados.forEach(prod => {
         // Uso directo de la ruta Cloudinary + carpeta productos 
-        const imagenUrl = prod.imagen_url ? `${CLOUD_BASE_IMG}productos/${prod.imagen_url}` : `${CLOUD_BASE_IMG}productos/default.webp`;
+        const imagenUrl = prod.imagen_url ? `${CLOUD_BASE_IMG}Productos/${prod.imagen_url}` : `${CLOUD_BASE_IMG}productos/default.webp`;
         
         const tarjeta = `
-            <div class="bg-[#151515] border border-gray-800 rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#7ed957] hover:shadow-[0_10px_30px_rgba(126,217,87,0.1)] transition-all duration-300 flex flex-col group cursor-pointer" onclick="window.location.href='detalle.html?id=${prod.idProducto}'">
+            <div class="bg-[#151515] border border-gray-800 rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#7ed957] hover:shadow-[0_10px_30px_rgba(126,217,87,0.1)] transition-all duration-300 flex flex-col group cursor-pointer" onclick="window.location.href='detalle_producto.html?id=${prod.idProducto}'">
                 
                 <div class="h-48 w-full bg-black p-4 flex items-center justify-center overflow-hidden">
                     <img src="${imagenUrl}" alt="${prod.nombre}" class="max-h-full max-w-full object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
