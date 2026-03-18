@@ -134,6 +134,82 @@ function inicializarEventosLogin() {
             }
         });
     }
+    // ==========================================
+    // LÓGICA DE PETICIÓN: REGISTRO DE CLIENTE
+    // ==========================================
+    const formRegistro = document.getElementById('formulario-registro');
+    if (formRegistro) {
+        formRegistro.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 1. Obtenemos las contraseñas para validar que sean iguales
+            const password = document.getElementById('reg-password').value;
+            const passwordConfirm = document.getElementById('reg-password-confirm').value;
+
+            if (password !== passwordConfirm) {
+                mostrarNotificacion("Las contraseñas no coinciden. Intenta de nuevo.", "error");
+                return; // Detenemos la ejecución aquí
+            }
+
+            // 2. Cambiamos el estado del botón
+            const btnSubmit = formRegistro.querySelector('button[type="submit"]');
+            const textoOriginal = btnSubmit.innerText;
+            btnSubmit.innerText = "⏳ Creando cuenta...";
+            btnSubmit.disabled = true;
+
+            // 3. Juntamos los campos de la dirección en un solo texto
+            const calle = document.getElementById('reg-calle').value.trim();
+            const colonia = document.getElementById('reg-colonia').value.trim();
+            const ciudad = document.getElementById('reg-ciudad').value.trim();
+            const estado = document.getElementById('reg-estado').value.trim();
+            const cp = document.getElementById('reg-cp').value.trim();
+            const direccionCompleta = `${calle}, Col. ${colonia}, ${ciudad}, ${estado}. C.P. ${cp}`;
+
+            // 4. Preparamos los datos para la API
+            const datosCliente = {
+                nombre: document.getElementById('reg-nombre').value.trim(),
+                aPaterno: document.getElementById('reg-ap-paterno').value.trim(),
+                aMaterno: document.getElementById('reg-ap-materno').value.trim(),
+                telefono: document.getElementById('reg-telefono').value.trim(),
+                direccion: direccionCompleta,
+                email: document.getElementById('reg-email').value.trim(),
+                password: password
+            };
+
+            try {
+                // Hacemos el POST a tu ruta pública de clientes
+                const respuesta = await fetch(`${API_BASE_URL}/clientes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosCliente)
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(datos.message || "Error al crear la cuenta");
+                }
+
+                // Si todo sale bien
+                mostrarNotificacion("¡Cuenta creada con éxito! Ahora puedes iniciar sesión.", "exito");
+                
+                // Limpiamos el formulario
+                formRegistro.reset();
+                
+                // Simulamos un clic en "Inicia sesión aquí" para cambiar de pestaña mágicamente
+                setTimeout(() => {
+                    document.getElementById('ir-a-login').click();
+                }, 1500);
+
+            } catch (error) {
+                mostrarNotificacion(error.message, "error");
+            } finally {
+                // Restauramos el botón
+                btnSubmit.innerText = textoOriginal;
+                btnSubmit.disabled = false;
+            }
+        });
+    }
 
     try {
         if (btnIrRegistro && btnIrLogin && bloqueLogin && bloqueRegistro) {
