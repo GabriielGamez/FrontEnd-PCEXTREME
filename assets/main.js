@@ -641,7 +641,7 @@ async function cargarDetalleProducto() {
         estado.classList.add('hidden');
         contenedor.classList.remove('hidden');
 
-        const imagenUrl = datos.imagen_url ? `${CLOUD_BASE_IMG}productos/${datos.imagen_url}` : `${CLOUD_BASE_IMG}productos/default.webp`;
+        const imagenUrl = `${CLOUD_BASE_IMG}/${datos.imagen_url}` ;
         const telefonoEmpresa = datos.telefono_empresa || "7711784044"; 
         const mensajeWa = encodeURIComponent(`Hola PC EXTREME, me interesa el producto: ${datos.nombre}`);
 
