@@ -272,7 +272,7 @@ async function rastrearEquipo(evento) {
                     const modelo = datosDisp.modelo || '';
                     
                     nombreEquipo = `${marca} ${modelo}`.trim() || `Dispositivo #${datosConsulta.idDispositivo}`;
-                    numeroSerie = datosDisp.numero_serie || datosDisp.serie || 'N/A';
+                    numeroSerie = datosDisp.numSerie || 'N/A';
                 }
             } catch (errorDisp) {
                 console.warn("Aviso: No se pudo cargar la info detallada del dispositivo.", errorDisp);
