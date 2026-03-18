@@ -763,6 +763,117 @@ window.confirmarEliminacionPersonal = function(id) {
         // Aquí agregaremos el fetch con method: 'DELETE'
     }
 };
+// ==========================================
+// SISTEMA DE NOTIFICACIONES (ADMIN)
+// ==========================================
+function mostrarNotificacionAdmin(mensaje, tipo = 'error') {
+    let contenedor = document.getElementById('toast-container-admin');
+    if (!contenedor) {
+        contenedor = document.createElement('div');
+        contenedor.id = 'toast-container-admin';
+        contenedor.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-3';
+        document.body.appendChild(contenedor);
+    }
+
+    const bgClass = tipo === 'error' ? 'bg-red-600' : 'bg-[#7ed957]';
+    const textClass = tipo === 'error' ? 'text-white' : 'text-black';
+
+    const toast = document.createElement('div');
+    toast.className = `${bgClass} ${textClass} px-6 py-3 rounded-lg shadow-lg font-bold flex items-center gap-3 transform transition-all duration-300 translate-y-10 opacity-0`;
+    toast.innerHTML = `<span>${tipo === 'error' ? '❌' : '✅'}</span> <span>${mensaje}</span>`;
+
+    contenedor.appendChild(toast);
+
+    setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-10');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ==========================================
+// FUNCIÓN PARA GUARDAR EMPLEADO
+// ==========================================
+window.guardarEmpleado = async function(evento) {
+    evento.preventDefault();
+    
+    const btnSubmit = evento.target.querySelector('button[type="submit"]');
+    const textoOriginal = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = "⏳ Guardando...";
+    btnSubmit.disabled = true;
+
+    // 1. Recolectamos datos
+    const idEmp = document.getElementById('emp-id').value;
+    const emailUsuario = document.getElementById('emp-email-user').value.trim();
+    const password = document.getElementById('emp-password').value;
+
+    // Validamos que tenga contraseña si es un registro nuevo
+    if (!idEmp && !password) {
+        mostrarNotificacionAdmin("La contraseña es obligatoria para un nuevo empleado", "error");
+        btnSubmit.innerHTML = textoOriginal;
+        btnSubmit.disabled = false;
+        return;
+    }
+
+    // Juntamos el correo con el dominio fijo
+    const correoCompleto = `${emailUsuario}@pcextreme.com`;
+
+    const datosTrabajador = {
+        nombre: document.getElementById('emp-nombre').value.trim(),
+        aPaterno: document.getElementById('emp-ap-paterno').value.trim(),
+        aMaterno: document.getElementById('emp-ap-materno').value.trim(),
+        idRol: document.getElementById('emp-rol').value,
+        email: correoCompleto,
+        telefono: document.getElementById('emp-telefono').value.trim(),
+        direccion: document.getElementById('emp-direccion').value.trim()
+    };
+
+    // Solo enviamos el password si el usuario escribió uno
+    if (password) {
+        datosTrabajador.password = password;
+    }
+
+    // 2. Extraemos el Token de seguridad del administrador
+    const token = localStorage.getItem('token');
+
+    try {
+        let url = `${baseUrl}/trabajadores`;
+        let method = 'POST'; 
+
+        if (idEmp) {
+            url = `${baseUrl}/trabajadores/${idEmp}`;
+            method = 'PUT';
+        }
+
+        // 3. Hacemos la petición a la API
+        const respuesta = await fetch(url, {
+            method: method,
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Enviamos la credencial
+            },
+            body: JSON.stringify(datosTrabajador)
+        });
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || resultado.error || "Error al guardar el empleado");
+        }
+
+        // 4. Éxito
+        mostrarNotificacionAdmin(`Empleado ${idEmp ? 'actualizado' : 'registrado'} correctamente`, 'exito');
+        cerrarModalPersonal();
+        iniciarModuloPersonal(); // Recarga la tabla de fondo
+
+    } catch (error) {
+        console.error("Error:", error);
+        mostrarNotificacionAdmin(error.message, "error");
+    } finally {
+        btnSubmit.innerHTML = textoOriginal;
+        btnSubmit.disabled = false;
+    }
+};
 
 // ==========================================
 // INICIALIZADOR GENERAL
