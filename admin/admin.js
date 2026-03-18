@@ -6,14 +6,53 @@
 const baseUrl = "https://app-web-java.vercel.app/api";
 
 // ==========================================
-// 1. CARGA DE COMPONENTES GLOBALES (Header/Footer)
+// 1. CARGA DE COMPONENTES GLOBALES Y SESIÓN
 // ==========================================
 async function cargarComponentesAdmin() {
     try {
         const headerEl = document.getElementById("encabezado-admin");
         if (headerEl) {
             const resH = await fetch("/FrontEnd-PCEXTREME/admin/admin_header.html");
-            if (resH.ok) headerEl.innerHTML = await resH.text();
+            if (resH.ok) {
+                headerEl.innerHTML = await resH.text();
+
+                // --- NUEVA LÓGICA DE SESIÓN ADMIN ---
+                
+                // 1. Recuperar datos del trabajador logueado
+                const usuarioStr = localStorage.getItem('usuario');
+                if (usuarioStr) {
+                    const usuario = JSON.parse(usuarioStr);
+                    
+                    // Verificamos por seguridad que sea un trabajador (opcional pero recomendado)
+                    if (usuario.tipo !== 'trabajador') {
+                        window.location.href = '/FrontEnd-PCEXTREME/login.html';
+                        return;
+                    }
+
+                    // Colocamos su nombre en el Header
+                    const nombreAdminEl = document.getElementById('admin-nombre-usuario');
+                    if (nombreAdminEl) {
+                        nombreAdminEl.innerText = usuario.nombre;
+                    }
+                } else {
+                    // Si no hay sesión, lo expulsamos al login
+                    window.location.href = '/FrontEnd-PCEXTREME/login.html';
+                    return;
+                }
+
+                // 2. Configurar el botón de Cerrar Sesión
+                const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
+                if (btnCerrarSesion) {
+                    btnCerrarSesion.addEventListener('click', () => {
+                        // Borramos los datos de la memoria
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('usuario');
+                        
+                        // Redirigimos al inicio de sesión
+                        window.location.href = '/FrontEnd-PCEXTREME/login.html'; 
+                    });
+                }
+            }
         }
 
         const footerEl = document.getElementById("admin-piePagina");
