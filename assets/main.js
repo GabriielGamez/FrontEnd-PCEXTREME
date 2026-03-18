@@ -145,7 +145,11 @@ async function cargarServicios() {
 
     try {
         const respuesta = await fetch(`${API_BASE_URL}/servicios`);
-        const servicios = await respuesta.json();
+        let servicios = await respuesta.json();
+
+        if (!Array.isArray(servicios)) {
+            servicios = [servicios];
+        }
 
         contenedor.innerHTML = '';
 
@@ -156,12 +160,21 @@ async function cargarServicios() {
 
         servicios.forEach(servicio => {
             const tarjeta = `
-                <div class="bg-[#111] border border-gray-800 rounded-2xl p-6 hover:border-[#7ed957] transition duration-300 flex flex-col items-center text-center shadow-lg">
-                    <div class="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center mb-4 text-3xl">
-                        <img src="${CLOUD_BASE_IMG}${servicio.imagen}" alt="Icono" class="w-8 h-8 object-contain">
+                <div class="bg-[#1f1f1f] rounded-xl overflow-hidden shadow-lg flex flex-col group border border-transparent hover:border-[#7ed957] transition-all duration-300">
+                    
+                    <div class="h-52 w-full overflow-hidden">
+                        <img src="${RUTA_ASSETS}${servicio.imagen}" alt="${servicio.titulo}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
                     </div>
-                    <h3 class="text-xl font-bold mb-2 text-white">${servicio.titulo}</h3>
-                    <p class="text-gray-400 text-sm mb-4">${servicio.descripcion}</p>
+                    
+                    <div class="p-6 flex flex-col flex-grow text-left">
+                        <h3 class="text-[#7ed957] text-lg font-bold mb-3 uppercase tracking-wide">
+                            ${servicio.titulo}
+                        </h3>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            ${servicio.descripcion}
+                        </p>
+                    </div>
+
                 </div>
             `;
             contenedor.innerHTML += tarjeta;
@@ -172,6 +185,39 @@ async function cargarServicios() {
         contenedor.innerHTML = `<p class="text-red-500 col-span-3 text-center">No se pudieron cargar los servicios.</p>`;
     }
 }
+
+/*/ ==========================================
+// SECCIÓN: MARCAS (CARRUSEL INFINITO)
+// ==========================================
+async function cargarMarcas() {
+    const contenedor = document.getElementById('carrusel-marcas');
+    if (!contenedor) return;
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/marcas`);
+        
+        if (!respuesta.ok) {
+            console.warn("La ruta /api/marcas aún no está disponible en el backend.");
+            return; 
+        }
+        const marcas = await respuesta.json();
+        const marcasDuplicadas = [...marcas, ...marcas];
+
+        contenedor.innerHTML = ''; 
+        contenedor.className = "animacion-carrusel items-center gap-16 py-4";
+
+        marcasDuplicadas.forEach(marca => {
+            contenedor.innerHTML += `
+                <img src="${RUTA_MARCAS}${marca.logo}" alt="${marca.nombre}" 
+                     class="h-8 md:h-12 w-auto object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300 cursor-pointer">
+            `;
+        });
+
+    } catch (error) {
+        console.error("Error al cargar el carrusel de marcas:", error);
+    }
+}
+*/
 
 // ==========================================
 // 9. MÓDULO: ANÁLISIS DE CRECIMIENTO (ED)

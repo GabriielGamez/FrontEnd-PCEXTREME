@@ -11,6 +11,19 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animacion-carrusel {
+            display: flex;
+            width: max-content;
+            animation: scroll 20s linear infinite;
+        }
+        .animacion-carrusel:hover {
+            animation-play-state: paused;;
+        }
     </style>
 
     <link rel="stylesheet" href="/FrontEnd-PCEXTREME/assets/styles.css" />
