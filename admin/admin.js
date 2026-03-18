@@ -25,7 +25,7 @@ async function cargarComponentesAdmin() {
                     
                     // Verificamos por seguridad que sea un trabajador (opcional pero recomendado)
                     if (usuario.tipo !== 'trabajador') {
-                        window.location.href = '/FrontEnd-PCEXTREME/login.html';
+                        window.location.href = '/FrontEnd-PCEXTREME/index.html';
                         return;
                     }
 
@@ -36,7 +36,7 @@ async function cargarComponentesAdmin() {
                     }
                 } else {
                     // Si no hay sesión, lo expulsamos al login
-                    window.location.href = '/FrontEnd-PCEXTREME/login.html';
+                    window.location.href = '/FrontEnd-PCEXTREME/index.html';
                     return;
                 }
 
@@ -49,7 +49,7 @@ async function cargarComponentesAdmin() {
                         localStorage.removeItem('usuario');
                         
                         // Redirigimos al inicio de sesión
-                        window.location.href = '/FrontEnd-PCEXTREME/login.html'; 
+                        window.location.href = '/FrontEnd-PCEXTREME/index.html'; 
                     });
                 }
             }
