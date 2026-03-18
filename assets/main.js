@@ -163,7 +163,7 @@ async function cargarServicios() {
                 <div class="bg-[#1f1f1f] rounded-xl overflow-hidden shadow-lg flex flex-col group border border-transparent hover:border-[#7ed957] transition-all duration-300">
                     
                     <div class="h-52 w-full overflow-hidden">
-                        <img src="${RUTA_ASSETS}${servicio.imagen}" alt="${servicio.titulo}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                        <img src="${CLOUD_BASE_IMG}${servicio.imagen}" alt="${servicio.titulo}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
                     </div>
                     
                     <div class="p-6 flex flex-col flex-grow text-left">
