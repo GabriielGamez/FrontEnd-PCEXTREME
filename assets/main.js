@@ -590,7 +590,7 @@ function renderizarCuadricula(filtroCategoria) {
 
     productosFiltrados.forEach(prod => {
         // Uso directo de la ruta Cloudinary + carpeta productos 
-        const imagenUrl = `${CLOUD_BASE_IMG}Productos/${prod.categoria}/${prod.imagen_url}`;
+        const imagenUrl = `${CLOUD_BASE_IMG}/${prod.imagen_url}`;
         
         const tarjeta = `
             <div class="bg-[#151515] border border-gray-800 rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#7ed957] hover:shadow-[0_10px_30px_rgba(126,217,87,0.1)] transition-all duration-300 flex flex-col group cursor-pointer" onclick="window.location.href='detalle_producto.html?id=${prod.idProducto}'">
