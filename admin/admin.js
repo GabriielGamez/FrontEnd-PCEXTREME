@@ -4,7 +4,8 @@
  * Contiene la lógica compartida, módulo de reparaciones, clientes y gestor web.
  */
 const baseUrl = "https://app-web-java.vercel.app/api";
-
+const CLOUD_NAME_ADMIN = 'dswljrmnu'; 
+const UPLOAD_PRESET = 'qgnakwni'; 
 // ==========================================
 // 1. CARGA DE COMPONENTES GLOBALES Y SESIÓN
 // ==========================================
@@ -807,6 +808,186 @@ function mostrarNotificacionAdmin(mensaje, tipo = 'error') {
     }, 3000);
 }
 
+
+// ==========================================
+// SECCIÓN: ADMINISTRACIÓN DE PRODUCTOS (CRUD)
+// ==========================================
+let adminProductosData = [];
+
+async function cargarTablaAdminProductos() {
+    const tbody = document.getElementById('tabla-productos-admin');
+    if (!tbody) return;
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/productos`);
+        if (!respuesta.ok) throw new Error("Error al obtener productos");
+        
+        adminProductosData = await respuesta.json();
+        tbody.innerHTML = '';
+
+        if(adminProductosData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-500">No hay productos registrados.</td></tr>`;
+            return;
+        }
+
+        adminProductosData.forEach(prod => {
+            const imagenUrl = `${CLOUD_BASE_IMG}/${prod.imagen_url}`;
+            
+            const prodDataString = encodeURIComponent(JSON.stringify(prod));
+
+            tbody.innerHTML += `
+                <tr class="hover:bg-[#151515] transition border-b border-gray-800">
+                    <td class="p-4 text-gray-500">#${prod.idProducto}</td>
+                    <td class="p-4">
+                        <div class="w-12 h-12 bg-black rounded flex items-center justify-center p-1 border border-gray-800">
+                            <img src="${imagenUrl}" alt="Img" class="max-w-full max-h-full object-contain">
+                        </div>
+                    </td>
+                    <td class="p-4 font-semibold">${prod.nombre}</td>
+                    <td class="p-4"><span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300">${prod.categoria}</span></td>
+                    <td class="p-4 text-[#7ed957] font-bold">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                    <td class="p-4">${prod.stock}</td>
+                    <td class="p-4 text-center space-x-3">
+                        <button onclick="abrirModalProducto('${prodDataString}')" class="text-blue-400 hover:text-blue-300 transition" title="Editar">✏️ Editar</button>
+                        <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-400 transition" title="Eliminar">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Error al cargar la tabla.</td></tr>`;
+    }
+}
+
+// Control del Modal
+function abrirModalProducto(prodDataString = null) {
+    const modal = document.getElementById('modal-producto');
+    const form = document.getElementById('formulario-producto');
+    const titulo = document.getElementById('modal-titulo');
+    
+    const inputFile = document.getElementById('admin-imagen-file');
+    const contenedorImgActual = document.getElementById('contenedor-imagen-actual');
+    const nombreImgActual = document.getElementById('nombre-imagen-actual');
+
+    form.reset(); 
+    inputFile.value = ''; // Limpiamos el archivo seleccionado
+
+    if (prodDataString) {
+        titulo.innerText = "Editar Producto";
+        const prod = JSON.parse(decodeURIComponent(prodDataString));
+        
+        document.getElementById('admin-id').value = prod.idProducto;
+        document.getElementById('admin-nombre').value = prod.nombre;
+        document.getElementById('admin-categoria').value = prod.categoria;
+        document.getElementById('admin-precio').value = prod.precio;
+        document.getElementById('admin-stock').value = prod.stock;
+        document.getElementById('admin-descripcion').value = prod.descripcion || '';
+        
+        // Mostrar la imagen actual
+        if (prod.imagen_url) {
+            contenedorImgActual.classList.remove('hidden');
+            nombreImgActual.innerText = prod.imagen_url;
+        } else {
+            contenedorImgActual.classList.add('hidden');
+            nombreImgActual.innerText = '';
+        }
+    } else {
+        titulo.innerText = "Añadir Nuevo Producto";
+        document.getElementById('admin-id').value = '';
+        contenedorImgActual.classList.add('hidden');
+        nombreImgActual.innerText = '';
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function cerrarModalProducto() {
+    document.getElementById('modal-producto').classList.add('hidden');
+}
+
+// Guardar (Crear o Editar)
+async function gestionarSubmitProducto(evento) {
+    evento.preventDefault();
+    const id = document.getElementById('admin-id').value;
+    const btnGuardar = document.getElementById('btn-guardar-producto');
+    const inputFile = document.getElementById('admin-imagen-file');
+    
+    // Partimos del nombre que ya tenía (por si no sube una nueva)
+    let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
+
+    btnGuardar.disabled = true;
+
+    try {
+        // IMAGEN  A CLOUDINARY ---
+        if (inputFile.files.length > 0) {
+            btnGuardar.innerText = "Subiendo imagen a la nube...";
+            
+            const formData = new FormData();
+            formData.append('file', inputFile.files[0]);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!resCloudinary.ok) throw new Error("Fallo al subir la imagen a Cloudinary.");
+            
+            const dataCloudinary = await resCloudinary.json();
+            
+            // guardar solo el "nombre.extensión"
+            const urlCompleta = dataCloudinary.secure_url;
+            nombreImagenFinal = urlCompleta.split('/').pop(); 
+        }
+
+        // ARMAMOS EL PAQUETE PARA LA API  
+        btnGuardar.innerText = "Guardando datos...";
+        const payload = {
+            nombre: document.getElementById('admin-nombre').value,
+            categoria: document.getElementById('admin-categoria').value,
+            precio: parseFloat(document.getElementById('admin-precio').value),
+            stock: parseInt(document.getElementById('admin-stock').value),
+            descripcion: document.getElementById('admin-descripcion').value,
+            imagen_url: nombreImagenFinal // <--- ¡Aquí va el nombre limpio para la base de datos!
+        };
+
+        const metodo = id ? 'PUT' : 'POST';
+        const url = id ? `${API_BASE_URL}/productos/${id}` : `${API_BASE_URL}/productos`;
+
+        // MANDAMOS LA PETICIÓN AL BACKEND DE JAVA 
+        const respuesta = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!respuesta.ok) throw new Error("Error al guardar en la base de datos");
+
+        cerrarModalProducto();
+        cargarTablaAdminProductos(); 
+        
+    } catch (error) {
+        alert("Ocurrió un error: " + error.message);
+    } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.innerText = "Guardar";
+    }
+}
+
+// Eliminar
+async function eliminarProducto(id) {
+    if(!confirm("¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.")) return;
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/productos/${id}`, { method: 'DELETE' });
+        if (!respuesta.ok) throw new Error("Error al eliminar");
+        
+        cargarTablaAdminProductos(); // Recargar la tabla
+    } catch (error) {
+        alert("Ocurrió un error al eliminar: " + error.message);
+    }
+}
+
 // ==========================================
 // FUNCIÓN PARA GUARDAR EMPLEADO
 // ==========================================
@@ -900,4 +1081,8 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
+    if(document.getElementById('tabla-productos-admin')) {
+        cargarTablaAdminProductos();
+        document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
+    }
 });

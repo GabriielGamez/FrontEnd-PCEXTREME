@@ -8,6 +8,7 @@
 // ==========================================
 const API_BASE_URL = 'https://app-web-java.vercel.app/api';
 const CLOUD_NAME = 'dswljrmnu';
+const UPLOAD_PRESET = 'productos_preset';
 
 // Rutas base de Cloudinary
 const CLOUD_BASE_IMG = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
@@ -277,7 +278,7 @@ async function cargarPortada() {
         `;
 
         if (datos.video_url && video) {
-            video.innerHTML = `<source src="${CLOUD_BASE_VID}/${datos.video_url}.mp4" type="video/mp4">`;
+            video.innerHTML = `<source src="${CLOUD_BASE_VID}${datos.video_url}.mp4" type="video/mp4">`;
             video.load();
         }
     } catch (error) {
