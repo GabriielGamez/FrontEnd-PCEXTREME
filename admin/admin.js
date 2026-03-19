@@ -833,7 +833,7 @@ async function cargarTablaAdminProductos() {
         }
 
         adminProductosData.forEach(prod => {
-            const imagenUrl = `${CLOUD_BASE}productos/${prod.imagen_url}`;
+            const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
 
             tbody.innerHTML += `
                 <tr class="hover:bg-gray-50 transition border-b border-gray-100">
