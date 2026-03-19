@@ -277,7 +277,7 @@ async function cargarPortada() {
         `;
 
         if (datos.video_url && video) {
-            video.innerHTML = `<source src="${CLOUD_BASE_VID}${datos.video_url}.mp4" type="video/mp4">`;
+            video.innerHTML = `<source src="${CLOUD_BASE_VID}/${datos.video_url}.mp4" type="video/mp4">`;
             video.load();
         }
     } catch (error) {
