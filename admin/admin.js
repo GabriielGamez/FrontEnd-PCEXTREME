@@ -4,7 +4,8 @@
  * Contiene la lógica compartida, módulo de reparaciones, clientes y gestor web.
  */
 const baseUrl = "https://app-web-java.vercel.app/api";
-const CLOUD_NAME_ADMIN = 'dswljrmnu'; 
+const CLOUD_BASE = 'https://res.cloudinary.com/dswljrmnu/image/upload/';
+const CLOUD_NAME_BASE = 'dswljrmnu'; 
 const UPLOAD_PRESET = 'qgnakwni'; 
 // ==========================================
 // 1. CARGA DE COMPONENTES GLOBALES Y SESIÓN
