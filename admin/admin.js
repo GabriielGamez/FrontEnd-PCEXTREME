@@ -823,6 +823,7 @@ async function cargarTablaAdminProductos() {
         const respuesta = await fetch(`${baseUrl}/productos`);
         if (!respuesta.ok) throw new Error("Error al obtener productos");
         
+        // Guardamos los productos en la memoria global
         adminProductosData = await respuesta.json();
         tbody.innerHTML = '';
 
@@ -832,8 +833,7 @@ async function cargarTablaAdminProductos() {
         }
 
         adminProductosData.forEach(prod => {
-            const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
-            const prodDataString = encodeURIComponent(JSON.stringify(prod));
+            const imagenUrl = `${CLOUD_BASE}productos/${prod.imagen_url}`;
 
             tbody.innerHTML += `
                 <tr class="hover:bg-gray-50 transition border-b border-gray-100">
@@ -848,87 +848,65 @@ async function cargarTablaAdminProductos() {
                     <td class="p-4 text-[#6bc148] font-bold">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                     <td class="p-4 text-gray-700">${prod.stock}</td>
                     <td class="p-4 text-center space-x-3">
-                        <button onclick="abrirModalProducto('${prodDataString}')" class="text-blue-500 hover:text-blue-700 font-medium transition" title="Editar">✏️ Editar</button>
+                        <button onclick="abrirModalProducto(${prod.idProducto})" class="text-blue-500 hover:text-blue-700 font-medium transition" title="Editar">✏️ Editar</button>
                         <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-700 font-medium transition" title="Eliminar">🗑️</button>
                     </td>
                 </tr>
             `;
         });
     } catch (error) {
-
         console.error("Error detallado al cargar la tabla:", error); 
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Error al cargar la tabla. Revisa la consola.</td></tr>`;
     }
 }
 
 // Control del Modal
-async function gestionarSubmitProducto(evento) {
-    evento.preventDefault();
+function abrirModalProducto(idProducto = null) {
+    const modal = document.getElementById('modal-producto');
+    const form = document.getElementById('formulario-producto');
+    const titulo = document.getElementById('modal-titulo');
     
-    const btnGuardar = evento.target.querySelector('button[type="submit"]');
-    const textoOriginalBtn = btnGuardar.innerText;
-    
-    const id = document.getElementById('admin-id').value;
     const inputFile = document.getElementById('admin-imagen-file');
-    
-    let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
+    const contenedorImgActual = document.getElementById('contenedor-imagen-actual');
+    const nombreImgActual = document.getElementById('nombre-imagen-actual');
 
-    btnGuardar.disabled = true;
-    btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
+    form.reset(); 
+    inputFile.value = ''; 
 
-    try {
-        if (inputFile.files.length > 0) {
-            btnGuardar.innerText = "Subiendo foto...";
-            
-            const formData = new FormData();
-            formData.append('file', inputFile.files[0]);
-            formData.append('upload_preset', UPLOAD_PRESET);
-
-           
-            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_BASE}/image/upload`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!resCloudinary.ok) throw new Error("Fallo al subir a Cloudinary.");
-            
-            const dataCloudinary = await resCloudinary.json();
-            const urlCompleta = dataCloudinary.secure_url;
-            nombreImagenFinal = urlCompleta.split('/').pop(); 
+    if (idProducto) {
+        // BUSCAMOS LOS DATOS DEL PRODUCTO EN LA MEMORIA GLOBAL
+        const prod = adminProductosData.find(p => p.idProducto === idProducto);
+        
+        if (!prod) {
+            alert("No se encontró la información del producto.");
+            return;
         }
 
-        btnGuardar.innerText = "Guardando...";
+        titulo.innerText = "Editar Producto";
         
-        const payload = {
-            nombre: document.getElementById('admin-nombre').value,
-            categoria: document.getElementById('admin-categoria').value,
-            precio: parseFloat(document.getElementById('admin-precio').value),
-            stock: parseInt(document.getElementById('admin-stock').value),
-            descripcion: document.getElementById('admin-descripcion').value,
-            imagen_url: nombreImagenFinal 
-        };
-
-        const metodo = id ? 'PUT' : 'POST';
-        const url = id ? `${baseUrl}/productos/${id}` : `${baseUrl}/productos`; // Usamos baseUrl
-
-        const respuesta = await fetch(url, {
-            method: metodo,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!respuesta.ok) throw new Error("Error al guardar en la base de datos");
-
-        cerrarModalProducto();
-        cargarTablaAdminProductos(); 
+        // Llenamos los campos
+        document.getElementById('admin-id').value = prod.idProducto;
+        document.getElementById('admin-nombre').value = prod.nombre;
+        document.getElementById('admin-categoria').value = prod.categoria;
+        document.getElementById('admin-precio').value = prod.precio;
+        document.getElementById('admin-stock').value = prod.stock;
+        document.getElementById('admin-descripcion').value = prod.descripcion || '';
         
-    } catch (error) {
-        alert("Ocurrió un error: " + error.message);
-    } finally {
-        btnGuardar.disabled = false;
-        btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
-        btnGuardar.innerText = textoOriginalBtn;
+        if (prod.imagen_url) {
+            contenedorImgActual.classList.remove('hidden');
+            nombreImgActual.innerText = prod.imagen_url;
+        } else {
+            contenedorImgActual.classList.add('hidden');
+            nombreImgActual.innerText = '';
+        }
+    } else {
+        titulo.innerText = "Añadir Nuevo Producto";
+        document.getElementById('admin-id').value = '';
+        contenedorImgActual.classList.add('hidden');
+        nombreImgActual.innerText = '';
     }
+
+    modal.classList.remove('hidden');
 }
 
 function cerrarModalProducto() {
@@ -942,7 +920,6 @@ async function gestionarSubmitProducto(evento) {
     const btnGuardar = document.getElementById('btn-guardar-producto');
     const inputFile = document.getElementById('admin-imagen-file');
     
-    // Partimos del nombre que ya tenía (por si no sube una nueva)
     let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
 
     btnGuardar.disabled = true;
