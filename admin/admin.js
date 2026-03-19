@@ -820,7 +820,7 @@ async function cargarTablaAdminProductos() {
     if (!tbody) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/productos`);
+        const respuesta = await fetch(`${baseUrl}/productos`);
         if (!respuesta.ok) throw new Error("Error al obtener productos");
         
         adminProductosData = await respuesta.json();
@@ -832,74 +832,103 @@ async function cargarTablaAdminProductos() {
         }
 
         adminProductosData.forEach(prod => {
-            const imagenUrl = `${CLOUD_BASE_IMG}/${prod.imagen_url}`;
-            
+            const imagenUrl = prod.imagen_url ? `${CLOUD_BASE}productos/${prod.imagen_url}` : `${CLOUD_BASE}productos/default.webp`;
             const prodDataString = encodeURIComponent(JSON.stringify(prod));
 
             tbody.innerHTML += `
-                <tr class="hover:bg-[#151515] transition border-b border-gray-800">
-                    <td class="p-4 text-gray-500">#${prod.idProducto}</td>
+                <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                    <td class="p-4 text-gray-500 font-medium">#${prod.idProducto}</td>
                     <td class="p-4">
-                        <div class="w-12 h-12 bg-black rounded flex items-center justify-center p-1 border border-gray-800">
+                        <div class="w-12 h-12 bg-white rounded flex items-center justify-center p-1 border border-gray-200 shadow-sm">
                             <img src="${imagenUrl}" alt="Img" class="max-w-full max-h-full object-contain">
                         </div>
                     </td>
-                    <td class="p-4 font-semibold">${prod.nombre}</td>
-                    <td class="p-4"><span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300">${prod.categoria}</span></td>
-                    <td class="p-4 text-[#7ed957] font-bold">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                    <td class="p-4">${prod.stock}</td>
+                    <td class="p-4 font-semibold text-gray-900">${prod.nombre}</td>
+                    <td class="p-4"><span class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-medium border border-gray-200">${prod.categoria}</span></td>
+                    <td class="p-4 text-[#6bc148] font-bold">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                    <td class="p-4 text-gray-700">${prod.stock}</td>
                     <td class="p-4 text-center space-x-3">
-                        <button onclick="abrirModalProducto('${prodDataString}')" class="text-blue-400 hover:text-blue-300 transition" title="Editar">✏️ Editar</button>
-                        <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-400 transition" title="Eliminar">🗑️</button>
+                        <button onclick="abrirModalProducto('${prodDataString}')" class="text-blue-500 hover:text-blue-700 font-medium transition" title="Editar">✏️ Editar</button>
+                        <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-700 font-medium transition" title="Eliminar">🗑️</button>
                     </td>
                 </tr>
             `;
         });
     } catch (error) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Error al cargar la tabla.</td></tr>`;
+
+        console.error("Error detallado al cargar la tabla:", error); 
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Error al cargar la tabla. Revisa la consola.</td></tr>`;
     }
 }
 
 // Control del Modal
-function abrirModalProducto(prodDataString = null) {
-    const modal = document.getElementById('modal-producto');
-    const form = document.getElementById('formulario-producto');
-    const titulo = document.getElementById('modal-titulo');
+async function gestionarSubmitProducto(evento) {
+    evento.preventDefault();
     
+    const btnGuardar = evento.target.querySelector('button[type="submit"]');
+    const textoOriginalBtn = btnGuardar.innerText;
+    
+    const id = document.getElementById('admin-id').value;
     const inputFile = document.getElementById('admin-imagen-file');
-    const contenedorImgActual = document.getElementById('contenedor-imagen-actual');
-    const nombreImgActual = document.getElementById('nombre-imagen-actual');
+    
+    let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
 
-    form.reset(); 
-    inputFile.value = ''; // Limpiamos el archivo seleccionado
+    btnGuardar.disabled = true;
+    btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
 
-    if (prodDataString) {
-        titulo.innerText = "Editar Producto";
-        const prod = JSON.parse(decodeURIComponent(prodDataString));
-        
-        document.getElementById('admin-id').value = prod.idProducto;
-        document.getElementById('admin-nombre').value = prod.nombre;
-        document.getElementById('admin-categoria').value = prod.categoria;
-        document.getElementById('admin-precio').value = prod.precio;
-        document.getElementById('admin-stock').value = prod.stock;
-        document.getElementById('admin-descripcion').value = prod.descripcion || '';
-        
-        // Mostrar la imagen actual
-        if (prod.imagen_url) {
-            contenedorImgActual.classList.remove('hidden');
-            nombreImgActual.innerText = prod.imagen_url;
-        } else {
-            contenedorImgActual.classList.add('hidden');
-            nombreImgActual.innerText = '';
+    try {
+        if (inputFile.files.length > 0) {
+            btnGuardar.innerText = "Subiendo foto...";
+            
+            const formData = new FormData();
+            formData.append('file', inputFile.files[0]);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+           
+            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_BASE}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!resCloudinary.ok) throw new Error("Fallo al subir a Cloudinary.");
+            
+            const dataCloudinary = await resCloudinary.json();
+            const urlCompleta = dataCloudinary.secure_url;
+            nombreImagenFinal = urlCompleta.split('/').pop(); 
         }
-    } else {
-        titulo.innerText = "Añadir Nuevo Producto";
-        document.getElementById('admin-id').value = '';
-        contenedorImgActual.classList.add('hidden');
-        nombreImgActual.innerText = '';
-    }
 
-    modal.classList.remove('hidden');
+        btnGuardar.innerText = "Guardando...";
+        
+        const payload = {
+            nombre: document.getElementById('admin-nombre').value,
+            categoria: document.getElementById('admin-categoria').value,
+            precio: parseFloat(document.getElementById('admin-precio').value),
+            stock: parseInt(document.getElementById('admin-stock').value),
+            descripcion: document.getElementById('admin-descripcion').value,
+            imagen_url: nombreImagenFinal 
+        };
+
+        const metodo = id ? 'PUT' : 'POST';
+        const url = id ? `${baseUrl}/productos/${id}` : `${baseUrl}/productos`; // Usamos baseUrl
+
+        const respuesta = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!respuesta.ok) throw new Error("Error al guardar en la base de datos");
+
+        cerrarModalProducto();
+        cargarTablaAdminProductos(); 
+        
+    } catch (error) {
+        alert("Ocurrió un error: " + error.message);
+    } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
+        btnGuardar.innerText = textoOriginalBtn;
+    }
 }
 
 function cerrarModalProducto() {
