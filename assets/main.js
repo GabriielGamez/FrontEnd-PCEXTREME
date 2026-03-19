@@ -348,7 +348,7 @@ async function cargarMarcas() {
             return; 
         }
         const marcas = await respuesta.json();
-        const marcasDuplicadas = [...marcas, ...marcas];
+        const marcasDuplicadas = [...marcas, ...marcas, ...marcas, ...marcas];
 
         contenedor.innerHTML = ''; 
         contenedor.className = "animacion-carrusel items-center gap-16 py-4";
