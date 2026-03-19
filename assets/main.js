@@ -355,7 +355,7 @@ async function cargarMarcas() {
 
         marcasDuplicadas.forEach(marca => {
             contenedor.innerHTML += `
-                <img src="${CLOUD_BASE_IMG}${marca.logo}" alt="${marca.nombre}" 
+                <img src="${CLOUD_BASE_IMG}/${marca.logo}" alt="${marca.nombre}" 
                      class="h-8 md:h-12 w-auto object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300 cursor-pointer">
             `;
         });
