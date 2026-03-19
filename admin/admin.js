@@ -916,59 +916,73 @@ function cerrarModalProducto() {
 // Guardar (Crear o Editar)
 async function gestionarSubmitProducto(evento) {
     evento.preventDefault();
+    
+    const btnGuardar = evento.target.querySelector('button[type="submit"]');
+    const textoOriginalBtn = btnGuardar.innerText;
+    
     const id = document.getElementById('admin-id').value;
-    const btnGuardar = document.getElementById('btn-guardar-producto');
     const inputFile = document.getElementById('admin-imagen-file');
     
     let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
 
     btnGuardar.disabled = true;
+    btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
 
     try {
-        // IMAGEN  A CLOUDINARY ---
         if (inputFile.files.length > 0) {
-            btnGuardar.innerText = "Subiendo imagen a la nube...";
+            btnGuardar.innerText = "Subiendo foto...";
             
             const formData = new FormData();
             formData.append('file', inputFile.files[0]);
             formData.append('upload_preset', UPLOAD_PRESET);
 
-            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_BASE}/image/upload`, {
                 method: 'POST',
                 body: formData
             });
 
-            if (!resCloudinary.ok) throw new Error("Fallo al subir la imagen a Cloudinary.");
+            if (!resCloudinary.ok) throw new Error("Fallo al subir a Cloudinary.");
             
             const dataCloudinary = await resCloudinary.json();
-            
-            // guardar solo el "nombre.extensión"
             const urlCompleta = dataCloudinary.secure_url;
             nombreImagenFinal = urlCompleta.split('/').pop(); 
         }
 
-        // ARMAMOS EL PAQUETE PARA LA API  
-        btnGuardar.innerText = "Guardando datos...";
+        btnGuardar.innerText = "Guardando...";
+        
+        // 1. Agregamos idProducto al JSON por si Java lo exige para actualizar
         const payload = {
             nombre: document.getElementById('admin-nombre').value,
             categoria: document.getElementById('admin-categoria').value,
             precio: parseFloat(document.getElementById('admin-precio').value),
             stock: parseInt(document.getElementById('admin-stock').value),
             descripcion: document.getElementById('admin-descripcion').value,
-            imagen_url: nombreImagenFinal // <--- ¡Aquí va el nombre limpio para la base de datos!
+            imagen_url: nombreImagenFinal 
         };
 
-        const metodo = id ? 'PUT' : 'POST';
-        const url = id ? `${API_BASE_URL}/productos/${id}` : `${API_BASE_URL}/productos`;
+        if (id) {
+            payload.idProducto = parseInt(id); 
+        }
 
-        // MANDAMOS LA PETICIÓN AL BACKEND DE JAVA 
+        const metodo = id ? 'PUT' : 'POST';
+        const url = id ? `${baseUrl}/productos/${id}` : `${baseUrl}/productos`;
+
+        const token = localStorage.getItem('token');
+        const headersAEnviar = { 'Content-Type': 'application/json' };
+        if (token) {
+            headersAEnviar['Authorization'] = `Bearer ${token}`;
+        }
+
         const respuesta = await fetch(url, {
             method: metodo,
-            headers: { 'Content-Type': 'application/json' },
+            headers: headersAEnviar,
             body: JSON.stringify(payload)
         });
 
-        if (!respuesta.ok) throw new Error("Error al guardar en la base de datos");
+        if (!respuesta.ok) {
+            const errorData = await respuesta.json().catch(() => ({})); 
+            throw new Error(errorData.message || errorData.error || `El servidor Java respondió con un error ${respuesta.status}`);
+        }
 
         cerrarModalProducto();
         cargarTablaAdminProductos(); 
@@ -977,7 +991,8 @@ async function gestionarSubmitProducto(evento) {
         alert("Ocurrió un error: " + error.message);
     } finally {
         btnGuardar.disabled = false;
-        btnGuardar.innerText = "Guardar";
+        btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
+        btnGuardar.innerText = textoOriginalBtn;
     }
 }
 
