@@ -832,7 +832,7 @@ async function cargarTablaAdminProductos() {
         }
 
         adminProductosData.forEach(prod => {
-            const imagenUrl = prod.imagen_url ? `${CLOUD_BASE}productos/${prod.imagen_url}` : `${CLOUD_BASE}productos/default.webp`;
+            const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
             const prodDataString = encodeURIComponent(JSON.stringify(prod));
 
             tbody.innerHTML += `
