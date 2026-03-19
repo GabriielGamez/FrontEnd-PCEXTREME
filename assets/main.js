@@ -333,7 +333,7 @@ async function cargarServicios() {
     }
 }
 
-/*/ ==========================================
+// ==========================================
 // SECCIÓN: MARCAS (CARRUSEL INFINITO)
 // ==========================================
 async function cargarMarcas() {
@@ -355,7 +355,7 @@ async function cargarMarcas() {
 
         marcasDuplicadas.forEach(marca => {
             contenedor.innerHTML += `
-                <img src="${RUTA_MARCAS}${marca.logo}" alt="${marca.nombre}" 
+                <img src="${CLOUD_BASE_IMG}${marca.logo}" alt="${marca.nombre}" 
                      class="h-8 md:h-12 w-auto object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300 cursor-pointer">
             `;
         });
@@ -364,7 +364,6 @@ async function cargarMarcas() {
         console.error("Error al cargar el carrusel de marcas:", error);
     }
 }
-*/
 
 // ==========================================
 // SECCIÓN: CONSULTA DE EQUIPOS (RASTREO)
@@ -791,6 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Funciones específicas del Index
     if(document.getElementById('portada-contenido')) cargarPortada();
     if(document.getElementById('lista-servicios')) cargarServicios();
+    if(document.getElementById('carrusel-marcas')) cargarMarcas();
     if(document.getElementById('graficaCrecimiento')) iniciarModuloCrecimiento();
      
     // Funciones específicas de Consulta de Equipo
