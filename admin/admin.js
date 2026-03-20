@@ -272,7 +272,7 @@ async function gestionarSubmitReparacion(evento) {
         const headersAEnviar = { 'Content-Type': 'application/json' };
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/reparaciones/${id}/estado`, {
+        const respuesta = await fetch(`${baseUrl}/registros/${id}/estado`, {
             method: 'PUT',
             headers: headersAEnviar,
             body: JSON.stringify(payload)
