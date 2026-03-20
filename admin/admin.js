@@ -1368,7 +1368,6 @@ window.guardarEmpleado = async function(evento) {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     cargarComponentesAdmin();
-    iniciarModuloReparaciones();
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
