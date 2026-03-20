@@ -18,31 +18,51 @@ async function cargarComponentesAdmin() {
             if (resH.ok) {
                 headerEl.innerHTML = await resH.text();
 
-                // --- NUEVA LÓGICA DE SESIÓN ADMIN ---
+                // --- LÓGICA DE SESIÓN ADMIN BLINDADA Y CON ROL ---
                 
-                // 1. Recuperar datos del trabajador logueado
                 const usuarioStr = localStorage.getItem('usuario');
-                if (usuarioStr) {
-                    const usuario = JSON.parse(usuarioStr);
-                    
-                    // Verificamos por seguridad que sea un trabajador (opcional pero recomendado)
-                    if (usuario.tipo !== 'trabajador') {
-                        window.location.href = '/FrontEnd-PCEXTREME/index.html';
-                        return;
-                    }
+                
+                // 1. Verificamos si NO hay sesión activa
+                if (!usuarioStr) {
+                    // Lo sacamos al index público (subiendo un nivel de carpeta con ../)
+                    window.location.replace('../index.html');
+                    return; // Detiene la ejecución de JavaScript aquí mismo
+                }
 
-                    // Colocamos su nombre en el Header
-                    const nombreAdminEl = document.getElementById('admin-nombre-usuario');
-                    if (nombreAdminEl) {
-                        nombreAdminEl.innerText = usuario.nombre;
-                    }
-                } else {
-                    // Si no hay sesión, lo expulsamos al login
-                    window.location.href = '/FrontEnd-PCEXTREME/index.html';
+                // 2. Si hay sesión, verificamos que sea administrador/trabajador
+                const usuario = JSON.parse(usuarioStr);
+                if (usuario.tipo !== 'trabajador') {
+                    window.location.replace('../index.html');
                     return;
                 }
 
-                // 2. Configurar el botón de Cerrar Sesión
+                // 3. Colocamos su nombre Y SU ROL en el Header
+                const nombreAdminEl = document.getElementById('admin-nombre-usuario');
+                const rolAdminEl = document.getElementById('admin-nombre-rol');
+
+                if (nombreAdminEl) {
+                    nombreAdminEl.innerText = usuario.nombre;
+                }
+
+                if (rolAdminEl) {
+                    // Intentamos obtener el nombre del rol directo del usuario
+                    let textoRol = usuario.rol || usuario.nombreRol;
+
+                    // Si el backend solo nos dio el número (idRol), lo traducimos a texto
+                    if (!textoRol && usuario.idRol) {
+                        const diccionarioRoles = {
+                            1: "Administrador",
+                            2: "Recepcionista",
+                            3: "Técnico"
+                        };
+                        textoRol = diccionarioRoles[usuario.idRol];
+                    }
+
+                    // Lo inyectamos en el HTML (si por alguna razón no hay rol, ponemos "Empleado")
+                    rolAdminEl.innerText = textoRol || "Empleado";
+                }
+
+                // 4. Configurar el botón de Cerrar Sesión
                 const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
                 if (btnCerrarSesion) {
                     btnCerrarSesion.addEventListener('click', () => {
@@ -50,8 +70,8 @@ async function cargarComponentesAdmin() {
                         localStorage.removeItem('token');
                         localStorage.removeItem('usuario');
                         
-                        // Redirigimos al inicio de sesión
-                        window.location.href = '/FrontEnd-PCEXTREME/index.html'; 
+                        // Redirigimos sin dejar rastro en el historial para romper bucles
+                        window.location.replace('../index.html'); 
                     });
                 }
             }
