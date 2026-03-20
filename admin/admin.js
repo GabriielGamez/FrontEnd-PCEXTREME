@@ -260,6 +260,9 @@ async function mostrarPaginaReparaciones() {
             }
         }
 
+        reg.nombreClienteMapeado = nombreCompleto;
+        reg.nombreEquipoMapeado = nombreEquipo;
+
         // --- CLASES DE ESTADO ---
        let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200'; // Valor por defecto
         
@@ -339,9 +342,7 @@ async function cambiarPaginaReparaciones(direccion) {
     }
 }
 
-/**
- * 4. Gestión de Modal
- */
+/* 4. Gestión de Modal */
 function abrirModalReparacion(idRegistroBuscado) {
     const modal = document.getElementById('modal-reparacion');
     
@@ -349,10 +350,9 @@ function abrirModalReparacion(idRegistroBuscado) {
     const reg = adminReparacionesData.find(r => (r.idRegistro || r.id || r.folio) === idRegistroBuscado);
     if (!reg) return alert("No se encontró la información del registro en memoria.");
 
-    // Extraemos la info desde la misma fila HTML que ya procesamos (para no volver a hacer fetch)
-    const filaHtml = document.querySelector(`button[onclick="abrirModalReparacion(${idRegistroBuscado})"]`).closest('tr');
-    const nombreClienteRenderizado = filaHtml.cells[1].innerText;
-    const nombreEquipoRenderizado = filaHtml.cells[2].innerText;
+    // Extraemos los nombres que guardamos durante la descarga
+    const nombreClienteRenderizado = reg.nombreClienteMapeado || "Desconocido";
+    const nombreEquipoRenderizado = reg.nombreEquipoMapeado || "Equipo sin definir";
 
     // Inyección visual
     document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
@@ -361,7 +361,7 @@ function abrirModalReparacion(idRegistroBuscado) {
     
     // Inyección de formulario
     document.getElementById('admin-reparacion-id').value = idRegistroBuscado;
-    document.getElementById('admin-estado-reparacion').value = reg.estado || 'Recibido'; 
+    document.getElementById('admin-estado-reparacion').value = reg.estado || 'En Diagnóstico'; 
 
     modal.classList.remove('hidden');
 }
