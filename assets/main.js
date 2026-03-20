@@ -158,21 +158,24 @@ function inicializarEventosLogin() {
             btnSubmit.innerText = "⏳ Creando cuenta...";
             btnSubmit.disabled = true;
 
-            // 3. Juntamos los campos de la dirección en un solo texto
-            const calle = document.getElementById('reg-calle').value.trim();
-            const colonia = document.getElementById('reg-colonia').value.trim();
-            const ciudad = document.getElementById('reg-ciudad').value.trim();
+            // 3. Obtenemos los campos de la dirección individualmente
+            const CPostal = document.getElementById('reg-cp').value.trim();
             const estado = document.getElementById('reg-estado').value.trim();
-            const cp = document.getElementById('reg-cp').value.trim();
-            const direccionCompleta = `${calle}, Col. ${colonia}, ${ciudad}, ${estado}. C.P. ${cp}`;
+            const municipio = document.getElementById('reg-ciudad').value.trim(); // Nota: el ID en HTML es reg-ciudad
+            const asentamiento = document.getElementById('reg-asentamiento').value.trim();
+            const calle = document.getElementById('reg-calle').value.trim();
 
-            // 4. Preparamos los datos para la API
+            // 4. Preparamos los datos para la API (Respetando los nombres exactos del backend)
             const datosCliente = {
                 nombre: document.getElementById('reg-nombre').value.trim(),
                 aPaterno: document.getElementById('reg-ap-paterno').value.trim(),
                 aMaterno: document.getElementById('reg-ap-materno').value.trim(),
                 telefono: document.getElementById('reg-telefono').value.trim(),
-                direccion: direccionCompleta,
+                CPostal: CPostal,
+                estado: estado,
+                municipio: municipio,
+                asentamiento: asentamiento,
+                calle: calle,
                 email: document.getElementById('reg-email').value.trim(),
                 password: password
             };
@@ -853,6 +856,55 @@ function mostrarNotificacion(mensaje, tipo = 'error') {
         toast.classList.add('opacity-0', 'translate-y-10');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+// ==========================================
+// FUNCIÓN PARA AUTOCOMPLETAR DIRECCIÓN (SEPOMEX) - CLIENTES
+// ==========================================
+function inicializarSepomexCliente() {
+    const inputCP = document.getElementById('reg-cp');
+    if (inputCP) {
+        inputCP.addEventListener('input', async (e) => {
+            const cp = e.target.value.trim();
+            
+            // Cuando escribe 5 dígitos
+            if (cp.length === 5) {
+                mostrarNotificacion("Buscando código postal...", "exito");
+                
+                try {
+                    const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);
+                    const datos = await respuesta.json();
+
+                    const lugares = datos.zip_codes;
+
+                    if (!lugares || lugares.length === 0) {
+                        throw new Error("Código postal no encontrado");
+                    }
+
+                    // Llenamos Estado y Ciudad (que están de solo lectura)
+                    document.getElementById('reg-estado').value = lugares[0].d_estado;
+                    document.getElementById('reg-ciudad').value = lugares[0].d_mnpio;
+
+                    // Cambiamos el Input de Asentamiento por un Select
+                    const contenedorAsentamiento = document.getElementById('contenedor-asentamiento');
+                    
+                    let selectHtml = `<select id="reg-asentamiento" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">`;
+                    selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
+                    
+                    lugares.forEach(lugar => {
+                        selectHtml += `<option value="${lugar.d_asenta}">${lugar.d_asenta}</option>`;
+                    });
+                    
+                    selectHtml += `</select>`;
+                    contenedorAsentamiento.innerHTML = selectHtml;
+
+                } catch (error) {
+                    console.error("Error API SEPOMEX:", error);
+                    mostrarNotificacion("C.P. no válido o no encontrado", "error");
+                }
+            }
+        });
+    }
 }
 // ==========================================
 // MANEJO DE SESIÓN Y HEADER
