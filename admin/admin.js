@@ -753,18 +753,66 @@ function mostrarListaPersonal() {
 // ==========================================
 // FUNCIONES DEL MODAL DE PERSONAL
 // ==========================================
-window.abrirModalPersonal = function(id = null) {
+window.abrirModalPersonal = async function(id = null) {
     const modal = document.getElementById("modal-personal");
     const form = document.getElementById("formulario-personal");
     if (!modal) return;
     
-    if (form) form.reset(); // Limpia el formulario cada vez que se abre
+    if (form) form.reset(); // Limpia el formulario
+    
+    // Restablecemos el contenedor de la colonia al estado original (bloqueado) por si venimos de otra edición
+    document.getElementById('contenedor-colonia').innerHTML = `<input type="text" id="emp-colonia" required placeholder="Escribe el C.P. primero" readonly class="w-full bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded focus:outline-none cursor-not-allowed">`;
 
     if (id) {
-        console.log("Modo Edición para el ID:", id);
-        // Aquí conectaremos los inputs cuando les pongamos ID en tu HTML
+        // BUSCAMOS AL EMPLEADO EN LA LISTA GLOBAL
+        const emp = personalGlobal.find(e => (e.idTrabajador || e.id || e.idEmpleado) == id);
+        
+        if (emp) {
+            document.getElementById('emp-id').value = id;
+            document.getElementById('emp-nombre').value = emp.nombre;
+            document.getElementById('emp-ap-paterno').value = emp.aPaterno;
+            document.getElementById('emp-ap-materno').value = emp.aMaterno || '';
+            document.getElementById('emp-rol').value = emp.idRol;
+            document.getElementById('emp-telefono').value = emp.telefono || '';
+            document.getElementById('emp-calle').value = emp.calle || emp.direccion || ''; // Soporta calle o direccion
+            
+            // Partimos el correo por el arroba para poner solo el usuario
+            if (emp.email) {
+                const partesCorreo = emp.email.split('@');
+                document.getElementById('emp-email-user').value = partesCorreo[0];
+            }
+
+            // Datos de SEPOMEX
+            document.getElementById('emp-cp').value = emp.CPostal || '';
+            document.getElementById('emp-estado').value = emp.estado || '';
+            document.getElementById('emp-municipio').value = emp.municipio || '';
+
+            // Si tiene un Código Postal guardado, cargamos sus colonias automáticamente
+            if (emp.CPostal && String(emp.CPostal).length === 5) {
+                try {
+                    const res = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${emp.CPostal}`);
+                    const datos = await res.json();
+                    
+                    if (datos.zip_codes && datos.zip_codes.length > 0) {
+                        let selectHtml = `<select id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
+                        
+                        datos.zip_codes.forEach(lugar => {
+                            // Si el asentamiento coincide con el del empleado, lo dejamos seleccionado (selected)
+                            const seleccionado = (lugar.d_asenta === emp.colonia) ? 'selected' : '';
+                            selectHtml += `<option value="${lugar.d_asenta}" ${seleccionado}>${lugar.d_asenta}</option>`;
+                        });
+                        
+                        selectHtml += `</select>`;
+                        document.getElementById('contenedor-colonia').innerHTML = selectHtml;
+                    }
+                } catch (e) {
+                    console.error("No se pudieron cargar las colonias al editar");
+                }
+            }
+        }
     } else {
-        console.log("Modo Nuevo Empleado");
+        // Si no hay ID, es un empleado nuevo
+        document.getElementById('emp-id').value = '';
     }
 
     modal.classList.remove("hidden");
@@ -775,10 +823,29 @@ window.cerrarModalPersonal = function() {
     if (modal) modal.classList.add("hidden");
 };
 
-window.confirmarEliminacionPersonal = function(id) {
-    if(confirm("¿Estás seguro de que deseas eliminar a este empleado del sistema?")) {
-        alert("Simulación: Empleado con ID " + id + " eliminado.");
-        // Aquí agregaremos el fetch con method: 'DELETE'
+window.confirmarEliminacionPersonal = async function(id) {
+    // Mostramos la advertencia de confirmación
+    if (confirm("⚠️ ¿Estás seguro de que deseas ELIMINAR a este empleado del sistema?\n\nEsta acción no se puede deshacer y el empleado perderá su acceso.")) {
+        
+        const token = localStorage.getItem('token'); // Sacamos la llave
+        
+        try {
+            // Hacemos la petición DELETE a la API
+            const respuesta = await fetch(`${baseUrl}/trabajadores/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!respuesta.ok) throw new Error("Error al eliminar el empleado");
+
+            mostrarNotificacionAdmin("Empleado eliminado correctamente", "exito");
+            
+            // Recargamos la tabla para que desaparezca
+            iniciarModuloPersonal(); 
+            
+        } catch (error) {
+            mostrarNotificacionAdmin(error.message, "error");
+        }
     }
 };
 // ==========================================
@@ -1129,13 +1196,25 @@ window.guardarEmpleado = async function(evento) {
     }
 
     // 3. Extraemos el Token de seguridad
+    // (Asegúrate de reemplazar desde "const token..." hacia abajo en tu función guardarEmpleado actual)
+    
+    // 3. Extraemos el Token de seguridad
     const token = localStorage.getItem('token');
 
     try {
         let url = `${baseUrl}/trabajadores`;
         let method = 'POST'; 
 
+        // Si existe un idEmp, significa que estamos EDITANDO
         if (idEmp) {
+            // MOSTRAMOS LA ADVERTENCIA DE CONFIRMACIÓN
+            if (!confirm("✏️ ¿Estás seguro de que deseas modificar los datos de este empleado?")) {
+                // Si el usuario cancela, restauramos el botón y detenemos todo
+                btnSubmit.innerHTML = textoOriginal;
+                btnSubmit.disabled = false;
+                return; 
+            }
+            
             url = `${baseUrl}/trabajadores/${idEmp}`;
             method = 'PUT';
         }
