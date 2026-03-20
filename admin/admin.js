@@ -1027,13 +1027,17 @@ function inicializarSepomex() {
                     const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);
                     const datos = await respuesta.json();
 
-                    if (datos.error) {
+                    // 1. Extraemos el arreglo real que viene dentro de la respuesta de la API
+                    const lugares = datos.zip_codes;
+
+                    // 2. Verificamos si no se encontraron resultados o si la API dio error
+                    if (!lugares || lugares.length === 0) {
                         throw new Error("Código postal no encontrado");
                     }
 
-                    // Llenamos el Estado y el Municipio automáticamente
-                    document.getElementById('emp-estado').value = datos.d_estado;
-                    document.getElementById('emp-municipio').value = datos.d_mnpio;
+                    // 3. Llenamos el Estado y el Municipio usando el primer elemento del arreglo [0]
+                    document.getElementById('emp-estado').value = lugares[0].d_estado;
+                    document.getElementById('emp-municipio').value = lugares[0].d_mnpio;
 
                     // Cambiamos el Input de Colonia por un Select con los Asentamientos
                     const contenedorColonia = document.getElementById('contenedor-colonia');
@@ -1041,7 +1045,8 @@ function inicializarSepomex() {
                     let selectHtml = `<select id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
                     selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
                     
-                    datos.forEach(lugar => {
+                    // 4. Ahora SÍ hacemos el forEach sobre el arreglo "lugares"
+                    lugares.forEach(lugar => {
                         selectHtml += `<option value="${lugar.d_asenta}">${lugar.d_asenta}</option>`;
                     });
                     
