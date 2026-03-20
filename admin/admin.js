@@ -99,133 +99,204 @@ window.abrirPestana = function (evento, nombrePestana) {
 };
 
 // ==========================================
-// 3. MÓDULO: GESTIÓN DE REPARACIONES
+// SECCIÓN: GESTIÓN DE REPARACIONES (CON PAGINACIÓN)
 // ==========================================
-let repGlobales = [];
-let repFiltradas = [];
-let repPaginaActual = 1;
-const repPorPagina = 20;
+let adminReparacionesData = [];
+let paginaActualReparaciones = 1;
+const itemsPorPaginaReparaciones = 20;
 
-async function iniciarModuloReparaciones() {
-    const contenedor = document.getElementById("lista-reparaciones");
-    if (!contenedor) return;
+/* 1. Descarga principal de datos desde la API*/
+async function cargarTablaAdminReparaciones() {
+    const tbody = document.getElementById('lista-reparaciones');
+    if (!tbody) return;
 
     try {
-        contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando reparaciones...</td></tr>`;
-        const respuesta = await fetch(`${baseUrl}/registros`);
-        if (!respuesta.ok) throw new Error("Error en la API");
-
-        repGlobales = await respuesta.json();
-        repFiltradas = [...repGlobales];
-        repPaginaActual = 1;
+        const respuesta = await fetch(`${baseUrl}/reparaciones`);
+        if (!respuesta.ok) throw new Error("Error al obtener las reparaciones");
+        
+        adminReparacionesData = await respuesta.json();
+        
+        // Renderizamos la primera página de la tabla y los controles
         mostrarPaginaReparaciones();
+        renderizarControlesPaginacionReparaciones();
 
-        const buscador = document.getElementById("buscador-reparaciones");
-        if (buscador) {
-            buscador.addEventListener("input", (e) => {
-                const texto = e.target.value.toLowerCase().trim();
-                repFiltradas = repGlobales.filter((rep) =>
-                    String(rep.idFolio).toLowerCase().includes(texto) ||
-                    String(rep.idDispositivo).toLowerCase().includes(texto)
-                );
-                repPaginaActual = 1;
-                mostrarPaginaReparaciones();
-            });
-        }
     } catch (error) {
-        contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-500">Error al conectar con la base de datos.</td></tr>`;
+        console.error("Error al cargar reparaciones:", error);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-semibold">Error al cargar la tabla. Revisa la consola.</td></tr>`;
     }
 }
 
-function mostrarPaginaReparaciones() {
-    const contenedor = document.getElementById("lista-reparaciones");
-    if (!contenedor) return;
+ /* Dibujar únicamente las reparaciones correspondientes a la página activa */
 
-    if (repFiltradas.length === 0) {
-        contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No se encontraron reparaciones.</td></tr>`;
-        actualizarPaginacionReparaciones();
+function mostrarPaginaReparaciones() {
+    const tbody = document.getElementById('lista-reparaciones');
+    tbody.innerHTML = '';
+
+    if(adminReparacionesData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay reparaciones en el sistema.</td></tr>`;
         return;
     }
 
-    const inicio = (repPaginaActual - 1) * repPorPagina;
-    const repPagina = repFiltradas.slice(inicio, inicio + repPorPagina);
-    let html = "";
+    // Cálculos de segmentación del arreglo (Paginación)
+    const inicio = (paginaActualReparaciones - 1) * itemsPorPaginaReparaciones;
+    const fin = inicio + itemsPorPaginaReparaciones;
+    const reparacionesPagina = adminReparacionesData.slice(inicio, fin);
 
-    repPagina.forEach((rep) => {
-        // ACTUALIZADO: Colores oscuros para las filas, inputs y textarea
-        html += `
-            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
-                <td class="px-4 py-4 align-top">
-                    <span class="bg-gray-800 text-gray-300 font-black px-2 py-1 rounded text-sm">#${rep.idFolio}</span>
+    reparacionesPagina.forEach(rep => {
+        // Clases de Tailwind dinámicas para el Modo Claro
+        let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200';
+        if (rep.estado === 'Reparado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
+        if (rep.estado === 'En revisión') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        if (rep.estado === 'Entregado') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
+        if (rep.estado === 'Esperando piezas') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
+
+        tbody.innerHTML += `
+            <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                <td class="p-4 text-gray-500 font-medium">#${rep.folio || rep.id}</td>
+                <td class="p-4 font-semibold text-gray-900">${rep.cliente_nombre || 'Cliente no registrado'}</td>
+                <td class="p-4 text-gray-600">${rep.equipo}</td>
+                <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${rep.falla}">${rep.falla}</td>
+                <td class="p-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">
+                        ${rep.estado}
+                    </span>
                 </td>
-                <td class="px-4 py-4 align-top">
-                    <strong class="text-gray-200 block">Disp. ID: ${rep.idDispositivo}</strong>
-                </td>
-                <td class="px-4 py-4 align-top text-gray-400">${rep.detalles}</td>
-                <td class="px-4 py-4 align-top">
-                    <form class="flex items-end gap-2" onsubmit="actualizarReparacion(event, ${rep.idFolio})">
-                        <div class="flex flex-col gap-2 w-full">
-                            <select class="w-full border border-gray-700 rounded px-3 py-1.5 text-sm bg-[#0f1115] text-gray-200 focus:outline-none focus:border-[#7ed957]">
-                                <option value="${rep.estadoEquipo}" selected hidden>${rep.estadoEquipo}</option>
-                                <option value="En Diagnóstico">🔵 En Diagnóstico</option>
-                                <option value="En Reparación">🟠 En Reparación</option>
-                                <option value="Listo para entregar">🟢 Listo para entregar</option>
-                                <option value="Entregado">⚫ Entregado</option>
-                            </select>
-                            <textarea rows="1" class="w-full border border-gray-700 rounded px-3 py-1.5 text-sm bg-[#0f1115] text-gray-200 resize-none focus:outline-none focus:border-[#7ed957]" placeholder="Diagnóstico...">${rep.diagnostico || ""}</textarea>
-                            <div class="flex items-center gap-2">
-                                <span class="text-gray-500 font-bold">$</span>
-                                <input type="number" value="${rep.costo || 0}" class="w-full border border-gray-700 rounded px-3 py-1.5 text-sm bg-[#0f1115] text-gray-200 no-spinners focus:outline-none focus:border-[#7ed957]">
-                            </div>
-                        </div>
-                        <button type="submit" class="text-2xl hover:scale-110 transition pb-1" title="Guardar">💾</button>
-                    </form>
-                </td>
-                <td class="px-4 py-4 align-top text-center">
-                    <button onclick="verTicket(${rep.idFolio})" type="button" class="text-gray-400 hover:text-[#7ed957] transition p-2 border border-gray-700 rounded-md hover:bg-gray-800">📄</button>
+                <td class="p-4 text-center">
+                    <button onclick="abrirModalReparacion(${rep.folio || rep.id})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm">
+                        <span>✏️</span> Actualizar
+                    </button>
                 </td>
             </tr>
         `;
     });
-    contenedor.innerHTML = html;
-    actualizarPaginacionReparaciones();
 }
 
-function actualizarPaginacionReparaciones() {
-    let controles = document.getElementById("paginacion-reparaciones");
-    if (!controles) {
-        const tabla = document.querySelector("#lista-reparaciones").closest("table").parentNode;
-        controles = document.createElement("div");
-        controles.id = "paginacion-reparaciones";
-        // ACTUALIZADO: Fondo oscuro para la barra de paginación
-        controles.className = "flex items-center justify-between px-4 py-3 bg-gray-900 border-t border-gray-800 sm:px-6 rounded-b-lg mt-2";
-        tabla.appendChild(controles);
-    }
+/**
+ * 3. Renderiza la lógica visual y validaciones de los botones Anterior / Siguiente
+ */
+function renderizarControlesPaginacionReparaciones() {
+    const contenedor = document.getElementById('controles-paginacion-reparaciones');
+    if(!contenedor) return;
 
-    const total = Math.ceil(repFiltradas.length / repPorPagina);
-    if (total <= 1) {
-        controles.innerHTML = "";
-        return;
-    }
+    const totalPaginas = Math.ceil(adminReparacionesData.length / itemsPorPaginaReparaciones);
+    contenedor.innerHTML = ''; 
 
-    // ACTUALIZADO: Botones oscuros para "Anterior" y "Siguiente"
-    controles.innerHTML = `
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-400">Mostrando ${(repPaginaActual - 1) * repPorPagina + 1} a ${Math.min(repPaginaActual * repPorPagina, repFiltradas.length)} de ${repFiltradas.length}</p>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaReparaciones('anterior')" ${repPaginaActual === 1 ? "disabled" : ""} class="px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${repPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">Anterior</button>
-                <span class="px-4 py-2 border border-gray-700 bg-[#0f1115] text-gray-200 text-sm">Página ${repPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaReparaciones('siguiente')" ${repPaginaActual === total ? "disabled" : ""} class="px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${repPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">Siguiente</button>
-            </nav>
-        </div>`;
+    if (totalPaginas <= 1) return; // Se omite la paginación si no supera el límite configurado
+
+    const btnAnteriorDisabled = paginaActualReparaciones === 1 ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white hover:bg-gray-100 hover:text-gray-900';
+    const btnSiguienteDisabled = paginaActualReparaciones === totalPaginas ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white hover:bg-gray-100 hover:text-gray-900';
+
+    contenedor.innerHTML = `
+        <button onclick="cambiarPaginaReparaciones(-1)" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg transition shadow-sm ${btnAnteriorDisabled}" ${paginaActualReparaciones === 1 ? 'disabled' : ''}>
+            ← Anterior
+        </button>
+        
+        <span class="text-sm font-semibold text-gray-500">
+            Página <span class="text-[#6bc148] font-bold">${paginaActualReparaciones}</span> de <span class="text-gray-900">${totalPaginas}</span>
+        </span>
+        
+        <button onclick="cambiarPaginaReparaciones(1)" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg transition shadow-sm ${btnSiguienteDisabled}" ${paginaActualReparaciones === totalPaginas ? 'disabled' : ''}>
+            Siguiente →
+        </button>
+    `;
 }
 
-window.cambiarPaginaReparaciones = function (dir) {
-    const total = Math.ceil(repFiltradas.length / repPorPagina);
-    if (dir === "siguiente" && repPaginaActual < total) repPaginaActual++;
-    else if (dir === "anterior" && repPaginaActual > 1) repPaginaActual--;
-    mostrarPaginaReparaciones();
-};
+/**
+ * 4. Actualiza el índice global y redibuja la tabla
+ */
+function cambiarPaginaReparaciones(direccion) {
+    const totalPaginas = Math.ceil(adminReparacionesData.length / itemsPorPaginaReparaciones);
+    const nuevaPagina = paginaActualReparaciones + direccion;
+
+    if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+        paginaActualReparaciones = nuevaPagina;
+        mostrarPaginaReparaciones();          
+        renderizarControlesPaginacionReparaciones();   
+    }
+}
+
+/**
+ * 5. Gestión de Modal: Búsqueda del registro en memoria para visualización
+ */
+function abrirModalReparacion(idReparacion) {
+    const modal = document.getElementById('modal-reparacion');
+    const form = document.getElementById('formulario-reparacion');
+    
+    // Evitamos enviar el objeto completo en el HTML; lo buscamos directamente
+    const rep = adminReparacionesData.find(r => (r.folio || r.id) === idReparacion);
+    if (!rep) return alert("No se encontró la información del equipo.");
+
+    // Inyección de información visual (solo lectura)
+    document.getElementById('modal-folio-display').innerText = idReparacion;
+    document.getElementById('info-cliente').innerText = rep.cliente_nombre || 'Desconocido';
+    document.getElementById('info-equipo').innerText = rep.equipo || 'Sin descripción';
+    
+    // Asignación de valores para la petición
+    document.getElementById('admin-reparacion-id').value = idReparacion;
+    document.getElementById('admin-estado-reparacion').value = rep.estado; 
+    
+    // Desmarcamos el flag por defecto para prevenir notificaciones erróneas
+    document.getElementById('admin-notificar-whatsapp').checked = false;
+
+    modal.classList.remove('hidden');
+}
+
+function cerrarModalReparacion() {
+    document.getElementById('modal-reparacion').classList.add('hidden');
+}
+
+/**
+ * 6. Construcción y Envío del Payload (PUT) hacia la API
+ */
+async function gestionarSubmitReparacion(evento) {
+    evento.preventDefault();
+    
+    const btnGuardar = evento.target.querySelector('button[type="submit"]');
+    const textoOriginalBtn = btnGuardar.innerText;
+    
+    const id = document.getElementById('admin-reparacion-id').value;
+    const nuevoEstado = document.getElementById('admin-estado-reparacion').value;
+    const quiereNotificar = document.getElementById('admin-notificar-whatsapp').checked;
+
+    btnGuardar.disabled = true;
+    btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
+    btnGuardar.innerText = "Actualizando...";
+
+    try {
+        const payload = {
+            estado: nuevoEstado,
+            notificar_whatsapp: quiereNotificar
+        };
+
+        const token = localStorage.getItem('token');
+        const headersAEnviar = { 'Content-Type': 'application/json' };
+        if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
+
+        const respuesta = await fetch(`${baseUrl}/reparaciones/${id}/estado`, {
+            method: 'PUT',
+            headers: headersAEnviar,
+            body: JSON.stringify(payload)
+        });
+
+        if (!respuesta.ok) {
+            const errorData = await respuesta.json().catch(() => ({})); 
+            throw new Error(errorData.message || `Error del servidor: código ${respuesta.status}`);
+        }
+
+        cerrarModalReparacion();
+        await cargarTablaAdminReparaciones(); // Refrescamos la fuente de datos
+        
+        const msjWhatsapp = quiereNotificar ? "\nSe ha emitido la notificación al cliente vía WhatsApp. 📱" : "";
+        alert(`Estado actualizado a "${nuevoEstado}" con éxito.${msjWhatsapp}`);
+        
+    } catch (error) {
+        alert("Ocurrió un error al intentar actualizar el registro: " + error.message);
+    } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
+        btnGuardar.innerText = textoOriginalBtn;
+    }
+}
 // ==========================================
 // 4. MÓDULO: GESTIÓN DE CLIENTES
 // ==========================================
@@ -1158,5 +1229,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if(document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
+    }
+    if(document.getElementById('lista-reparaciones')) {
+        cargarTablaAdminReparaciones();
+        document.getElementById('formulario-reparacion').addEventListener('submit', gestionarSubmitReparacion);
     }
 });

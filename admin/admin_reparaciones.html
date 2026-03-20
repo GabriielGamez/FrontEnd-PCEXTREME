@@ -6,71 +6,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Reparaciones — Admin PC EXTREME</title>
 
-    <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dswljrmnu/image/upload/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
-
-        /* Ocultar flechas numéricas igual que en consulta */
-        .no-spinners::-webkit-outer-spin-button,
-        .no-spinners::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .no-spinners {
-            -moz-appearance: textfield;
-        }
     </style>
 </head>
 
-<body class="bg-[#0f1115] text-gray-200 antialiased flex flex-col min-h-screen">
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
     <header id="encabezado-admin"></header>
 
-    <main class="flex-grow w-full max-w-[1400px] mx-auto px-6 py-8">
-
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h1 class="text-2xl font-bold text-white">Gestión de Reparaciones</h1>
-
-            <div class="relative w-full sm:w-72">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span class="text-gray-500">🔍</span>
-                </div>
-                <input type="text" id="buscador-reparaciones" placeholder="Buscar Folio o ID Equipo..."
-                    class="block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md leading-5 bg-[#1a1c20] text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#7ed957] focus:border-[#7ed957] sm:text-sm transition duration-150 ease-in-out">
-            </div>
+    <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <h1 class="text-3xl font-extrabold text-gray-900">Gestión de <span
+                    class="text-[#6bc148]">Reparaciones</span></h1>
         </div>
 
-        <div id="alerta-sistema"
-            class="hidden bg-green-900 border border-green-500 text-green-200 px-4 py-3 rounded mb-6 font-medium">
-        </div>
-
-        <div class="bg-[#1a1c20] rounded-lg shadow-xl border border-gray-800 overflow-hidden">
+        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-900 text-gray-400 font-semibold border-b border-gray-800 text-xs uppercase tracking-wider">
-                        <tr>
-                            <th class="px-4 py-4 w-24">Folio</th>
-                            <th class="px-4 py-4 w-48">Equipo</th>
-                            <th class="px-4 py-4">Falla Reportada</th>
-                            <th class="px-4 py-4 w-[350px]">Actualizar Estado / Inventario</th>
-                            <th class="px-4 py-4 w-24 text-center">Acciones</th>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                            <th class="p-4 font-semibold">Folio</th>
+                            <th class="p-4 font-semibold">Cliente</th>
+                            <th class="p-4 font-semibold">Equipo</th>
+                            <th class="p-4 font-semibold">Falla / Problema</th>
+                            <th class="p-4 font-semibold">Estado Actual</th>
+                            <th class="p-4 font-semibold text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-reparaciones" class="divide-y divide-gray-800">
-                        </tbody>
+                    <tbody id="tabla-reparaciones-admin" class="text-sm divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Cargando
+                                reparaciones...</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
-
     </main>
 
-    <footer id="admin-piePagina" class="mt-auto"></footer>
+    <div id="modal-reparacion"
+        class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+        <div
+            class="bg-white border border-gray-200 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-all">
+            <div class="p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-900 border-b border-gray-100 pb-4">Actualizar Reparación
+                    #<span id="modal-folio-display"></span></h2>
+
+                <form id="formulario-reparacion" class="space-y-5">
+                    <input type="hidden" id="admin-reparacion-id">
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm">
+                        <p><span class="font-bold text-gray-700">Cliente:</span> <span id="info-cliente"
+                                class="text-gray-600"></span></p>
+                        <p class="mt-1"><span class="font-bold text-gray-700">Equipo:</span> <span id="info-equipo"
+                                class="text-gray-600"></span></p>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Estado del Equipo</label>
+                        <select id="admin-estado-reparacion" required
+                            class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition cursor-pointer">
+                            <option value="Recibido">Recibido</option>
+                            <option value="En revisión">En revisión</option>
+                            <option value="Esperando piezas">Esperando piezas</option>
+                            <option value="Reparado">Reparado</option>
+                            <option value="Entregado">Entregado</option>
+                        </select>
+                    </div>
+
+                    <div
+                        class="mt-4 flex items-center bg-green-50 p-4 rounded-lg border border-green-200 hover:bg-green-100 transition cursor-pointer">
+                        <input type="checkbox" id="admin-notificar-whatsapp"
+                            class="w-5 h-5 text-[#6bc148] bg-white border-gray-300 rounded focus:ring-[#7ed957] cursor-pointer">
+                        <label for="admin-notificar-whatsapp"
+                            class="ml-3 text-sm font-semibold text-green-800 cursor-pointer w-full">
+                            Notificar actualización al cliente por WhatsApp
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
+                        <button type="button" onclick="cerrarModalReparacion()"
+                            class="px-6 py-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 font-medium transition">Cancelar</button>
+                        <button type="submit"
+                            class="bg-[#7ed957] hover:bg-[#6bc148] text-gray-900 font-bold px-6 py-2 rounded-lg transition shadow-sm">Actualizar
+                            Estado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer id="pie-admin"></footer>
 
     <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
 </body>
