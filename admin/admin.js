@@ -392,7 +392,21 @@ async function gestionarSubmitReparacion(evento) {
     btnGuardar.innerText = "Actualizando...";
 
     try {
-        const payload = { estado: nuevoEstado };
+        // 1. Buscamos el registro original completo en nuestra memoria
+        const reg = adminReparacionesData.find(r => String(r.idFolio) === String(id));
+        if (!reg) throw new Error("No se encontró el registro en memoria para armar la petición.");
+
+        // 2. Rescatamos las llaves foráneas exactas que tu API Java exige
+        const idClienteFk = reg.idCliente || (reg.cliente ? reg.cliente.idCliente : null);
+        const idDispositivoFk = reg.idDispositivo || (reg.dispositivo ? reg.dispositivo.idDispositivo : null);
+
+        // 3. Armamos el payload completo (usamos el spread operator ...reg para conservar fechas, detalles, etc.)
+        const payload = {
+            ...reg,
+            estadoEquipo: nuevoEstado,
+            idCliente: idClienteFk,
+            idDispositivo: idDispositivoFk
+        };
 
         const token = localStorage.getItem('token');
         const headersAEnviar = { 'Content-Type': 'application/json' };
@@ -406,7 +420,8 @@ async function gestionarSubmitReparacion(evento) {
 
         if (!respuesta.ok) {
             const errorData = await respuesta.json().catch(() => ({})); 
-            throw new Error(errorData.message || `Error del servidor: código ${respuesta.status}`);
+            // Si el backend envía el detalle del error en su JSON, lo mostramos
+            throw new Error(errorData.message || errorData.error || `Error del servidor: código ${respuesta.status}`);
         }
 
         cerrarModalReparacion();
@@ -415,7 +430,7 @@ async function gestionarSubmitReparacion(evento) {
         alert(`Estado actualizado a "${nuevoEstado}" con éxito.`);
         
     } catch (error) {
-        alert("Ocurrió un error al intentar actualizar el registro: " + error.message);
+        alert("Ocurrió un error al intentar actualizar el registro:\n" + error.message);
     } finally {
         btnGuardar.disabled = false;
         btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
