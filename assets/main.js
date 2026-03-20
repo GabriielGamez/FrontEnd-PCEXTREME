@@ -967,8 +967,8 @@ function verificarSesion() {
                         Hola, ${usuario.nombre}
                     </button>
                     <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1f1f1f] rounded-xl shadow-lg border border-gray-700 overflow-hidden z-50">
-                        <button class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mi Perfil</button>
-                        <button class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mis Dispositivos</button>
+                        <button onclick="window.location.href='perfil.html'" class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mi Perfil</button>
+                        <button onclick="window.location.href='mis_dispositivos.html'" class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mis Dispositivos</button>
                         <button onclick="cerrarSesion()" class="w-full text-left px-4 py-3 text-[#ff4d4d] hover:bg-gray-800 transition font-semibold">Cerrar Sesión</button>
                     </div>
                 </div>
