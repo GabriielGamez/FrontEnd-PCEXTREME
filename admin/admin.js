@@ -12,43 +12,58 @@ const UPLOAD_PRESET = 'qgnakwni';
 // ==========================================
 async function cargarComponentesAdmin() {
     try {
-        // --- 1. CARGAR HEADER ---
         const headerEl = document.getElementById("encabezado-admin");
         if (headerEl) {
-            // Usamos la ruta completa para GitHub Pages
             const resH = await fetch("/FrontEnd-PCEXTREME/admin/admin_header.html");
             if (resH.ok) {
                 headerEl.innerHTML = await resH.text();
 
-                // Lógica de sesión admin (Protección de rutas)
+                // --- NUEVA LÓGICA DE SESIÓN ADMIN ---
+                
+                // 1. Recuperar datos del trabajador logueado
                 const usuarioStr = localStorage.getItem('usuario');
                 if (usuarioStr) {
                     const usuario = JSON.parse(usuarioStr);
                     
+                    // Verificamos por seguridad que sea un trabajador (opcional pero recomendado)
                     if (usuario.tipo !== 'trabajador') {
                         window.location.href = '/FrontEnd-PCEXTREME/index.html';
                         return;
                     }
 
-                    // Inyectar el nombre del administrador si existe el elemento en el header
-                    const nombreAdminEl = document.getElementById("nombre-admin");
-                    if (nombreAdminEl) nombreAdminEl.innerText = usuario.nombre;
+                    // Colocamos su nombre en el Header
+                    const nombreAdminEl = document.getElementById('admin-nombre-usuario');
+                    if (nombreAdminEl) {
+                        nombreAdminEl.innerText = usuario.nombre;
+                    }
+                } else {
+                    // Si no hay sesión, lo expulsamos al login
+                    window.location.href = '/FrontEnd-PCEXTREME/index.html';
+                    return;
+                }
+
+                // 2. Configurar el botón de Cerrar Sesión
+                const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
+                if (btnCerrarSesion) {
+                    btnCerrarSesion.addEventListener('click', () => {
+                        // Borramos los datos de la memoria
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('usuario');
+                        
+                        // Redirigimos al inicio de sesión
+                        window.location.href = '/FrontEnd-PCEXTREME/index.html'; 
+                    });
                 }
             }
         }
 
-        // --- 2. CARGAR FOOTER ---
-        const footerEl = document.getElementById("pie-admin");
+        const footerEl = document.getElementById("admin-piePagina");
         if (footerEl) {
-            // Usamos la ruta completa para GitHub Pages
             const resF = await fetch("/FrontEnd-PCEXTREME/admin/admin_footer.html");
-            if (resF.ok) {
-                footerEl.innerHTML = await resF.text();
-            }
+            if (resF.ok) footerEl.innerHTML = await resF.text();
         }
-
     } catch (error) {
-        console.error("Error al cargar los componentes estáticos:", error);
+        console.error("Error al cargar header/footer:", error);
     }
 }
 
