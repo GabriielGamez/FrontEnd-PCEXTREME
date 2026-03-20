@@ -1011,6 +1011,53 @@ async function eliminarProducto(id) {
 }
 
 // ==========================================
+// FUNCIÓN PARA AUTOCOMPLETAR DIRECCIÓN (SEPOMEX)
+// ==========================================
+function inicializarSepomex() {
+    const inputCP = document.getElementById('emp-cp');
+    if (inputCP) {
+        inputCP.addEventListener('input', async (e) => {
+            const cp = e.target.value.trim();
+            
+            // Cuando el usuario escribe exactamente 5 dígitos, disparamos la búsqueda
+            if (cp.length === 5) {
+                mostrarNotificacionAdmin("Buscando código postal...", "exito");
+                
+                try {
+                    const respuesta = await fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${cp}`);
+                    const datos = await respuesta.json();
+
+                    if (datos.error) {
+                        throw new Error("Código postal no encontrado");
+                    }
+
+                    // Llenamos el Estado y el Municipio automáticamente
+                    document.getElementById('emp-estado').value = datos[0].estado;
+                    document.getElementById('emp-municipio').value = datos[0].municipio;
+
+                    // Cambiamos el Input de Colonia por un Select con los Asentamientos
+                    const contenedorColonia = document.getElementById('contenedor-colonia');
+                    
+                    let selectHtml = `<select id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
+                    selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
+                    
+                    datos.forEach(lugar => {
+                        selectHtml += `<option value="${lugar.asentamiento}">${lugar.asentamiento}</option>`;
+                    });
+                    
+                    selectHtml += `</select>`;
+                    contenedorColonia.innerHTML = selectHtml;
+
+                } catch (error) {
+                    console.error("Error API SEPOMEX:", error);
+                    mostrarNotificacionAdmin("C.P. no válido o no encontrado", "error");
+                }
+            }
+        });
+    }
+}
+
+// ==========================================
 // FUNCIÓN PARA GUARDAR EMPLEADO
 // ==========================================
 window.guardarEmpleado = async function(evento) {
@@ -1021,12 +1068,11 @@ window.guardarEmpleado = async function(evento) {
     btnSubmit.innerHTML = "⏳ Guardando...";
     btnSubmit.disabled = true;
 
-    // 1. Recolectamos datos
+    // 1. Recolectamos datos básicos
     const idEmp = document.getElementById('emp-id').value;
     const emailUsuario = document.getElementById('emp-email-user').value.trim();
     const password = document.getElementById('emp-password').value;
 
-    // Validamos que tenga contraseña si es un registro nuevo
     if (!idEmp && !password) {
         mostrarNotificacionAdmin("La contraseña es obligatoria para un nuevo empleado", "error");
         btnSubmit.innerHTML = textoOriginal;
@@ -1034,9 +1080,9 @@ window.guardarEmpleado = async function(evento) {
         return;
     }
 
-    // Juntamos el correo con el dominio fijo
     const correoCompleto = `${emailUsuario}@pcextreme.com`;
 
+    // 2. Preparamos TODOS los datos para el Backend (Incluyendo dirección SEPOMEX)
     const datosTrabajador = {
         nombre: document.getElementById('emp-nombre').value.trim(),
         aPaterno: document.getElementById('emp-ap-paterno').value.trim(),
@@ -1044,7 +1090,13 @@ window.guardarEmpleado = async function(evento) {
         idRol: document.getElementById('emp-rol').value,
         email: correoCompleto,
         telefono: document.getElementById('emp-telefono').value.trim(),
-        direccion: document.getElementById('emp-direccion').value.trim()
+        
+        // NUEVOS CAMPOS DE DIRECCIÓN:
+        CPostal: document.getElementById('emp-cp').value.trim(),
+        estado: document.getElementById('emp-estado').value.trim(),
+        municipio: document.getElementById('emp-municipio').value.trim(),
+        colonia: document.getElementById('emp-colonia').value.trim(), // Toma el valor del asentamiento elegido
+        calle: document.getElementById('emp-calle').value.trim()      // Toma el nombre de la calle y número
     };
 
     // Solo enviamos el password si el usuario escribió uno
@@ -1052,7 +1104,7 @@ window.guardarEmpleado = async function(evento) {
         datosTrabajador.password = password;
     }
 
-    // 2. Extraemos el Token de seguridad del administrador
+    // 3. Extraemos el Token de seguridad
     const token = localStorage.getItem('token');
 
     try {
@@ -1064,12 +1116,12 @@ window.guardarEmpleado = async function(evento) {
             method = 'PUT';
         }
 
-        // 3. Hacemos la petición a la API
+        // 4. Petición a la API
         const respuesta = await fetch(url, {
             method: method,
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Enviamos la credencial
+                'Authorization': `Bearer ${token}` 
             },
             body: JSON.stringify(datosTrabajador)
         });
@@ -1080,10 +1132,9 @@ window.guardarEmpleado = async function(evento) {
             throw new Error(resultado.message || resultado.error || "Error al guardar el empleado");
         }
 
-        // 4. Éxito
         mostrarNotificacionAdmin(`Empleado ${idEmp ? 'actualizado' : 'registrado'} correctamente`, 'exito');
         cerrarModalPersonal();
-        iniciarModuloPersonal(); // Recarga la tabla de fondo
+        iniciarModuloPersonal(); 
 
     } catch (error) {
         console.error("Error:", error);
@@ -1103,6 +1154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
+    inicializarSepomex();
     if(document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);

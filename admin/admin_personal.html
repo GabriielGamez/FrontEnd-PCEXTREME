@@ -51,7 +51,7 @@
     </main>
 
     <div id="modal-personal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 transition-opacity p-4">
-        <div class="bg-[#1a1c20] border border-gray-800 p-8 rounded-2xl w-full max-w-2xl shadow-[0_0_30px_rgba(0,0,0,0.8)] relative overflow-y-auto max-h-screen">
+        <div class="bg-[#1a1c20] border border-gray-800 p-8 rounded-2xl w-full max-w-3xl shadow-[0_0_30px_rgba(0,0,0,0.8)] relative overflow-y-auto max-h-screen">
             
             <button onclick="cerrarModalPersonal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl font-bold leading-none">&times;</button>
             
@@ -63,55 +63,90 @@
                 
                 <input type="hidden" id="emp-id">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Nombre(s)</label>
-                        <input type="text" id="emp-nombre" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Paterno</label>
-                        <input type="text" id="emp-ap-paterno" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
-                    </div>
+                <div>
+                    <h4 class="text-white text-sm uppercase tracking-wider font-semibold mb-3 border-b border-gray-700 pb-1">Datos Personales</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-3">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Nombre(s)</label>
+                            <input type="text" id="emp-nombre" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        </div>
+                        
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Paterno</label>
+                            <input type="text" id="emp-ap-paterno" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        </div>
 
-                    <div>
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Materno</label>
-                        <input type="text" id="emp-ap-materno" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
-                    </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Apellido Materno</label>
+                            <input type="text" id="emp-ap-materno" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        </div>
 
-                    <div>
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Rol de Acceso</label>
-                        <select id="emp-rol" required class="w-full bg-[#0f1115] border border-[#7ed957] text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-[#7ed957]">
-                            <option value="" disabled selected>Selecciona rol...</option>
-                            <option value="1">Administrador</option>
-                            <option value="2">Recepcionista</option>
-                            <option value="3">Técnico</option>
-                        </select>
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Correo Institucional</label>
-                        <div class="flex">
-                            <input type="text" id="emp-email-user" required placeholder="nombre.apellido" class="w-full bg-[#0f1115] border border-gray-700 border-r-0 text-white px-4 py-2 rounded-l focus:outline-none focus:border-[#7ed957]">
-                            <span class="bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded-r font-semibold select-none flex items-center">
-                                @pcextreme.com
-                            </span>
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Teléfono</label>
+                            <input type="text" id="emp-telefono" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
                         </div>
                     </div>
+                </div>
 
-                    <div class="md:col-span-2">
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Teléfono</label>
-                        <input type="text" id="emp-telefono" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                <div class="mt-6">
+                    <h4 class="text-white text-sm uppercase tracking-wider font-semibold mb-3 border-b border-gray-700 pb-1">Dirección</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Código Postal</label>
+                            <input type="number" id="emp-cp" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957] no-spinners">
+                        </div>
+
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Estado</label>
+                            <input type="text" id="emp-estado" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        </div>
+
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Municipio</label>
+                            <input type="text" id="emp-municipio" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        </div>
+
+                        <div class="md:col-span-1">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Colonia</label>
+                            <div id="contenedor-colonia" class="relative">
+                                <input type="text" id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-4">
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Calle y Número</label>
+                            <input type="text" id="emp-calle" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
+                        </div>
                     </div>
+                </div>
 
-                    <div class="md:col-span-2">
-                        <label class="block text-gray-400 text-sm font-bold mb-2">Dirección</label>
-                        <input type="text" id="emp-direccion" class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">
-                    </div>
+                <div class="mt-6">
+                    <h4 class="text-white text-sm uppercase tracking-wider font-semibold mb-3 border-b border-gray-700 pb-1">Cuenta y Acceso</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Rol de Acceso</label>
+                            <select id="emp-rol" required class="w-full bg-[#0f1115] border border-[#7ed957] text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-[#7ed957]">
+                                <option value="" disabled selected>Selecciona rol...</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Recepcionista</option>
+                                <option value="3">Técnico</option>
+                            </select>
+                        </div>
 
-                    <div class="md:col-span-2 bg-[#0f1115] p-4 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500">
-                        <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
-                        <input type="password" id="emp-password" placeholder="Obligatoria para nuevo usuario / Dejar vacío para NO cambiar" class="w-full bg-black border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-500">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold mb-2">Correo</label>
+                            <div class="flex">
+                                <input type="text" id="emp-email-user" required placeholder="nombre.apellido" class="w-full bg-[#0f1115] border border-gray-700 border-r-0 text-white px-4 py-2 rounded-l focus:outline-none focus:border-[#7ed957]">
+                                <span class="bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded-r font-semibold select-none flex items-center text-sm">
+                                    @pcextreme.com
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 bg-[#0f1115] p-4 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500">
+                            <label class="block text-gray-300 text-sm font-bold mb-2">Contraseña</label>
+                            <input type="password" id="emp-password" placeholder="Obligatoria para nuevo usuario / Dejar vacío para NO cambiar" class="w-full bg-black border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-500">
+                        </div>
                     </div>
                 </div>
 
