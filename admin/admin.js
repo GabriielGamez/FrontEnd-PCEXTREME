@@ -97,72 +97,120 @@ window.abrirPestana = function (evento, nombrePestana) {
     botonActual.classList.remove("text-gray-500", "border-transparent");
     botonActual.classList.add("text-[#7ed957]", "border-[#7ed957]");
 };
-
 // ==========================================
-// SECCIÓN: GESTIÓN DE REPARACIONES (CON PAGINACIÓN)
+// SECCIÓN: GESTIÓN DE REPARACIONES 
 // ==========================================
 let adminReparacionesData = [];
 let paginaActualReparaciones = 1;
 const itemsPorPaginaReparaciones = 20;
 
-/* 1. Descarga principal de datos desde la API*/
+// Diccionarios en memoria para cruzar las llaves foráneas
+let mapaClientesRep = {};
+let mapaDispositivosRep = {};
+
+/**
+ * 1. Descarga de datos paralela (Cruces Relacionales)
+ */
 async function cargarTablaAdminReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
     if (!tbody) return;
 
     try {
-        const respuesta = await fetch(`${baseUrl}/registros`);
-        if (!respuesta.ok) throw new Error("Error al obtener las reparaciones");
+        // Llamamos a las 3 APIs al mismo tiempo 
+        const [resRegistros, resClientes, resDispositivos] = await Promise.all([
+            fetch(`${baseUrl}/registros`),
+            fetch(`${baseUrl}/clientes`),
+            fetch(`${baseUrl}/dispositivos`) 
+        ]);
+
+        if (!resRegistros.ok) throw new Error("Error al obtener los registros de la API");
         
-        adminReparacionesData = await respuesta.json();
+        adminReparacionesData = await resRegistros.json();
+    
+        const clientesData = resClientes.ok ? await resClientes.json() : [];
+        const dispositivosData = resDispositivos.ok ? await resDispositivos.json() : [];
+
+        // ----------------------------------------------------
+        // CONSTRUCCIÓN DE DICCIONARIOS (JOIN EN MEMORIA)
+        // ----------------------------------------------------
+        mapaClientesRep = {};
+        clientesData.forEach(cli => {
+            const id = cli.idCliente || cli.id; 
+            mapaClientesRep[id] = `${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ''}`.trim();
+        });
+
+        mapaDispositivosRep = {};
+        dispositivosData.forEach(disp => {
+            const id = disp.idDispositivo || disp.id;
+            mapaDispositivosRep[id] = `${disp.tipo || ''} ${disp.marca || disp.modelo || ''}`.trim() || `Dispositivo #${id}`; 
+        });
         
-        // Renderizamos la primera página de la tabla y los controles
         mostrarPaginaReparaciones();
         renderizarControlesPaginacionReparaciones();
 
     } catch (error) {
         console.error("Error al cargar reparaciones:", error);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-semibold">Error al cargar la tabla. Revisa la consola.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-semibold">Error al cargar la tabla relacional. Revisa la consola.</td></tr>`;
     }
 }
 
- /* Dibujar únicamente las reparaciones correspondientes a la página activa */
-
+/**
+ * 2. Dibujado de la tabla con reemplazo de IDs
+ */
 function mostrarPaginaReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
     tbody.innerHTML = '';
 
     if(adminReparacionesData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay reparaciones en el sistema.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay registros de reparación en el sistema.</td></tr>`;
         return;
     }
 
-    // Cálculos de segmentación del arreglo (Paginación)
     const inicio = (paginaActualReparaciones - 1) * itemsPorPaginaReparaciones;
     const fin = inicio + itemsPorPaginaReparaciones;
     const reparacionesPagina = adminReparacionesData.slice(inicio, fin);
 
-    reparacionesPagina.forEach(rep => {
-        // Clases de Tailwind dinámicas para el Modo Claro
+    reparacionesPagina.forEach(reg => {
+      
+        let nombreCliente = "Desconocido";
+        if (reg.cliente && reg.cliente.nombre) {
+            nombreCliente = `${reg.cliente.nombre} ${reg.cliente.aPaterno || ''}`;
+        } else if (reg.idCliente || reg.cliente_id) {
+            nombreCliente = mapaClientesRep[reg.idCliente || reg.cliente_id] || "Cliente no encontrado";
+        }
+
+        let nombreEquipo = "Equipo sin definir";
+        if (reg.dispositivo && (reg.dispositivo.tipo || reg.dispositivo.marca)) {
+            nombreEquipo = `${reg.dispositivo.tipo || ''} ${reg.dispositivo.marca || ''}`;
+        } else if (reg.idDispositivo || reg.dispositivo_id) {
+            nombreEquipo = mapaDispositivosRep[reg.idDispositivo || reg.dispositivo_id] || "Dispositivo no encontrado";
+        }
+
+        // Variables dinámicas de la tabla registros
+        const idRegistro = reg.idRegistro ;
+        const falla = reg.detalles || "Sin descripción";
+        const estado = reg.estadoEquipo || "Recibido";
+
+        // Clases de Tailwind
         let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200';
-        if (rep.estado === 'Reparado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
-        if (rep.estado === 'En revisión') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
-        if (rep.estado === 'Entregado') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
-        if (rep.estado === 'Esperando piezas') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
+        if (estado === 'Reparado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
+        if (estado === 'En revisión') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        if (estado === 'Entregado') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
+        if (estado === 'Esperando piezas') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
 
         tbody.innerHTML += `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
-                <td class="p-4 text-gray-500 font-medium">#${rep.folio || rep.id}</td>
-                <td class="p-4 font-semibold text-gray-900">${rep.cliente_nombre || 'Cliente no registrado'}</td>
-                <td class="p-4 text-gray-600">${rep.equipo}</td>
-                <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${rep.falla}">${rep.falla}</td>
+                <td class="p-4 text-gray-500 font-medium">#${idRegistro}</td>
+                <td class="p-4 font-semibold text-gray-900">${nombreCliente}</td>
+                <td class="p-4 text-gray-600">${nombreEquipo}</td>
+                <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
                 <td class="p-4">
                     <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">
-                        ${rep.estado}
+                        ${estado}
                     </span>
                 </td>
                 <td class="p-4 text-center">
-                    <button onclick="abrirModalReparacion(${rep.folio || rep.id})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm">
+                    <button onclick="abrirModalReparacion(${idRegistro})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm">
                         <span>✏️</span> Actualizar
                     </button>
                 </td>
@@ -172,7 +220,7 @@ function mostrarPaginaReparaciones() {
 }
 
 /**
- * 3. Renderiza la lógica visual y validaciones de los botones Anterior / Siguiente
+ * 3. Renderiza los controles Anterior / Siguiente
  */
 function renderizarControlesPaginacionReparaciones() {
     const contenedor = document.getElementById('controles-paginacion-reparaciones');
@@ -181,7 +229,7 @@ function renderizarControlesPaginacionReparaciones() {
     const totalPaginas = Math.ceil(adminReparacionesData.length / itemsPorPaginaReparaciones);
     contenedor.innerHTML = ''; 
 
-    if (totalPaginas <= 1) return; // Se omite la paginación si no supera el límite configurado
+    if (totalPaginas <= 1) return; 
 
     const btnAnteriorDisabled = paginaActualReparaciones === 1 ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white hover:bg-gray-100 hover:text-gray-900';
     const btnSiguienteDisabled = paginaActualReparaciones === totalPaginas ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white hover:bg-gray-100 hover:text-gray-900';
@@ -190,20 +238,15 @@ function renderizarControlesPaginacionReparaciones() {
         <button onclick="cambiarPaginaReparaciones(-1)" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg transition shadow-sm ${btnAnteriorDisabled}" ${paginaActualReparaciones === 1 ? 'disabled' : ''}>
             ← Anterior
         </button>
-        
         <span class="text-sm font-semibold text-gray-500">
             Página <span class="text-[#6bc148] font-bold">${paginaActualReparaciones}</span> de <span class="text-gray-900">${totalPaginas}</span>
         </span>
-        
         <button onclick="cambiarPaginaReparaciones(1)" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg transition shadow-sm ${btnSiguienteDisabled}" ${paginaActualReparaciones === totalPaginas ? 'disabled' : ''}>
             Siguiente →
         </button>
     `;
 }
 
-/**
- * 4. Actualiza el índice global y redibuja la tabla
- */
 function cambiarPaginaReparaciones(direccion) {
     const totalPaginas = Math.ceil(adminReparacionesData.length / itemsPorPaginaReparaciones);
     const nuevaPagina = paginaActualReparaciones + direccion;
@@ -216,27 +259,33 @@ function cambiarPaginaReparaciones(direccion) {
 }
 
 /**
- * 5. Gestión de Modal: Búsqueda del registro en memoria para visualización
+ * 4. Gestión de Modal: Adaptado para el objeto relacional
  */
-function abrirModalReparacion(idReparacion) {
+function abrirModalReparacion(idRegistroBuscado) {
     const modal = document.getElementById('modal-reparacion');
     const form = document.getElementById('formulario-reparacion');
     
-    // Evitamos enviar el objeto completo en el HTML; lo buscamos directamente
-    const rep = adminReparacionesData.find(r => (r.folio || r.id) === idReparacion);
-    if (!rep) return alert("No se encontró la información del equipo.");
+    // Buscar el registro exacto tolerando distintos nombres de ID
+    const reg = adminReparacionesData.find(r => (r.idRegistro || r.id || r.folio) === idRegistroBuscado);
+    if (!reg) return alert("No se encontró la información del equipo en memoria.");
 
-    // Inyección de información visual (solo lectura)
-    document.getElementById('modal-folio-display').innerText = idReparacion;
-    document.getElementById('info-cliente').innerText = rep.cliente_nombre || 'Desconocido';
-    document.getElementById('info-equipo').innerText = rep.equipo || 'Sin descripción';
+    // Resolvemos los nombres igual que en la tabla
+    let nombreCliente = "Desconocido";
+    if (reg.cliente && reg.cliente.nombre) nombreCliente = `${reg.cliente.nombre} ${reg.cliente.aPaterno || ''}`;
+    else if (reg.idCliente) nombreCliente = mapaClientesRep[reg.idCliente] || "Cliente no encontrado";
+
+    let nombreEquipo = "Equipo sin definir";
+    if (reg.dispositivo && reg.dispositivo.tipo) nombreEquipo = `${reg.dispositivo.tipo || ''} ${reg.dispositivo.marca || ''}`;
+    else if (reg.idDispositivo) nombreEquipo = mapaDispositivosRep[reg.idDispositivo] || "Dispositivo no encontrado";
+
+    // Inyección visual
+    document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
+    document.getElementById('info-cliente').innerText = nombreCliente;
+    document.getElementById('info-equipo').innerText = nombreEquipo;
     
-    // Asignación de valores para la petición
-    document.getElementById('admin-reparacion-id').value = idReparacion;
-    document.getElementById('admin-estado-reparacion').value = rep.estado; 
-    
-    // Desmarcamos el flag por defecto para prevenir notificaciones erróneas
-    document.getElementById('admin-notificar-whatsapp').checked = false;
+    // Inyección de formulario
+    document.getElementById('admin-reparacion-id').value = idRegistroBuscado;
+    document.getElementById('admin-estado-reparacion').value = reg.estado || 'Recibido'; 
 
     modal.classList.remove('hidden');
 }
@@ -246,7 +295,7 @@ function cerrarModalReparacion() {
 }
 
 /**
- * 6. Construcción y Envío del Payload (PUT) hacia la API
+ * 5. Envío hacia el backend (Solo mandamos la información pertinente al UPDATE)
  */
 async function gestionarSubmitReparacion(evento) {
     evento.preventDefault();
@@ -256,23 +305,19 @@ async function gestionarSubmitReparacion(evento) {
     
     const id = document.getElementById('admin-reparacion-id').value;
     const nuevoEstado = document.getElementById('admin-estado-reparacion').value;
-    const quiereNotificar = document.getElementById('admin-notificar-whatsapp').checked;
 
     btnGuardar.disabled = true;
     btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
     btnGuardar.innerText = "Actualizando...";
 
     try {
-        const payload = {
-            estado: nuevoEstado,
-            notificar_whatsapp: quiereNotificar
-        };
+        const payload = { estado: nuevoEstado };
 
         const token = localStorage.getItem('token');
         const headersAEnviar = { 'Content-Type': 'application/json' };
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/registros/${id}/estado`, {
+        const respuesta = await fetch(`${baseUrl}/registros/${id}`, {
             method: 'PUT',
             headers: headersAEnviar,
             body: JSON.stringify(payload)
@@ -284,10 +329,9 @@ async function gestionarSubmitReparacion(evento) {
         }
 
         cerrarModalReparacion();
-        await cargarTablaAdminReparaciones(); // Refrescamos la fuente de datos
+        await cargarTablaAdminReparaciones(); // Refrescamos todo tras el guardado
         
-        const msjWhatsapp = quiereNotificar ? "\nSe ha emitido la notificación al cliente vía WhatsApp. 📱" : "";
-        alert(`Estado actualizado a "${nuevoEstado}" con éxito.${msjWhatsapp}`);
+        alert(`Estado actualizado a "${nuevoEstado}" con éxito.`);
         
     } catch (error) {
         alert("Ocurrió un error al intentar actualizar el registro: " + error.message);
