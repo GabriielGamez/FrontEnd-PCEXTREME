@@ -824,18 +824,66 @@ function mostrarListaPersonal() {
 // ==========================================
 // FUNCIONES DEL MODAL DE PERSONAL
 // ==========================================
-window.abrirModalPersonal = function(id = null) {
+window.abrirModalPersonal = async function(id = null) {
     const modal = document.getElementById("modal-personal");
     const form = document.getElementById("formulario-personal");
     if (!modal) return;
     
-    if (form) form.reset(); // Limpia el formulario cada vez que se abre
+    if (form) form.reset(); // Limpia el formulario
+    
+    // Restablecemos el contenedor de la asentamiento al estado original (bloqueado) por si venimos de otra edición
+    document.getElementById('contenedor-asentamiento').innerHTML = `<input type="text" id="emp-asentamiento" required placeholder="Escribe el C.P. primero" readonly class="w-full bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded focus:outline-none cursor-not-allowed">`;
 
     if (id) {
-        console.log("Modo Edición para el ID:", id);
-        // Aquí conectaremos los inputs cuando les pongamos ID en tu HTML
+        // BUSCAMOS AL EMPLEADO EN LA LISTA GLOBAL
+        const emp = personalGlobal.find(e => (e.idTrabajador || e.id || e.idEmpleado) == id);
+        
+        if (emp) {
+            document.getElementById('emp-id').value = id;
+            document.getElementById('emp-nombre').value = emp.nombre;
+            document.getElementById('emp-ap-paterno').value = emp.aPaterno;
+            document.getElementById('emp-ap-materno').value = emp.aMaterno || '';
+            document.getElementById('emp-rol').value = emp.idRol;
+            document.getElementById('emp-telefono').value = emp.telefono || '';
+            document.getElementById('emp-calle').value = emp.calle || emp.direccion || ''; // Soporta calle o direccion
+            
+            // Partimos el correo por el arroba para poner solo el usuario
+            if (emp.email) {
+                const partesCorreo = emp.email.split('@');
+                document.getElementById('emp-email-user').value = partesCorreo[0];
+            }
+
+            // Datos de SEPOMEX
+            document.getElementById('emp-cp').value = emp.CPostal || '';
+            document.getElementById('emp-estado').value = emp.estado || '';
+            document.getElementById('emp-municipio').value = emp.municipio || '';
+
+            // Si tiene un Código Postal guardado, cargamos sus asentamientos automáticamente
+            if (emp.CPostal && String(emp.CPostal).length === 5) {
+                try {
+                    const res = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${emp.CPostal}`);
+                    const datos = await res.json();
+                    
+                    if (datos.zip_codes && datos.zip_codes.length > 0) {
+                        let selectHtml = `<select id="emp-asentamiento" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
+                        
+                        datos.zip_codes.forEach(lugar => {
+                            // Si el asentamiento coincide con el del empleado, lo dejamos seleccionado (selected)
+                            const seleccionado = (lugar.d_asenta === emp.asentamiento) ? 'selected' : '';
+                            selectHtml += `<option value="${lugar.d_asenta}" ${seleccionado}>${lugar.d_asenta}</option>`;
+                        });
+                        
+                        selectHtml += `</select>`;
+                        document.getElementById('contenedor-asentamiento').innerHTML = selectHtml;
+                    }
+                } catch (e) {
+                    console.error("No se pudieron cargar las asentamientos al editar");
+                }
+            }
+        }
     } else {
-        console.log("Modo Nuevo Empleado");
+        // Si no hay ID, es un empleado nuevo
+        document.getElementById('emp-id').value = '';
     }
 
     modal.classList.remove("hidden");
@@ -846,10 +894,28 @@ window.cerrarModalPersonal = function() {
     if (modal) modal.classList.add("hidden");
 };
 
-window.confirmarEliminacionPersonal = function(id) {
-    if(confirm("¿Estás seguro de que deseas eliminar a este empleado del sistema?")) {
-        alert("Simulación: Empleado con ID " + id + " eliminado.");
-        // Aquí agregaremos el fetch con method: 'DELETE'
+window.confirmarEliminacionPersonal = async function(id) {
+    // LLAMAMOS AL NUEVO MODAL FLOTANTE
+    const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas ELIMINAR a este empleado?<br><br>Esta acción no se puede deshacer y perderá su acceso al sistema.", "peligro");
+    
+    // Si el usuario hizo clic en "Sí, continuar", confirmado será true
+    if (confirmado) {
+        const token = localStorage.getItem('token'); 
+        
+        try {
+            const respuesta = await fetch(`${baseUrl}/trabajadores/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!respuesta.ok) throw new Error("Error al eliminar el empleado");
+
+            mostrarNotificacionAdmin("Empleado eliminado correctamente", "exito");
+            iniciarModuloPersonal(); // Recargamos la tabla
+            
+        } catch (error) {
+            mostrarNotificacionAdmin(error.message, "error");
+        }
     }
 };
 // ==========================================
@@ -880,7 +946,62 @@ function mostrarNotificacionAdmin(mensaje, tipo = 'error') {
     }, 3000);
 }
 
+// ==========================================
+// SISTEMA DE CONFIRMACIÓN FLOTANTE (CUSTOM)
+// ==========================================
+function mostrarConfirmacionAdmin(mensaje, tipo = 'peligro') {
+    return new Promise((resolve) => {
+        // Creamos el contenedor del fondo oscuro
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] px-4 opacity-0 transition-opacity duration-300';
+        
+        // Colores según si es para eliminar (rojo) o editar (amarillo)
+        const colorModal = tipo === 'peligro' ? 'border-red-600' : 'border-yellow-500';
+        const colorBtn = tipo === 'peligro' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-black';
+        const icono = tipo === 'peligro' ? '🗑️' : '✏️';
+        const titulo = tipo === 'peligro' ? 'Eliminar Registro' : 'Modificar Datos';
 
+        overlay.innerHTML = `
+            <div class="bg-[#1a1c20] border-t-4 ${colorModal} rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] p-6 max-w-sm w-full transform scale-95 transition-transform duration-300 text-center">
+                <span class="text-5xl mb-4 block drop-shadow-lg">${icono}</span>
+                <h3 class="text-xl font-bold text-white mb-2">${titulo}</h3>
+                <p class="text-gray-400 text-sm mb-8 leading-relaxed">${mensaje}</p>
+                <div class="flex justify-center gap-4">
+                    <button id="btn-cancelar-conf" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-bold transition text-sm">
+                        Cancelar
+                    </button>
+                    <button id="btn-aceptar-conf" class="px-5 py-2.5 ${colorBtn} rounded-lg font-bold transition text-sm shadow-lg">
+                        Sí, continuar
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Animación de entrada
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.querySelector('div').classList.remove('scale-95');
+        }, 10);
+
+        const btnAceptar = overlay.querySelector('#btn-aceptar-conf');
+        const btnCancelar = overlay.querySelector('#btn-cancelar-conf');
+
+        // Función para cerrar y resolver la promesa
+        const cerrar = (resultado) => {
+            overlay.classList.add('opacity-0');
+            overlay.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                overlay.remove();
+                resolve(resultado); // Devuelve true o false
+            }, 300);
+        };
+
+        btnAceptar.addEventListener('click', () => cerrar(true));
+        btnCancelar.addEventListener('click', () => cerrar(false));
+    });
+}
 // ==========================================
 // SECCIÓN: ADMINISTRACIÓN DE PRODUCTOS (CRUD)
 // ==========================================
@@ -1098,26 +1219,31 @@ function inicializarSepomex() {
                     const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);
                     const datos = await respuesta.json();
 
-                    if (datos.error) {
+                    // 1. Extraemos el arreglo real que viene dentro de la respuesta de la API
+                    const lugares = datos.zip_codes;
+
+                    // 2. Verificamos si no se encontraron resultados o si la API dio error
+                    if (!lugares || lugares.length === 0) {
                         throw new Error("Código postal no encontrado");
                     }
 
-                    // Llenamos el Estado y el Municipio automáticamente
-                    document.getElementById('emp-estado').value = datos[0].estado;
-                    document.getElementById('emp-municipio').value = datos[0].municipio;
+                    // 3. Llenamos el Estado y el Municipio usando el primer elemento del arreglo [0]
+                    document.getElementById('emp-estado').value = lugares[0].d_estado;
+                    document.getElementById('emp-municipio').value = lugares[0].d_mnpio;
 
-                    // Cambiamos el Input de Colonia por un Select con los Asentamientos
-                    const contenedorColonia = document.getElementById('contenedor-colonia');
+                    // Cambiamos el Input de asentamiento por un Select con los Asentamientos
+                    const contenedorasentamiento = document.getElementById('contenedor-asentamiento');
                     
-                    let selectHtml = `<select id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
+                    let selectHtml = `<select id="emp-asentamiento" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
                     selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
                     
-                    datos.forEach(lugar => {
-                        selectHtml += `<option value="${lugar.asentamiento}">${lugar.asentamiento}</option>`;
+                    // 4. Ahora SÍ hacemos el forEach sobre el arreglo "lugares"
+                    lugares.forEach(lugar => {
+                        selectHtml += `<option value="${lugar.d_asenta}">${lugar.d_asenta}</option>`;
                     });
                     
                     selectHtml += `</select>`;
-                    contenedorColonia.innerHTML = selectHtml;
+                    contenedorasentamiento.innerHTML = selectHtml;
 
                 } catch (error) {
                     console.error("Error API SEPOMEX:", error);
@@ -1129,31 +1255,57 @@ function inicializarSepomex() {
 }
 
 // ==========================================
+// FUNCIÓN PARA MOSTRAR/OCULTAR CONTRASEÑA
+// ==========================================
+function inicializarOjoPassword() {
+    const inputPassword = document.getElementById('emp-password');
+    const btnOjo = document.getElementById('btn-ver-password');
+
+    if (inputPassword && btnOjo) {
+        // Cuando el puntero ENTRA al icono, cambiamos a texto visible
+        btnOjo.addEventListener('mouseenter', () => {
+            inputPassword.type = 'text';
+        });
+
+        // Cuando el puntero SALE del icono, regresamos a contraseña oculta
+        btnOjo.addEventListener('mouseleave', () => {
+            inputPassword.type = 'password';
+        });
+    }
+}
+// ==========================================
 // FUNCIÓN PARA GUARDAR EMPLEADO
 // ==========================================
 window.guardarEmpleado = async function(evento) {
     evento.preventDefault();
     
-    const btnSubmit = evento.target.querySelector('button[type="submit"]');
-    const textoOriginal = btnSubmit.innerHTML;
-    btnSubmit.innerHTML = "⏳ Guardando...";
-    btnSubmit.disabled = true;
-
-    // 1. Recolectamos datos básicos
+    // 1. Recolectamos datos
     const idEmp = document.getElementById('emp-id').value;
     const emailUsuario = document.getElementById('emp-email-user').value.trim();
     const password = document.getElementById('emp-password').value;
 
     if (!idEmp && !password) {
         mostrarNotificacionAdmin("La contraseña es obligatoria para un nuevo empleado", "error");
-        btnSubmit.innerHTML = textoOriginal;
-        btnSubmit.disabled = false;
         return;
     }
 
+    // SI ESTAMOS EDITANDO, LANZAMOS LA ADVERTENCIA FLOTANTE
+    if (idEmp) {
+        const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas modificar los datos y accesos de este empleado?", "advertencia");
+        
+        if (!confirmado) {
+            return; // Si hace clic en Cancelar, se detiene todo el proceso de guardado
+        }
+    }
+
+    // 2. Si es nuevo o si aceptó la advertencia, bloqueamos el botón
+    const btnSubmit = evento.target.querySelector('button[type="submit"]');
+    const textoOriginal = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = "⏳ Guardando...";
+    btnSubmit.disabled = true;
+
     const correoCompleto = `${emailUsuario}@pcextreme.com`;
 
-    // 2. Preparamos TODOS los datos para el Backend (Incluyendo dirección SEPOMEX)
     const datosTrabajador = {
         nombre: document.getElementById('emp-nombre').value.trim(),
         aPaterno: document.getElementById('emp-ap-paterno').value.trim(),
@@ -1161,21 +1313,17 @@ window.guardarEmpleado = async function(evento) {
         idRol: document.getElementById('emp-rol').value,
         email: correoCompleto,
         telefono: document.getElementById('emp-telefono').value.trim(),
-        
-        // NUEVOS CAMPOS DE DIRECCIÓN:
         CPostal: document.getElementById('emp-cp').value.trim(),
         estado: document.getElementById('emp-estado').value.trim(),
         municipio: document.getElementById('emp-municipio').value.trim(),
-        colonia: document.getElementById('emp-colonia').value.trim(), // Toma el valor del asentamiento elegido
-        calle: document.getElementById('emp-calle').value.trim()      // Toma el nombre de la calle y número
+        asentamiento: document.getElementById('emp-asentamiento').value.trim(), 
+        calle: document.getElementById('emp-calle').value.trim()      
     };
 
-    // Solo enviamos el password si el usuario escribió uno
     if (password) {
         datosTrabajador.password = password;
     }
 
-    // 3. Extraemos el Token de seguridad
     const token = localStorage.getItem('token');
 
     try {
@@ -1187,7 +1335,6 @@ window.guardarEmpleado = async function(evento) {
             method = 'PUT';
         }
 
-        // 4. Petición a la API
         const respuesta = await fetch(url, {
             method: method,
             headers: { 
@@ -1226,6 +1373,7 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloWeb();
     iniciarModuloPersonal();
     inicializarSepomex();
+    inicializarOjoPassword();
     if(document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
