@@ -947,9 +947,9 @@ function verificarSesion() {
     // 1. Si estamos en la página de login y YA hay sesión, lo sacamos de ahí
     if (window.location.pathname.includes('login.html')) {
         if (usuario.tipo === 'trabajador') {
-            window.location.href = '#'; // Redirección admin
+            window.location.replace('/FrontEnd-PCEXTREME/admin/dashboard.html'); // Ruta segura
         } else {
-            window.location.href = 'index.html'; // Redirección cliente
+            window.location.replace('/FrontEnd-PCEXTREME/index.html'); // Ruta segura
         }
         return;
     }
@@ -991,5 +991,7 @@ function verificarSesion() {
 window.cerrarSesion = function() {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
-    window.location.href = 'index.html'; // Recargamos enviándolo al inicio
+    
+    // Usamos replace y la ruta absoluta exacta para evitar bucles o carpetas fantasma
+    window.location.replace('/FrontEnd-PCEXTREME/index.html'); 
 };
