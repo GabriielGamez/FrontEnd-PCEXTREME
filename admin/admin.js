@@ -45,21 +45,22 @@ async function cargarComponentesAdmin() {
                 }
 
                 if (rolAdminEl) {
-                    // Intentamos obtener el nombre del rol directo del usuario
-                    let textoRol = usuario.rol || usuario.nombreRol;
+                    // Tomamos el número del rol, ya sea que el backend lo llame 'idRol' o simplemente 'rol'
+                    const idDelRol = usuario.idRol || usuario.rol;
 
-                    // Si el backend solo nos dio el número (idRol), lo traducimos a texto
-                    if (!textoRol && usuario.idRol) {
-                        const diccionarioRoles = {
-                            1: "Administrador",
-                            2: "Recepcionista",
-                            3: "Técnico"
-                        };
-                        textoRol = diccionarioRoles[usuario.idRol];
-                    }
+                    // Diccionario de traducción estricto
+                    const diccionarioRoles = {
+                        "1": "Administrador",
+                        "2": "Recepcionista",
+                        "3": "Técnico"
+                    };
 
-                    // Lo inyectamos en el HTML (si por alguna razón no hay rol, ponemos "Empleado")
-                    rolAdminEl.innerText = textoRol || "Empleado";
+                    // Forzamos la traducción. Convierte el número a texto sí o sí.
+                    // Si el número no existe en el diccionario (o viene vacío), pondrá "Empleado" por defecto.
+                    const textoRol = diccionarioRoles[String(idDelRol)] || "Empleado";
+
+                    // Inyectamos el texto final en el HTML
+                    rolAdminEl.innerText = textoRol;
                 }
 
                 // 4. Configurar el botón de Cerrar Sesión
