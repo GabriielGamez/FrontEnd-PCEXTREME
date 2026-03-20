@@ -1063,6 +1063,25 @@ function inicializarSepomex() {
 }
 
 // ==========================================
+// FUNCIÓN PARA MOSTRAR/OCULTAR CONTRASEÑA
+// ==========================================
+function inicializarOjoPassword() {
+    const inputPassword = document.getElementById('emp-password');
+    const btnOjo = document.getElementById('btn-ver-password');
+
+    if (inputPassword && btnOjo) {
+        // Cuando el puntero ENTRA al icono, cambiamos a texto visible
+        btnOjo.addEventListener('mouseenter', () => {
+            inputPassword.type = 'text';
+        });
+
+        // Cuando el puntero SALE del icono, regresamos a contraseña oculta
+        btnOjo.addEventListener('mouseleave', () => {
+            inputPassword.type = 'password';
+        });
+    }
+}
+// ==========================================
 // FUNCIÓN PARA GUARDAR EMPLEADO
 // ==========================================
 window.guardarEmpleado = async function(evento) {
@@ -1160,6 +1179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloWeb();
     iniciarModuloPersonal();
     inicializarSepomex();
+    inicializarOjoPassword();
     if(document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
