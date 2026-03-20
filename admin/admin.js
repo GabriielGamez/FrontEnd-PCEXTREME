@@ -1012,7 +1012,7 @@ async function eliminarProducto(id) {
 
 // ==========================================
 // FUNCIÓN PARA AUTOCOMPLETAR DIRECCIÓN (SEPOMEX)
-// ==========================================
+// ==========================================43052
 function inicializarSepomex() {
     const inputCP = document.getElementById('emp-cp');
     if (inputCP) {
@@ -1024,7 +1024,7 @@ function inicializarSepomex() {
                 mostrarNotificacionAdmin("Buscando código postal...", "exito");
                 
                 try {
-                    const respuesta = await fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${cp}`);
+                    const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);
                     const datos = await respuesta.json();
 
                     if (datos.error) {
@@ -1032,8 +1032,8 @@ function inicializarSepomex() {
                     }
 
                     // Llenamos el Estado y el Municipio automáticamente
-                    document.getElementById('emp-estado').value = datos[0].estado;
-                    document.getElementById('emp-municipio').value = datos[0].municipio;
+                    document.getElementById('emp-estado').value = datos[0].d_estado;
+                    document.getElementById('emp-municipio').value = datos[0].d_mnpio;
 
                     // Cambiamos el Input de Colonia por un Select con los Asentamientos
                     const contenedorColonia = document.getElementById('contenedor-colonia');
@@ -1042,7 +1042,7 @@ function inicializarSepomex() {
                     selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
                     
                     datos.forEach(lugar => {
-                        selectHtml += `<option value="${lugar.asentamiento}">${lugar.asentamiento}</option>`;
+                        selectHtml += `<option value="${lugar.d_asenta}">${lugar.d_asenta}</option>`;
                     });
                     
                     selectHtml += `</select>`;
