@@ -226,7 +226,7 @@ async function mostrarPaginaReparaciones() {
         const idClienteFk = reg.idCliente || reg.clienteId || reg.cliente_id;
         const idDispositivoFk = reg.idDispositivo || reg.dispositivoId || reg.dispositivo_id;
         
-        const falla = reg.detalle || reg.problema || "Sin descripción";
+        const falla = reg.detalles || reg.problema || "Sin descripción";
         const estado = reg.estadoEquipo || "Recibido";
 
         let nombreCompleto = "Cliente no encontrado";
