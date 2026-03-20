@@ -198,10 +198,11 @@ async function cargarTablaAdminReparaciones() {
 // Dibuja las filas de la tabla limitando a 20 por página
 function mostrarPaginaReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
-    tbody.innerHTML = '';
+    // Ponemos un mensaje de carga porque ahora haremos fetch por cada fila
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Consultando clientes y equipos...</td></tr>`;
 
     if(adminReparacionesData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay registros de reparación en el sistema.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay registros de reparación.</td></tr>`;
         return;
     }
 
@@ -215,8 +216,12 @@ function mostrarPaginaReparaciones() {
         const nombreCompleto = `${clienteObj.nombre || 'Sin nombre'} ${clienteObj.aPaterno || ''}`.trim();
         const nombreEquipo = `${dispositivoObj.tipo || 'Equipo'} ${dispositivoObj.marca || ''} ${dispositivoObj.modelo || ''}`.trim();
         
-        const idRegistro = reg.idRegistro;
-        const falla = reg.falla || "Sin descripción";
+        // Capturamos los IDs tal cual vienen de API /registros
+        const idRegistro = reg.idRegistro || reg.id || reg.folio;
+        const idClienteFk = reg.idCliente || reg.clienteId || reg.cliente_id;
+        const idDispositivoFk = reg.idDispositivo || reg.dispositivoId || reg.dispositivo_id;
+        
+        const falla = reg.falla || reg.problema || "Sin descripción";
         const estado = reg.estado || "Recibido";
 
         let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200';
@@ -225,11 +230,12 @@ function mostrarPaginaReparaciones() {
         if (estado === 'Entregado') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
         if (estado === 'Esperando piezas') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
 
-        tbody.innerHTML += `
+        // --- CONSTRUIMOS LA FILA ---
+        htmlFilas += `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
                 <td class="p-4 text-gray-500 font-medium">#${idRegistro}</td>
-                <td class="p-4 font-semibold text-gray-900">${nombreCompleto}</td>
-                <td class="p-4 text-gray-600">${nombreEquipo}</td>
+                <td class="p-4 font-semibold text-gray-900">${nombreClienteReal}</td>
+                <td class="p-4 text-gray-600">${nombreEquipoReal}</td>
                 <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
                 <td class="p-4">
                     <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">${estado}</span>
@@ -239,7 +245,10 @@ function mostrarPaginaReparaciones() {
                 </td>
             </tr>
         `;
-    });
+    }
+
+    // Finalmente, vaciamos todas las filas ya procesadas en la tabla
+    tbody.innerHTML = htmlFilas;
 }
 
 // Crea los botones de siguiente/anterior en la tabla de reparaciones
@@ -268,7 +277,7 @@ function cambiarPaginaReparaciones(direccion) {
 
     if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
         paginaActualReparaciones = nuevaPagina;
-        mostrarPaginaReparaciones();          
+        await mostrarPaginaReparaciones();          
         renderizarControlesPaginacionReparaciones();   
     }
 }
