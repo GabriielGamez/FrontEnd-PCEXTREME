@@ -791,6 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Componentes globales
     cargarComponentes();
     inicializarEventosLogin();
+    inicializarSepomexCliente();
     
     // Funciones específicas del Index
     if(document.getElementById('portada-contenido')) cargarPortada();
