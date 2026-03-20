@@ -1245,7 +1245,7 @@ window.guardarEmpleado = async function(evento) {
         CPostal: document.getElementById('emp-cp').value.trim(),
         estado: document.getElementById('emp-estado').value.trim(),
         municipio: document.getElementById('emp-municipio').value.trim(),
-        colonia: document.getElementById('emp-colonia').value.trim(), 
+        asentamiento: document.getElementById('emp-asentamiento').value.trim(), 
         calle: document.getElementById('emp-calle').value.trim()      
     };
 
