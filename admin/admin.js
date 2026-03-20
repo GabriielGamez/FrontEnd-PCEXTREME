@@ -824,13 +824,14 @@ window.cerrarModalPersonal = function() {
 };
 
 window.confirmarEliminacionPersonal = async function(id) {
-    // Mostramos la advertencia de confirmación
-    if (confirm("⚠️ ¿Estás seguro de que deseas ELIMINAR a este empleado del sistema?\n\nEsta acción no se puede deshacer y el empleado perderá su acceso.")) {
-        
-        const token = localStorage.getItem('token'); // Sacamos la llave
+    // LLAMAMOS AL NUEVO MODAL FLOTANTE
+    const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas ELIMINAR a este empleado?<br><br>Esta acción no se puede deshacer y perderá su acceso al sistema.", "peligro");
+    
+    // Si el usuario hizo clic en "Sí, continuar", confirmado será true
+    if (confirmado) {
+        const token = localStorage.getItem('token'); 
         
         try {
-            // Hacemos la petición DELETE a la API
             const respuesta = await fetch(`${baseUrl}/trabajadores/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -839,9 +840,7 @@ window.confirmarEliminacionPersonal = async function(id) {
             if (!respuesta.ok) throw new Error("Error al eliminar el empleado");
 
             mostrarNotificacionAdmin("Empleado eliminado correctamente", "exito");
-            
-            // Recargamos la tabla para que desaparezca
-            iniciarModuloPersonal(); 
+            iniciarModuloPersonal(); // Recargamos la tabla
             
         } catch (error) {
             mostrarNotificacionAdmin(error.message, "error");
@@ -876,7 +875,62 @@ function mostrarNotificacionAdmin(mensaje, tipo = 'error') {
     }, 3000);
 }
 
+// ==========================================
+// SISTEMA DE CONFIRMACIÓN FLOTANTE (CUSTOM)
+// ==========================================
+function mostrarConfirmacionAdmin(mensaje, tipo = 'peligro') {
+    return new Promise((resolve) => {
+        // Creamos el contenedor del fondo oscuro
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] px-4 opacity-0 transition-opacity duration-300';
+        
+        // Colores según si es para eliminar (rojo) o editar (amarillo)
+        const colorModal = tipo === 'peligro' ? 'border-red-600' : 'border-yellow-500';
+        const colorBtn = tipo === 'peligro' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-black';
+        const icono = tipo === 'peligro' ? '🗑️' : '✏️';
+        const titulo = tipo === 'peligro' ? 'Eliminar Registro' : 'Modificar Datos';
 
+        overlay.innerHTML = `
+            <div class="bg-[#1a1c20] border-t-4 ${colorModal} rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] p-6 max-w-sm w-full transform scale-95 transition-transform duration-300 text-center">
+                <span class="text-5xl mb-4 block drop-shadow-lg">${icono}</span>
+                <h3 class="text-xl font-bold text-white mb-2">${titulo}</h3>
+                <p class="text-gray-400 text-sm mb-8 leading-relaxed">${mensaje}</p>
+                <div class="flex justify-center gap-4">
+                    <button id="btn-cancelar-conf" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-bold transition text-sm">
+                        Cancelar
+                    </button>
+                    <button id="btn-aceptar-conf" class="px-5 py-2.5 ${colorBtn} rounded-lg font-bold transition text-sm shadow-lg">
+                        Sí, continuar
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Animación de entrada
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.querySelector('div').classList.remove('scale-95');
+        }, 10);
+
+        const btnAceptar = overlay.querySelector('#btn-aceptar-conf');
+        const btnCancelar = overlay.querySelector('#btn-cancelar-conf');
+
+        // Función para cerrar y resolver la promesa
+        const cerrar = (resultado) => {
+            overlay.classList.add('opacity-0');
+            overlay.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                overlay.remove();
+                resolve(resultado); // Devuelve true o false
+            }, 300);
+        };
+
+        btnAceptar.addEventListener('click', () => cerrar(true));
+        btnCancelar.addEventListener('click', () => cerrar(false));
+    });
+}
 // ==========================================
 // SECCIÓN: ADMINISTRACIÓN DE PRODUCTOS (CRUD)
 // ==========================================
@@ -1154,26 +1208,33 @@ function inicializarOjoPassword() {
 window.guardarEmpleado = async function(evento) {
     evento.preventDefault();
     
-    const btnSubmit = evento.target.querySelector('button[type="submit"]');
-    const textoOriginal = btnSubmit.innerHTML;
-    btnSubmit.innerHTML = "⏳ Guardando...";
-    btnSubmit.disabled = true;
-
-    // 1. Recolectamos datos básicos
+    // 1. Recolectamos datos
     const idEmp = document.getElementById('emp-id').value;
     const emailUsuario = document.getElementById('emp-email-user').value.trim();
     const password = document.getElementById('emp-password').value;
 
     if (!idEmp && !password) {
         mostrarNotificacionAdmin("La contraseña es obligatoria para un nuevo empleado", "error");
-        btnSubmit.innerHTML = textoOriginal;
-        btnSubmit.disabled = false;
         return;
     }
 
+    // SI ESTAMOS EDITANDO, LANZAMOS LA ADVERTENCIA FLOTANTE
+    if (idEmp) {
+        const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas modificar los datos y accesos de este empleado?", "advertencia");
+        
+        if (!confirmado) {
+            return; // Si hace clic en Cancelar, se detiene todo el proceso de guardado
+        }
+    }
+
+    // 2. Si es nuevo o si aceptó la advertencia, bloqueamos el botón
+    const btnSubmit = evento.target.querySelector('button[type="submit"]');
+    const textoOriginal = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = "⏳ Guardando...";
+    btnSubmit.disabled = true;
+
     const correoCompleto = `${emailUsuario}@pcextreme.com`;
 
-    // 2. Preparamos TODOS los datos para el Backend (Incluyendo dirección SEPOMEX)
     const datosTrabajador = {
         nombre: document.getElementById('emp-nombre').value.trim(),
         aPaterno: document.getElementById('emp-ap-paterno').value.trim(),
@@ -1181,45 +1242,28 @@ window.guardarEmpleado = async function(evento) {
         idRol: document.getElementById('emp-rol').value,
         email: correoCompleto,
         telefono: document.getElementById('emp-telefono').value.trim(),
-        
-        // NUEVOS CAMPOS DE DIRECCIÓN:
         CPostal: document.getElementById('emp-cp').value.trim(),
         estado: document.getElementById('emp-estado').value.trim(),
         municipio: document.getElementById('emp-municipio').value.trim(),
-        asentamiento: document.getElementById('emp-asentamiento').value.trim(), // Toma el valor del asentamiento elegido
-        calle: document.getElementById('emp-calle').value.trim()      // Toma el nombre de la calle y número
+        colonia: document.getElementById('emp-colonia').value.trim(), 
+        calle: document.getElementById('emp-calle').value.trim()      
     };
 
-    // Solo enviamos el password si el usuario escribió uno
     if (password) {
         datosTrabajador.password = password;
     }
 
-    // 3. Extraemos el Token de seguridad
-    // (Asegúrate de reemplazar desde "const token..." hacia abajo en tu función guardarEmpleado actual)
-    
-    // 3. Extraemos el Token de seguridad
     const token = localStorage.getItem('token');
 
     try {
         let url = `${baseUrl}/trabajadores`;
         let method = 'POST'; 
 
-        // Si existe un idEmp, significa que estamos EDITANDO
         if (idEmp) {
-            // MOSTRAMOS LA ADVERTENCIA DE CONFIRMACIÓN
-            if (!confirm("✏️ ¿Estás seguro de que deseas modificar los datos de este empleado?")) {
-                // Si el usuario cancela, restauramos el botón y detenemos todo
-                btnSubmit.innerHTML = textoOriginal;
-                btnSubmit.disabled = false;
-                return; 
-            }
-            
             url = `${baseUrl}/trabajadores/${idEmp}`;
             method = 'PUT';
         }
 
-        // 4. Petición a la API
         const respuesta = await fetch(url, {
             method: method,
             headers: { 
