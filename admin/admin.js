@@ -111,7 +111,7 @@ async function cargarTablaAdminReparaciones() {
     if (!tbody) return;
 
     try {
-        const respuesta = await fetch(`${baseUrl}/reparaciones`);
+        const respuesta = await fetch(`${baseUrl}/registros`);
         if (!respuesta.ok) throw new Error("Error al obtener las reparaciones");
         
         adminReparacionesData = await respuesta.json();
@@ -1368,7 +1368,6 @@ window.guardarEmpleado = async function(evento) {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     cargarComponentesAdmin();
-    iniciarModuloReparaciones();
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
