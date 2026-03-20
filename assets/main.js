@@ -132,7 +132,6 @@ function verificarSesion() {
                     </button>
                     <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1f1f1f] rounded-xl shadow-lg border border-gray-700 overflow-hidden z-50">
                         <button onclick="window.location.href='public/perfil.html'" class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mi Perfil</button>
-                        <button onclick="window.location.href='public/mis_dispositivos.html'" class="w-full text-left px-4 py-3 text-white hover:bg-gray-800 transition font-semibold">Mis Dispositivos</button>
                         <button onclick="cerrarSesion()" class="w-full text-left px-4 py-3 text-[#ff4d4d] hover:bg-gray-800 transition font-semibold">Cerrar Sesión</button>
                     </div>
                 </div>
@@ -786,6 +785,90 @@ async function cargarComponentes() {
     }
 }
 
+// ==========================================
+// MÓDULO 10: PERFIL Y DISPOSITIVOS DEL CLIENTE
+// ==========================================
+async function cargarPerfilYDispositivos() {
+    const contenedorNombre = document.getElementById('perfil-nombre');
+    const listaDisp = document.getElementById('lista-mis-dispositivos');
+    
+    // Verificamos si estamos en la página del perfil
+    if (!contenedorNombre || !listaDisp) return;
+
+    const usuarioStr = localStorage.getItem('usuario');
+    if (!usuarioStr) return; // Si no hay sesión, el verificarSesion() ya se encarga de sacarlo
+    
+    const usuarioSesion = JSON.parse(usuarioStr);
+    
+    // Dependiendo de cómo lo guarde tu BD, puede ser idCliente o id
+    const idCliente = usuarioSesion.idCliente || usuarioSesion.id; 
+
+    try {
+        // --- 1. CARGAMOS LOS DATOS DEL PERFIL DEL CLIENTE ---
+        const resPerfil = await fetch(`${API_BASE_URL}/clientes/${idCliente}`);
+        if (resPerfil.ok) {
+            let datosCli = await resPerfil.json();
+            if (Array.isArray(datosCli)) datosCli = datosCli[0]; // Por si la API devuelve un array
+
+            document.getElementById('perfil-nombre').innerText = datosCli.nombre || 'N/A';
+            document.getElementById('perfil-apellidos').innerText = `${datosCli.aPaterno || ''} ${datosCli.aMaterno || ''}`.trim() || 'N/A';
+            document.getElementById('perfil-telefono').innerText = datosCli.telefono || 'N/A';
+            document.getElementById('perfil-correo').innerText = datosCli.email || datosCli.correo || 'N/A';
+        }
+
+        // --- 2. CARGAMOS LOS DISPOSITIVOS DEL CLIENTE ---
+        const resDisp = await fetch(`${API_BASE_URL}/dispositivos`);
+        
+        if (resDisp.ok) {
+            const todosDispositivos = await resDisp.json();
+            
+            // Filtramos en memoria para obtener solo los que le pertenecen a este idCliente
+            const misDispositivos = todosDispositivos.filter(d => String(d.idCliente) === String(idCliente));
+
+            if (misDispositivos.length === 0) {
+                listaDisp.innerHTML = `
+                    <div class="bg-gray-900/50 border border-gray-800 p-8 rounded-xl text-center flex flex-col items-center justify-center">
+                        <span class="text-4xl mb-4 opacity-50">💻</span>
+                        <p class="text-gray-400 font-medium">Aún no tienes dispositivos registrados.</p>
+                    </div>`;
+            } else {
+                let html = '';
+                misDispositivos.forEach(disp => {
+                    // Diseño de tarjeta individual para el dispositivo
+                    html += `
+                        <div class="bg-[#151515] border border-gray-800 p-5 rounded-xl flex justify-between items-center hover:border-[#7ed957] transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-gray-900 p-3 rounded-lg text-gray-400 group-hover:text-[#7ed957] transition-colors">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-white uppercase">${disp.marca}</h4>
+                                    <p class="text-sm text-gray-400">Mod. ${disp.modelo}</p>
+                                </div>
+                            </div>
+                            <button onclick="verDetalleDispositivo(${disp.idDispositivo})" class="px-5 py-2.5 bg-gray-800 hover:bg-[#7ed957] text-gray-300 hover:text-black font-bold rounded-lg border border-gray-700 transition">
+                                Ver Detalles
+                            </button>
+                        </div>
+                    `;
+                });
+                listaDisp.innerHTML = html;
+            }
+        } else {
+            listaDisp.innerHTML = `<p class="text-red-500">Error al cargar la lista de dispositivos.</p>`;
+        }
+
+    } catch (error) {
+        console.error("Error cargando perfil o dispositivos:", error);
+        mostrarNotificacion("Hubo un error de conexión", "error");
+    }
+}
+
+// Función del botón "Ver" de cada dispositivo
+window.verDetalleDispositivo = function(idDispositivo) {
+    // Aquí puedes cambiarlo para redirigir a donde quieras que vean los detalles de su equipo
+    window.location.href = `/FrontEnd-PCEXTREME/detalle_dispositivo.html?id=${idDispositivo}`;
+};
 // Disparador principal
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Cargamos cosas generales
@@ -814,4 +897,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Llamadas exclusivas para los Productos
     if(document.getElementById('cuadricula-productos')) cargarCatalogoProductos();
     if(document.getElementById('contenedor-detalle')) cargarDetalleProducto();
+    // 5. Llamada para la vista de Perfil / Dispositivos
+    if(document.getElementById('perfil-nombre')) cargarPerfilYDispositivos();
 });
