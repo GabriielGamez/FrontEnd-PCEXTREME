@@ -222,15 +222,15 @@ async function mostrarPaginaReparaciones() {
     for (const reg of reparacionesPagina) {
         
         // Capturamos los IDs API /registros
-        const idRegistro = reg.idRegistro || reg.id || reg.folio;
+        const idRegistro = reg.idFolio || reg.id || reg.folio;
         const idClienteFk = reg.idCliente || reg.clienteId || reg.cliente_id;
         const idDispositivoFk = reg.idDispositivo || reg.dispositivoId || reg.dispositivo_id;
         
-        const falla = reg.falla || reg.problema || "Sin descripción";
-        const estado = reg.estado || "Recibido";
+        const falla = reg.detalle || reg.problema || "Sin descripción";
+        const estado = reg.estadoEquipo || "Recibido";
 
-        let nombreClienteReal = "Cliente no encontrado";
-        let nombreEquipoReal = "Equipo no encontrado";
+        let nombreCompleto = "Cliente no encontrado";
+        let nombreEquipo = "Equipo no encontrado";
 
         // --- CONSUMO DE LA API DE CLIENTES ---
         if (idClienteFk) {
@@ -238,7 +238,7 @@ async function mostrarPaginaReparaciones() {
                 const resCli = await fetch(`${baseUrl}/clientes/${idClienteFk}`);
                 if (resCli.ok) {
                     const cli = await resCli.json();
-                    nombreClienteReal = `${cli.nombre || ''} ${cli.aPaterno || ''}`.trim();
+                    nombreCompleto = `${cli.nombre || ''} ${cli.aPaterno || ''}`.trim();
                 }
             } catch (error) {
                 console.warn(`No se pudo cargar el cliente ${idClienteFk}`);
@@ -252,8 +252,8 @@ async function mostrarPaginaReparaciones() {
                 if (resDisp.ok) {
                     const disp = await resDisp.json();
                     // Recuperamos solo marca y modelo concatenado como lo solicitaste
-                    nombreEquipoReal = `${disp.marca || ''} ${disp.modelo || ''}`.trim();
-                    if (nombreEquipoReal === "") nombreEquipoReal = disp.tipo || "Equipo sin marca";
+                    nombreEquipo = `${disp.marca || ''} ${disp.modelo || ''}`.trim();
+                    if (nombreEquipo === "") nombreEquipo = disp.tipo || "Equipo sin marca";
                 }
             } catch (error) {
                 console.warn(`No se pudo cargar el dispositivo ${idDispositivoFk}`);
@@ -271,8 +271,8 @@ async function mostrarPaginaReparaciones() {
         htmlFilas += `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
                 <td class="p-4 text-gray-500 font-medium">#${idRegistro}</td>
-                <td class="p-4 font-semibold text-gray-900">${nombreClienteReal}</td>
-                <td class="p-4 text-gray-600">${nombreEquipoReal}</td>
+                <td class="p-4 font-semibold text-gray-900">${nombreCompleto}</td>
+                <td class="p-4 text-gray-600">${nombreEquipo}</td>
                 <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
                 <td class="p-4">
                     <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">
