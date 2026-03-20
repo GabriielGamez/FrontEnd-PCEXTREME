@@ -1039,10 +1039,10 @@ function inicializarSepomex() {
                     document.getElementById('emp-estado').value = lugares[0].d_estado;
                     document.getElementById('emp-municipio').value = lugares[0].d_mnpio;
 
-                    // Cambiamos el Input de Colonia por un Select con los Asentamientos
-                    const contenedorColonia = document.getElementById('contenedor-colonia');
+                    // Cambiamos el Input de asentamiento por un Select con los Asentamientos
+                    const contenedorasentamiento = document.getElementById('contenedor-asentamiento');
                     
-                    let selectHtml = `<select id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
+                    let selectHtml = `<select id="emp-asentamiento" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
                     selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
                     
                     // 4. Ahora SÍ hacemos el forEach sobre el arreglo "lugares"
@@ -1051,7 +1051,7 @@ function inicializarSepomex() {
                     });
                     
                     selectHtml += `</select>`;
-                    contenedorColonia.innerHTML = selectHtml;
+                    contenedorasentamiento.innerHTML = selectHtml;
 
                 } catch (error) {
                     console.error("Error API SEPOMEX:", error);
@@ -1100,7 +1100,7 @@ window.guardarEmpleado = async function(evento) {
         CPostal: document.getElementById('emp-cp').value.trim(),
         estado: document.getElementById('emp-estado').value.trim(),
         municipio: document.getElementById('emp-municipio').value.trim(),
-        colonia: document.getElementById('emp-colonia').value.trim(), // Toma el valor del asentamiento elegido
+        asentamiento: document.getElementById('emp-asentamiento').value.trim(), // Toma el valor del asentamiento elegido
         calle: document.getElementById('emp-calle').value.trim()      // Toma el nombre de la calle y número
     };
 
