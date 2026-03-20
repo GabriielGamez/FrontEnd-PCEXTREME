@@ -290,7 +290,7 @@ async function mostrarPaginaReparaciones() {
                     </span>
                 </td>
                 <td class="p-4 text-center">
-                    <button onclick="abrirModalReparacion(${idRegistro})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm">
+                    <button onclick="abrirModalReparacion(${idRegistro})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-black-200 rounded-lg hover:shadow-sm">
                     Actualizar
                     </button>
                 </td>
@@ -346,16 +346,16 @@ async function cambiarPaginaReparaciones(direccion) {
 function abrirModalReparacion(idRegistroBuscado) {
     const modal = document.getElementById('modal-reparacion');
     
-    const reg = adminReparacionesData.find(r => String(r.idRegistro || r.id || r.folio) === String(idRegistroBuscado));
+    // ¡AQUÍ ESTÁ LA CORRECCIÓN! Buscamos usando la variable real: r.idFolio
+    const reg = adminReparacionesData.find(r => String(r.idFolio) === String(idRegistroBuscado));
     
     if (!reg) {
         console.error("No se encontró el ID:", idRegistroBuscado, "en la memoria:", adminReparacionesData);
         return alert("No se encontró la información del registro en memoria.");
     }
 
-    // Extraer los nombres 
-    const nombreClienteRenderizado = reg.nombreClienteMapeado || "Desconocido";
-    const nombreEquipoRenderizado = reg.nombreEquipoMapeado || "Equipo sin definir";
+    const nombreClienteRenderizado = reg.nombreCompleto || "Desconocido";
+    const nombreEquipoRenderizado = reg.nombreEquipo || "Equipo sin definir";
 
     // Inyección visual en el HTML
     document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
@@ -365,8 +365,8 @@ function abrirModalReparacion(idRegistroBuscado) {
     // Inyección del ID oculto para el formulario
     document.getElementById('admin-reparacion-id').value = idRegistroBuscado;
     
-    // Inyección del estado actual en el select
-    document.getElementById('admin-estado-reparacion').value = reg.estado || 'En Diagnóstico'; 
+    // ¡CORRECCIÓN! Usamos el nombre real de tu base de datos: reg.estadoEquipo
+    document.getElementById('admin-estado-reparacion').value = reg.estadoEquipo || 'En Diagnóstico'; 
 
     modal.classList.remove('hidden');
 }
