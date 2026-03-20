@@ -176,7 +176,7 @@ function mostrarPaginaReparaciones() {
                 </td>
                 <td class="p-4 text-center">
                     <button onclick="abrirModalReparacion(${idRegistro})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm">
-                        <span>✏️</span> Actualizar
+                        Actualizar
                     </button>
                 </td>
             </tr>
