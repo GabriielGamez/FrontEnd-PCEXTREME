@@ -784,6 +784,31 @@ function iniciarModuloCrecimiento() {
         window.calcularCrecimiento(); // Hace el primer cálculo por defecto al entrar a la página
     }
 }
+
+// ==========================================
+// FUNCIÓN PARA MOSTRAR/OCULTAR MÚLTIPLES CONTRASEÑAS
+// ==========================================
+function inicializarOjosPasswordGlobal() {
+    // Buscamos todos los botones de ojito en la página
+    const botonesOjo = document.querySelectorAll('.btn-ver-password');
+    
+    botonesOjo.forEach(boton => {
+        // El input de la contraseña siempre es el elemento anterior al botón en nuestro HTML
+        const inputPassword = boton.previousElementSibling;
+        
+        if (inputPassword && inputPassword.tagName === 'INPUT') {
+            // Cuando el puntero ENTRA al icono
+            boton.addEventListener('mouseenter', () => {
+                inputPassword.type = 'text';
+            });
+            
+            // Cuando el puntero SALE del icono
+            boton.addEventListener('mouseleave', () => {
+                inputPassword.type = 'password';
+            });
+        }
+    });
+}
 // ==========================================
 // INICIALIZACIÓN GLOBAL
 // ==========================================
@@ -792,6 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarComponentes();
     inicializarEventosLogin();
     inicializarSepomexCliente();
+    inicializarOjosPasswordGlobal();
     
     // Funciones específicas del Index
     if(document.getElementById('portada-contenido')) cargarPortada();

@@ -42,8 +42,16 @@
 
                     <div>
                         <label for="password-login" class="block text-sm font-medium text-gray-400 mb-1">Contraseña:</label>
-                        <input type="password" id="password-login" required placeholder="••••••••" 
-                               class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                        <div class="relative flex items-center">
+                            <input type="password" id="password-login" required placeholder="••••••••" 
+                                   class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 pr-10 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                            <button type="button" class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 mt-2 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
@@ -129,11 +137,27 @@
                             </div>
                             <div>
                                 <label for="reg-password" class="block text-sm text-gray-400 mb-1">Contraseña:</label>
-                                <input type="password" id="reg-password" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <div class="relative flex items-center">
+                                    <input type="password" id="reg-password" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                    <button type="button" class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label for="reg-password-confirm" class="block text-sm text-gray-400 mb-1">Confirmar Contraseña:</label>
-                                <input type="password" id="reg-password-confirm" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <div class="relative flex items-center">
+                                    <input type="password" id="reg-password-confirm" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                    <button type="button" class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
