@@ -260,13 +260,20 @@ async function mostrarPaginaReparaciones() {
             }
         }
 
-        // --- CLASES DE ESTADO (TAILWIND) ---
-        let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200';
-        if (estado === 'Reparado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
-        if (estado === 'En revisión') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
-        if (estado === 'Entregado') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
-        if (estado === 'Esperando piezas') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
-
+        // --- CLASES DE ESTADO ---
+       let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200'; // Valor por defecto
+        
+        if (estado === 'Entregado') {
+            colorEstado = 'bg-green-100 text-green-700 border-green-200';
+        } else if (estado === 'Listo para entregar') {
+            colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
+        } else if (estado === 'En Reparación') {
+            colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        } else if (estado === 'En Diagnóstico') {
+            colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
+        } else if (estado === 'Sin Reparación') {
+            colorEstado = 'bg-red-100 text-red-700 border-red-200';
+        }
         // --- CONSTRUIMOS LA FILA ---
         htmlFilas += `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
@@ -281,7 +288,7 @@ async function mostrarPaginaReparaciones() {
                 </td>
                 <td class="p-4 text-center">
                     <button onclick="abrirModalReparacion(${idRegistro})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:shadow-sm">
-                        <span>✏️</span> Actualizar
+                    Actualizar
                     </button>
                 </td>
             </tr>
