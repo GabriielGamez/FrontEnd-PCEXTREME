@@ -760,8 +760,8 @@ window.abrirModalPersonal = async function(id = null) {
     
     if (form) form.reset(); // Limpia el formulario
     
-    // Restablecemos el contenedor de la colonia al estado original (bloqueado) por si venimos de otra edición
-    document.getElementById('contenedor-colonia').innerHTML = `<input type="text" id="emp-colonia" required placeholder="Escribe el C.P. primero" readonly class="w-full bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded focus:outline-none cursor-not-allowed">`;
+    // Restablecemos el contenedor de la asentamiento al estado original (bloqueado) por si venimos de otra edición
+    document.getElementById('contenedor-asentamiento').innerHTML = `<input type="text" id="emp-asentamiento" required placeholder="Escribe el C.P. primero" readonly class="w-full bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded focus:outline-none cursor-not-allowed">`;
 
     if (id) {
         // BUSCAMOS AL EMPLEADO EN LA LISTA GLOBAL
@@ -787,26 +787,26 @@ window.abrirModalPersonal = async function(id = null) {
             document.getElementById('emp-estado').value = emp.estado || '';
             document.getElementById('emp-municipio').value = emp.municipio || '';
 
-            // Si tiene un Código Postal guardado, cargamos sus colonias automáticamente
+            // Si tiene un Código Postal guardado, cargamos sus asentamientos automáticamente
             if (emp.CPostal && String(emp.CPostal).length === 5) {
                 try {
                     const res = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${emp.CPostal}`);
                     const datos = await res.json();
                     
                     if (datos.zip_codes && datos.zip_codes.length > 0) {
-                        let selectHtml = `<select id="emp-colonia" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
+                        let selectHtml = `<select id="emp-asentamiento" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
                         
                         datos.zip_codes.forEach(lugar => {
                             // Si el asentamiento coincide con el del empleado, lo dejamos seleccionado (selected)
-                            const seleccionado = (lugar.d_asenta === emp.colonia) ? 'selected' : '';
+                            const seleccionado = (lugar.d_asenta === emp.asentamiento) ? 'selected' : '';
                             selectHtml += `<option value="${lugar.d_asenta}" ${seleccionado}>${lugar.d_asenta}</option>`;
                         });
                         
                         selectHtml += `</select>`;
-                        document.getElementById('contenedor-colonia').innerHTML = selectHtml;
+                        document.getElementById('contenedor-asentamiento').innerHTML = selectHtml;
                     }
                 } catch (e) {
-                    console.error("No se pudieron cargar las colonias al editar");
+                    console.error("No se pudieron cargar las asentamientos al editar");
                 }
             }
         }
