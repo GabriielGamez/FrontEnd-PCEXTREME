@@ -346,21 +346,26 @@ async function cambiarPaginaReparaciones(direccion) {
 function abrirModalReparacion(idRegistroBuscado) {
     const modal = document.getElementById('modal-reparacion');
     
-    // Buscamos el registro
-    const reg = adminReparacionesData.find(r => (r.idRegistro || r.id || r.folio) === idRegistroBuscado);
-    if (!reg) return alert("No se encontró la información del registro en memoria.");
+    const reg = adminReparacionesData.find(r => String(r.idRegistro || r.id || r.folio) === String(idRegistroBuscado));
+    
+    if (!reg) {
+        console.error("No se encontró el ID:", idRegistroBuscado, "en la memoria:", adminReparacionesData);
+        return alert("No se encontró la información del registro en memoria.");
+    }
 
-    // Extraemos los nombres que guardamos durante la descarga
+    // Extraer los nombres 
     const nombreClienteRenderizado = reg.nombreClienteMapeado || "Desconocido";
     const nombreEquipoRenderizado = reg.nombreEquipoMapeado || "Equipo sin definir";
 
-    // Inyección visual
+    // Inyección visual en el HTML
     document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
     document.getElementById('info-cliente').innerText = nombreClienteRenderizado;
     document.getElementById('info-equipo').innerText = nombreEquipoRenderizado;
     
-    // Inyección de formulario
+    // Inyección del ID oculto para el formulario
     document.getElementById('admin-reparacion-id').value = idRegistroBuscado;
+    
+    // Inyección del estado actual en el select
     document.getElementById('admin-estado-reparacion').value = reg.estado || 'En Diagnóstico'; 
 
     modal.classList.remove('hidden');
