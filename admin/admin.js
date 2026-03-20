@@ -98,64 +98,37 @@ window.abrirPestana = function (evento, nombrePestana) {
     botonActual.classList.add("text-[#7ed957]", "border-[#7ed957]");
 };
 // ==========================================
-// SECCIÓN: GESTIÓN DE REPARACIONES 
+// SECCIÓN: GESTIÓN DE REPARACIONES (PAGINACIÓN Y API ANIDADA)
 // ==========================================
 let adminReparacionesData = [];
 let paginaActualReparaciones = 1;
 const itemsPorPaginaReparaciones = 20;
 
-// Diccionarios en memoria para cruzar las llaves foráneas
-let mapaClientesRep = {};
-let mapaDispositivosRep = {};
-
 /**
- * 1. Descarga de datos paralela (Cruces Relacionales)
+ * 1. Descarga principal de datos desde la API
  */
 async function cargarTablaAdminReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
     if (!tbody) return;
 
     try {
-        // Llamamos a las 3 APIs al mismo tiempo 
-        const [resRegistros, resClientes, resDispositivos] = await Promise.all([
-            fetch(`${baseUrl}/registros`),
-            fetch(`${baseUrl}/clientes`),
-            fetch(`${baseUrl}/dispositivos`) 
-        ]);
-
-        if (!resRegistros.ok) throw new Error("Error al obtener los registros de la API");
+        // ¡Ya no necesitamos 3 peticiones! La API de registros ya trae todo anidado
+        const respuesta = await fetch(`${baseUrl}/registros`);
+        if (!respuesta.ok) throw new Error("Error al obtener los registros");
         
-        adminReparacionesData = await resRegistros.json();
-    
-        const clientesData = resClientes.ok ? await resClientes.json() : [];
-        const dispositivosData = resDispositivos.ok ? await resDispositivos.json() : [];
-
-        // ----------------------------------------------------
-        // CONSTRUCCIÓN DE DICCIONARIOS (JOIN EN MEMORIA)
-        // ----------------------------------------------------
-        mapaClientesRep = {};
-        clientesData.forEach(cli => {
-            const id = cli.idCliente || cli.id; 
-            mapaClientesRep[id] = `${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ''}`.trim();
-        });
-
-        mapaDispositivosRep = {};
-        dispositivosData.forEach(disp => {
-            const id = disp.idDispositivo || disp.id;
-            mapaDispositivosRep[id] = `${disp.tipo || ''} ${disp.marca || disp.modelo || ''}`.trim() || `Dispositivo #${id}`; 
-        });
+        adminReparacionesData = await respuesta.json();
         
         mostrarPaginaReparaciones();
         renderizarControlesPaginacionReparaciones();
 
     } catch (error) {
         console.error("Error al cargar reparaciones:", error);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-semibold">Error al cargar la tabla relacional. Revisa la consola.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-500 font-semibold">Error al cargar la tabla. Revisa la consola.</td></tr>`;
     }
 }
 
 /**
- * 2. Dibujado de la tabla con reemplazo de IDs
+ * 2. Dibuja la tabla extrayendo los datos anidados
  */
 function mostrarPaginaReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
@@ -171,27 +144,19 @@ function mostrarPaginaReparaciones() {
     const reparacionesPagina = adminReparacionesData.slice(inicio, fin);
 
     reparacionesPagina.forEach(reg => {
-      
-        let nombreCliente = "Desconocido";
-        if (reg.cliente && reg.cliente.nombre) {
-            nombreCliente = `${reg.cliente.nombre} ${reg.cliente.aPaterno || ''}`;
-        } else if (reg.idCliente || reg.cliente_id) {
-            nombreCliente = mapaClientesRep[reg.idCliente || reg.cliente_id] || "Cliente no encontrado";
-        }
+        // EXTRAEMOS LOS DATOS EXACTAMENTE COMO VIENEN EN TU JSON
+        const clienteObj = reg.cliente || {};
+        const dispositivoObj = reg.dispositivo || {};
 
-        let nombreEquipo = "Equipo sin definir";
-        if (reg.dispositivo && (reg.dispositivo.tipo || reg.dispositivo.marca)) {
-            nombreEquipo = `${reg.dispositivo.tipo || ''} ${reg.dispositivo.marca || ''}`;
-        } else if (reg.idDispositivo || reg.dispositivo_id) {
-            nombreEquipo = mapaDispositivosRep[reg.idDispositivo || reg.dispositivo_id] || "Dispositivo no encontrado";
-        }
+        // Armamos los nombres validando que no vengan vacíos
+        const nombreCompleto = `${clienteObj.nombre || 'Sin nombre'} ${clienteObj.aPaterno || ''}`.trim();
+        const nombreEquipo = `${dispositivoObj.tipo || 'Equipo'} ${dispositivoObj.marca || ''} ${dispositivoObj.modelo || ''}`.trim();
+        
+        const idRegistro = reg.idRegistro;
+        const falla = reg.falla || "Sin descripción";
+        const estado = reg.estado || "Recibido";
 
-        // Variables dinámicas de la tabla registros
-        const idRegistro = reg.idRegistro ;
-        const falla = reg.detalles || "Sin descripción";
-        const estado = reg.estadoEquipo || "Recibido";
-
-        // Clases de Tailwind
+        // Clases de Tailwind para el estado
         let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200';
         if (estado === 'Reparado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
         if (estado === 'En revisión') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
@@ -201,7 +166,7 @@ function mostrarPaginaReparaciones() {
         tbody.innerHTML += `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
                 <td class="p-4 text-gray-500 font-medium">#${idRegistro}</td>
-                <td class="p-4 font-semibold text-gray-900">${nombreCliente}</td>
+                <td class="p-4 font-semibold text-gray-900">${nombreCompleto}</td>
                 <td class="p-4 text-gray-600">${nombreEquipo}</td>
                 <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
                 <td class="p-4">
@@ -220,7 +185,7 @@ function mostrarPaginaReparaciones() {
 }
 
 /**
- * 3. Renderiza los controles Anterior / Siguiente
+ * 3. Renderiza controles de paginación
  */
 function renderizarControlesPaginacionReparaciones() {
     const contenedor = document.getElementById('controles-paginacion-reparaciones');
@@ -259,32 +224,28 @@ function cambiarPaginaReparaciones(direccion) {
 }
 
 /**
- * 4. Gestión de Modal: Adaptado para el objeto relacional
+ * 4. Gestión de Modal: Carga de datos para visualización
  */
 function abrirModalReparacion(idRegistroBuscado) {
     const modal = document.getElementById('modal-reparacion');
-    const form = document.getElementById('formulario-reparacion');
     
-    // Buscar el registro exacto tolerando distintos nombres de ID
-    const reg = adminReparacionesData.find(r => (r.idRegistro || r.id || r.folio) === idRegistroBuscado);
+    // Buscamos el registro en memoria usando idRegistro
+    const reg = adminReparacionesData.find(r => r.idRegistro === idRegistroBuscado);
     if (!reg) return alert("No se encontró la información del equipo en memoria.");
 
-    // Resolvemos los nombres igual que en la tabla
-    let nombreCliente = "Desconocido";
-    if (reg.cliente && reg.cliente.nombre) nombreCliente = `${reg.cliente.nombre} ${reg.cliente.aPaterno || ''}`;
-    else if (reg.idCliente) nombreCliente = mapaClientesRep[reg.idCliente] || "Cliente no encontrado";
+    const clienteObj = reg.cliente || {};
+    const dispositivoObj = reg.dispositivo || {};
 
-    let nombreEquipo = "Equipo sin definir";
-    if (reg.dispositivo && reg.dispositivo.tipo) nombreEquipo = `${reg.dispositivo.tipo || ''} ${reg.dispositivo.marca || ''}`;
-    else if (reg.idDispositivo) nombreEquipo = mapaDispositivosRep[reg.idDispositivo] || "Dispositivo no encontrado";
+    const nombreCompleto = `${clienteObj.nombre || 'Desconocido'} ${clienteObj.aPaterno || ''}`.trim();
+    const nombreEquipo = `${dispositivoObj.tipo || 'Equipo'} ${dispositivoObj.marca || ''} ${dispositivoObj.modelo || ''}`.trim();
 
-    // Inyección visual
-    document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
-    document.getElementById('info-cliente').innerText = nombreCliente;
+    // Inyección visual en el HTML
+    document.getElementById('modal-folio-display').innerText = reg.idRegistro;
+    document.getElementById('info-cliente').innerText = nombreCompleto;
     document.getElementById('info-equipo').innerText = nombreEquipo;
     
     // Inyección de formulario
-    document.getElementById('admin-reparacion-id').value = idRegistroBuscado;
+    document.getElementById('admin-reparacion-id').value = reg.idRegistro;
     document.getElementById('admin-estado-reparacion').value = reg.estado || 'Recibido'; 
 
     modal.classList.remove('hidden');
@@ -295,7 +256,7 @@ function cerrarModalReparacion() {
 }
 
 /**
- * 5. Envío hacia el backend (Solo mandamos la información pertinente al UPDATE)
+ * 5. Envío hacia el backend (Solo actualiza el estado)
  */
 async function gestionarSubmitReparacion(evento) {
     evento.preventDefault();
@@ -329,7 +290,7 @@ async function gestionarSubmitReparacion(evento) {
         }
 
         cerrarModalReparacion();
-        await cargarTablaAdminReparaciones(); // Refrescamos todo tras el guardado
+        await cargarTablaAdminReparaciones(); 
         
         alert(`Estado actualizado a "${nuevoEstado}" con éxito.`);
         
@@ -341,6 +302,7 @@ async function gestionarSubmitReparacion(evento) {
         btnGuardar.innerText = textoOriginalBtn;
     }
 }
+
 // ==========================================
 // 4. MÓDULO: GESTIÓN DE CLIENTES
 // ==========================================
