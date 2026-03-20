@@ -1050,6 +1050,8 @@ function mostrarConfirmacionAdmin(mensaje, tipo = 'peligro') {
 // SECCIÓN: ADMINISTRACIÓN DE PRODUCTOS (CRUD)
 // ==========================================
 let adminProductosData = [];
+let prodPaginaActual = 1;
+const prodPorPagina = 20;
 
 async function cargarTablaAdminProductos() {
     const tbody = document.getElementById('tabla-productos-admin');
@@ -1059,45 +1061,87 @@ async function cargarTablaAdminProductos() {
         const respuesta = await fetch(`${baseUrl}/productos`);
         if (!respuesta.ok) throw new Error("Error al obtener productos");
         
-        // Guardamos los productos en la memoria global
         adminProductosData = await respuesta.json();
-        tbody.innerHTML = '';
+        prodPaginaActual = 1;
+        mostrarPaginaProductos();
 
-        if(adminProductosData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-500">No hay productos registrados.</td></tr>`;
-            return;
-        }
-
-        adminProductosData.forEach(prod => {
-            const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
-
-            tbody.innerHTML += `
-                <tr class="hover:bg-gray-50 transition border-b border-gray-100">
-                    <td class="p-4 text-gray-500 font-medium">#${prod.idProducto}</td>
-                    <td class="p-4">
-                        <div class="w-12 h-12 bg-white rounded flex items-center justify-center p-1 border border-gray-200 shadow-sm">
-                            <img src="${imagenUrl}" alt="Img" class="max-w-full max-h-full object-contain">
-                        </div>
-                    </td>
-                    <td class="p-4 font-semibold text-gray-900">${prod.nombre}</td>
-                    <td class="p-4"><span class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 font-medium border border-gray-200">${prod.categoria}</span></td>
-                    <td class="p-4 text-[#6bc148] font-bold">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                    <td class="p-4 text-gray-700">${prod.stock}</td>
-                    <td class="p-4 text-center space-x-3">
-                        <button onclick="abrirModalProducto(${prod.idProducto})" class="text-blue-500 hover:text-blue-700 font-medium transition" title="Editar">✏️ Editar</button>
-                        <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-700 font-medium transition" title="Eliminar">🗑️</button>
-                    </td>
-                </tr>
-            `;
-        });
     } catch (error) {
         console.error("Error detallado al cargar la tabla:", error); 
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Error al cargar la tabla. Revisa la consola.</td></tr>`;
     }
 }
 
+function mostrarPaginaProductos() {
+    const tbody = document.getElementById('tabla-productos-admin');
+    if (!tbody) return;
+
+    if(adminProductosData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-500">No hay productos registrados.</td></tr>`;
+        document.getElementById('paginacion-productos').innerHTML = '';
+        return;
+    }
+
+    const inicio = (prodPaginaActual - 1) * prodPorPagina;
+    const prodPagina = adminProductosData.slice(inicio, inicio + prodPorPagina);
+    let html = "";
+
+    prodPagina.forEach(prod => {
+        const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
+
+        html += `
+            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
+                <td class="p-4 text-gray-400 font-medium align-middle">#${prod.idProducto}</td>
+                <td class="p-4 align-middle">
+                    <div class="w-12 h-12 bg-[#0f1115] rounded flex items-center justify-center p-1 border border-gray-700 shadow-sm">
+                        <img src="${imagenUrl}" alt="Img" class="max-w-full max-h-full object-contain">
+                    </div>
+                </td>
+                <td class="p-4 font-bold text-white align-middle">${prod.nombre}</td>
+                <td class="p-4 align-middle">
+                    <span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300 font-bold border border-gray-700 tracking-wide uppercase">${prod.categoria}</span>
+                </td>
+                <td class="p-4 text-[#7ed957] font-extrabold align-middle">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="p-4 text-gray-300 font-semibold align-middle">${prod.stock}</td>
+                <td class="p-4 text-center space-x-3 align-middle">
+                    <button onclick="abrirModalProducto(${prod.idProducto})" class="text-blue-400 hover:text-blue-300 font-semibold transition" title="Editar">✏️ Editar</button>
+                    <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-400 font-semibold transition ml-2" title="Eliminar">🗑️</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+    actualizarPaginacionProductos();
+}
+function actualizarPaginacionProductos() {
+    const controles = document.getElementById("paginacion-productos");
+    if (!controles) return;
+
+    const total = Math.ceil(adminProductosData.length / prodPorPagina);
+    if (total <= 1) {
+        controles.innerHTML = "";
+        return;
+    }
+
+    controles.innerHTML = `
+        <div class="flex items-center justify-between px-6 py-3 bg-gray-900 border-t border-gray-800 rounded-b-2xl">
+            <p class="text-sm text-gray-400">Mostrando ${(prodPaginaActual - 1) * prodPorPagina + 1} a ${Math.min(prodPaginaActual * prodPorPagina, adminProductosData.length)} de ${adminProductosData.length}</p>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm">
+                <button onclick="cambiarPaginaProductos('anterior')" ${prodPaginaActual === 1 ? "disabled" : ""} class="px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${prodPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">Anterior</button>
+                <span class="px-4 py-2 border-t border-b border-gray-700 bg-[#0f1115] text-gray-200 text-sm">Página ${prodPaginaActual} de ${total}</span>
+                <button onclick="cambiarPaginaProductos('siguiente')" ${prodPaginaActual === total ? "disabled" : ""} class="px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${prodPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">Siguiente</button>
+            </nav>
+        </div>`;
+}
+window.cambiarPaginaProductos = function (dir) {
+    const total = Math.ceil(adminProductosData.length / prodPorPagina);
+    if (dir === "siguiente" && prodPaginaActual < total) prodPaginaActual++;
+    else if (dir === "anterior" && prodPaginaActual > 1) prodPaginaActual--;
+    mostrarPaginaProductos();
+};
+
 // Control del Modal
-function abrirModalProducto(idProducto = null) {
+window.abrirModalProducto = function(idProducto = null) {
     const modal = document.getElementById('modal-producto');
     const form = document.getElementById('formulario-producto');
     const titulo = document.getElementById('modal-titulo');
@@ -1110,17 +1154,15 @@ function abrirModalProducto(idProducto = null) {
     inputFile.value = ''; 
 
     if (idProducto) {
-        // BUSCAMOS LOS DATOS DEL PRODUCTO EN LA MEMORIA GLOBAL
         const prod = adminProductosData.find(p => p.idProducto === idProducto);
         
         if (!prod) {
-            alert("No se encontró la información del producto.");
+            mostrarNotificacionAdmin("No se encontró la información del producto.", "error");
             return;
         }
 
         titulo.innerText = "Editar Producto";
         
-        // Llenamos los campos
         document.getElementById('admin-id').value = prod.idProducto;
         document.getElementById('admin-nombre').value = prod.nombre;
         document.getElementById('admin-categoria').value = prod.categoria;
@@ -1143,14 +1185,14 @@ function abrirModalProducto(idProducto = null) {
     }
 
     modal.classList.remove('hidden');
-}
+};
 
-function cerrarModalProducto() {
+window.cerrarModalProducto = function() {
     document.getElementById('modal-producto').classList.add('hidden');
-}
+};
 
 // Guardar (Crear o Editar)
-async function gestionarSubmitProducto(evento) {
+window.gestionarSubmitProducto = async function(evento) {
     evento.preventDefault();
     
     const btnGuardar = evento.target.querySelector('button[type="submit"]');
@@ -1161,8 +1203,14 @@ async function gestionarSubmitProducto(evento) {
     
     let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
 
+    // ALERTA DE CONFIRMACIÓN AL EDITAR
+    if (id) {
+        const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas modificar los datos de este producto?", "advertencia");
+        if (!confirmado) return;
+    }
+
     btnGuardar.disabled = true;
-    btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
+    btnGuardar.innerText = "Guardando...";
 
     try {
         if (inputFile.files.length > 0) {
@@ -1186,7 +1234,6 @@ async function gestionarSubmitProducto(evento) {
 
         btnGuardar.innerText = "Guardando...";
         
-        // 1. Agregamos idProducto al JSON por si Java lo exige para actualizar
         const payload = {
             nombre: document.getElementById('admin-nombre').value,
             categoria: document.getElementById('admin-categoria').value,
@@ -1217,34 +1264,47 @@ async function gestionarSubmitProducto(evento) {
 
         if (!respuesta.ok) {
             const errorData = await respuesta.json().catch(() => ({})); 
-            throw new Error(errorData.message || errorData.error || `El servidor Java respondió con un error ${respuesta.status}`);
+            throw new Error(errorData.message || errorData.error || `El servidor respondió con un error ${respuesta.status}`);
         }
 
+        mostrarNotificacionAdmin(`Producto ${id ? 'actualizado' : 'creado'} con éxito`, 'exito');
         cerrarModalProducto();
         cargarTablaAdminProductos(); 
         
     } catch (error) {
-        alert("Ocurrió un error: " + error.message);
+        mostrarNotificacionAdmin(error.message, "error");
     } finally {
         btnGuardar.disabled = false;
-        btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
         btnGuardar.innerText = textoOriginalBtn;
     }
-}
+};
 
 // Eliminar
-async function eliminarProducto(id) {
-    if(!confirm("¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.")) return;
+window.eliminarProducto = async function(id) {
+    const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas ELIMINAR este producto? Esta acción lo borrará permanentemente del catálogo.", "peligro");
+    
+    if(!confirmado) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/productos/${id}`, { method: 'DELETE' });
-        if (!respuesta.ok) throw new Error("Error al eliminar");
+        const token = localStorage.getItem('token');
+        const headersAEnviar = {};
+        if (token) {
+            headersAEnviar['Authorization'] = `Bearer ${token}`;
+        }
+
+        const respuesta = await fetch(`${baseUrl}/productos/${id}`, { 
+            method: 'DELETE',
+            headers: headersAEnviar
+        });
         
-        cargarTablaAdminProductos(); // Recargar la tabla
+        if (!respuesta.ok) throw new Error("Error al eliminar el producto");
+        
+        mostrarNotificacionAdmin("Producto eliminado correctamente", "exito");
+        cargarTablaAdminProductos(); 
     } catch (error) {
-        alert("Ocurrió un error al eliminar: " + error.message);
+        mostrarNotificacionAdmin(error.message, "error");
     }
-}
+};
 
 // ==========================================
 // FUNCIÓN PARA AUTOCOMPLETAR DIRECCIÓN (SEPOMEX)

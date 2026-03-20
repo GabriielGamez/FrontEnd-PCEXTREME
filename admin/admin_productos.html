@@ -15,23 +15,23 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
+<body class="bg-[#0f1115] text-gray-200 antialiased min-h-screen flex flex-col">
 
     <header id="encabezado-admin"></header>
 
     <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <h1 class="text-3xl font-extrabold text-gray-900">Gestión de <span class="text-[#6bc148]">Productos</span></h1>
-            <button onclick="abrirModalProducto()" class="bg-[#7ed957] hover:bg-[#6bc148] text-gray-900 font-bold py-2 px-6 rounded-lg transition duration-300 shadow-md">
+            <h1 class="text-3xl font-extrabold text-white">Gestión de <span class="text-[#7ed957]">Productos</span></h1>
+            <button onclick="abrirModalProducto()" class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-2.5 px-6 rounded-lg transition duration-300 shadow-[0_0_10px_rgba(126,217,87,0.2)]">
                 + Nuevo Producto
             </button>
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="bg-[#1a1c20] border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                        <tr class="bg-gray-900 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-800">
                             <th class="p-4 font-semibold">ID</th>
                             <th class="p-4 font-semibold">Imagen</th>
                             <th class="p-4 font-semibold">Nombre</th>
@@ -41,72 +41,77 @@
                             <th class="p-4 font-semibold text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tabla-productos-admin" class="text-sm divide-y divide-gray-200">
+                    <tbody id="tabla-productos-admin" class="text-sm divide-y divide-gray-800">
                         <tr><td colspan="7" class="text-center py-8 text-gray-500 animate-pulse">Cargando inventario...</td></tr>
                     </tbody>
                 </table>
             </div>
+            <div id="paginacion-productos"></div>
         </div>
     </main>
 
-    <div id="modal-producto" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-        <div class="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl transform transition-all">
+    <div id="modal-producto" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center p-4 transition-opacity">
+        <div class="bg-[#1a1c20] border border-gray-800 rounded-2xl w-full max-w-2xl overflow-y-auto max-h-screen shadow-[0_0_30px_rgba(0,0,0,0.8)] relative">
             <div class="p-6 md:p-8">
-                <h2 id="modal-titulo" class="text-2xl font-bold mb-6 text-gray-900 border-b border-gray-100 pb-4">Añadir Producto</h2>
+                <button onclick="cerrarModalProducto()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl font-bold leading-none">&times;</button>
+                
+                <h2 id="modal-titulo" class="text-2xl font-bold mb-6 text-[#7ed957] border-b border-gray-800 pb-4">Añadir Producto</h2>
                 
                 <form id="formulario-producto" class="space-y-5">
                     <input type="hidden" id="admin-id">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Nombre del Producto</label>
-                            <input type="text" id="admin-nombre" required class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                            <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Nombre del Producto</label>
+                            <input type="text" id="admin-nombre" required class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] transition">
                         </div>
                         <div>
-                            <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Categoría</label>
-                            <input type="text" id="admin-categoria" required class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                            <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Categoría</label>
+                            <input type="text" id="admin-categoria" required class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] transition">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Precio ($)</label>
-                            <input type="number" step="0.01" min="0" id="admin-precio" required class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                            <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Precio ($)</label>
+                            <input type="number" step="0.01" min="0" id="admin-precio" required class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] transition">
                         </div>
                         <div>
-                            <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Stock</label>
-                            <input type="number" min="0" step="1" id="admin-stock" required class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                            <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Stock</label>
+                            <input type="number" min="0" step="1" id="admin-stock" required class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] transition">
                         </div>
                     </div>
 
-                    <div class="md:col-span-2 border border-dashed border-gray-300 rounded-xl p-5 bg-gray-50">
-                        <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Subir Imagen del Producto</label>
+                    <div class="md:col-span-2 border border-dashed border-gray-700 rounded-xl p-5 bg-[#0f1115]">
+                        <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Subir Imagen del Producto</label>
                         <input type="file" id="admin-imagen-file" accept="image/*" 
-                            class="w-full text-sm text-gray-600 
+                            class="w-full text-sm text-gray-400 
                             file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
-                            file:text-sm file:font-semibold file:bg-[#7ed957] file:text-gray-900 
-                            hover:file:bg-[#6bc148] transition cursor-pointer">
+                            file:text-sm file:font-semibold file:bg-gray-800 file:text-white 
+                            hover:file:bg-gray-700 transition cursor-pointer">
                         
                         <div id="contenedor-imagen-actual" class="hidden mt-3 text-xs text-gray-500 flex items-center gap-2">
                             <span>Imagen actual guardada:</span>
-                            <span id="nombre-imagen-actual" class="text-gray-700 font-bold bg-gray-200 px-2 py-1 rounded"></span>
+                            <span id="nombre-imagen-actual" class="text-gray-300 font-bold bg-gray-800 px-2 py-1 rounded"></span>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-gray-600 text-xs font-bold mb-2 uppercase">Descripción</label>
-                        <textarea id="admin-descripcion" rows="3" class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition"></textarea>
+                        <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Descripción</label>
+                        <textarea id="admin-descripcion" rows="3" class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] transition"></textarea>
                     </div>
 
-                    <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
-                        <button type="button" onclick="cerrarModalProducto()" class="px-6 py-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 font-medium transition">Cancelar</button>
-                        <button type="submit" class="bg-[#7ed957] hover:bg-[#6bc148] text-gray-900 font-bold px-6 py-2 rounded-lg transition shadow-sm">Guardar</button>
+                    <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-800">
+                        <button type="button" onclick="cerrarModalProducto()" class="px-6 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-medium transition">Cancelar</button>
+                        <button type="submit" class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold px-6 py-2 rounded-lg transition shadow-sm">Guardar Datos</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    
     <footer id="pie-admin"></footer>
     <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
 </body>
+
 </html>
