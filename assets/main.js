@@ -1120,15 +1120,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ==========================================
+// MÓDULO 11: DETALLES DEL DISPOSITIVO (CLIENTE)
+// ==========================================
 // Función del botón "Ver" de cada dispositivo
 window.verDetalleDispositivo = function(idDispositivo) {
     // Aquí puedes cambiarlo para redirigir a donde quieras que vean los detalles de su equipo
     window.location.href = `/FrontEnd-PCEXTREME/public/detalleDispositivo.html?id=${idDispositivo}`;
 };
 
-// ==========================================
-// MÓDULO 11: DETALLES DEL DISPOSITIVO (CLIENTE)
-// ==========================================
 async function cargarDetalleDispositivoCliente() {
     const contenedor = document.getElementById('contenedor-detalle-disp');
     if (!contenedor) return;
