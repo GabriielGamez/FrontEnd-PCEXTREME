@@ -925,7 +925,7 @@ async function cargarPerfilYDispositivos() {
                                     <p class="text-sm text-gray-400">Mod. ${disp.modelo}</p>
                                 </div>
                             </div>
-                            <button onclick="window.location.href='/FrontEnd-PCEXTREME/detalle_dispositivo.html?id=${disp.idDispositivo}'" class="px-5 py-2.5 bg-gray-800 hover:bg-[#7ed957] text-gray-300 hover:text-black font-bold rounded-lg border border-gray-700 transition">Ver Detalles</button>
+                            <button onclick="window.location.href='/FrontEnd-PCEXTREME/public/detalleDispositivo.html?id=${disp.idDispositivo}'" class="px-5 py-2.5 bg-gray-800 hover:bg-[#7ed957] text-gray-300 hover:text-black font-bold rounded-lg border border-gray-700 transition">Ver Detalles</button>
                         </div>`;
                 });
                 listaDisp.innerHTML = html;
