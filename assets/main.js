@@ -1125,6 +1125,106 @@ window.verDetalleDispositivo = function(idDispositivo) {
     // Aquí puedes cambiarlo para redirigir a donde quieras que vean los detalles de su equipo
     window.location.href = `/FrontEnd-PCEXTREME/detalle_dispositivo.html?id=${idDispositivo}`;
 };
+
+// ==========================================
+// MÓDULO 11: DETALLES DEL DISPOSITIVO (CLIENTE)
+// ==========================================
+async function cargarDetalleDispositivoCliente() {
+    const contenedor = document.getElementById('contenedor-detalle-disp');
+    if (!contenedor) return;
+
+    // 1. Extraemos el ID del dispositivo de la URL (ej: detalle_dispositivo.html?id=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const idDispositivo = urlParams.get('id');
+
+    if (!idDispositivo) {
+        document.getElementById('panel-diagnostico').innerHTML = '<p class="text-red-500 text-center py-10 font-bold">No se especificó ningún dispositivo.</p>';
+        return;
+    }
+
+    try {
+        // --- 1. CONSULTA: DATOS DEL DISPOSITIVO ---
+        const resDisp = await fetch(`${API_BASE_URL}/dispositivos/${idDispositivo}`);
+        if (!resDisp.ok) throw new Error("No se pudo cargar la información del dispositivo.");
+        
+        let disp = await resDisp.json();
+        if (Array.isArray(disp)) disp = disp[0];
+
+        document.getElementById('det-marca').innerText = disp.marca || 'N/A';
+        document.getElementById('det-modelo').innerText = disp.modelo || 'N/A';
+        // Buscamos número de serie, dependiendo de cómo lo llame tu backend (n_serie, numeroSerie, etc)
+        document.getElementById('det-sn').innerText = disp.numeroSerie || disp.n_serie || disp.serie || 'N/A';
+
+
+        // --- 2. CONSULTA: HISTORIAL DE REPARACIÓN ---
+        // Traemos todos los registros para buscar el que le pertenece a este equipo
+        const resReg = await fetch(`${API_BASE_URL}/registros`);
+        let registros = await resReg.json();
+        
+        // Filtramos para encontrar el registro de este dispositivo. 
+        // Usamos reverse() para que, si tiene varias reparaciones, agarre la más reciente.
+        let registro = registros.reverse().find(r => String(r.idDispositivo) === String(idDispositivo));
+
+        if (registro) {
+            // Llenamos los datos
+            document.getElementById('det-fecha').innerText = formatearFecha(registro.fechaIngreso);
+            document.getElementById('det-detalles').innerText = registro.detalles || registro.falla || 'Sin detalles reportados.';
+            document.getElementById('det-diagnostico').innerText = registro.diagnostico || 'El equipo está en fila para ser revisado.';
+            document.getElementById('det-costo').innerText = `$${parseFloat(registro.costo || 0).toFixed(2)}`;
+            
+            // Colores dinámicos del estado (reutilizamos la función que ya tenías para el rastreo)
+            const badge = document.getElementById('det-estado');
+            actualizarEstadoBadgeDetalle(badge, registro.estado || registro.estadoEquipo || 'Recibido');
+
+            // --- 3. CONSULTA: NOMBRE DEL TÉCNICO ---
+            let nombreTecnico = "No asignado";
+            if (registro.idTrabajador) {
+                try {
+                    const resTrab = await fetch(`${API_BASE_URL}/trabajadores`);
+                    if (resTrab.ok) {
+                        const trabajadores = await resTrab.json();
+                        const tec = trabajadores.find(t => String(t.idTrabajador || t.idEmpleado) === String(registro.idTrabajador));
+                        if (tec) nombreTecnico = `${tec.nombre} ${tec.aPaterno}`;
+                    }
+                } catch (e) { console.warn("No se pudo cargar el técnico."); }
+            } else if (registro.trabajador) {
+                // Por si el backend ya manda el objeto del trabajador anidado
+                nombreTecnico = `${registro.trabajador.nombre} ${registro.trabajador.aPaterno}`;
+            }
+            document.getElementById('det-tecnico').innerText = nombreTecnico;
+
+        } else {
+            // Si el equipo existe pero no tiene ninguna orden de reparación
+            document.getElementById('panel-diagnostico').innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 h-full">
+                    <span class="text-6xl mb-4 opacity-50">📋</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Sin historial de servicio</h3>
+                    <p class="text-gray-400 text-center">Este dispositivo está registrado a tu nombre, pero actualmente no tiene ninguna orden de reparación activa.</p>
+                </div>
+            `;
+        }
+
+    } catch (error) {
+        document.getElementById('panel-diagnostico').innerHTML = `<p class="text-red-500 text-center py-10 font-bold">${error.message}</p>`;
+    }
+}
+
+// Función auxiliar para pintar el badge de estado en el detalle del dispositivo
+function actualizarEstadoBadgeDetalle(badge, estado) {
+    badge.innerText = estado;
+    badge.className = "px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide border";
+
+    const estadoLower = (estado || '').toLowerCase();
+    if (estadoLower.includes('revisión') || estadoLower.includes('pendiente')) {
+        badge.classList.add('bg-blue-900/40', 'text-blue-400', 'border-blue-600/50');
+    } else if (estadoLower.includes('reparación') || estadoLower.includes('proceso')) {
+        badge.classList.add('bg-yellow-900/40', 'text-yellow-400', 'border-yellow-600/50');
+    } else if (estadoLower.includes('listo') || estadoLower.includes('entregado') || estadoLower.includes('reparado')) {
+        badge.classList.add('bg-green-900/40', 'text-[#7ed957]', 'border-[#7ed957]/50');
+    } else {
+        badge.classList.add('bg-gray-900', 'text-gray-400', 'border-gray-700');
+    }
+}
 // Disparador principal
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Cargamos cosas generales
@@ -1155,4 +1255,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(document.getElementById('contenedor-detalle')) cargarDetalleProducto();
     // 5. Llamada para la vista de Perfil / Dispositivos
     if(document.getElementById('perfil-nombre')) cargarPerfilYDispositivos();
+    // 6. Llamada para la vista de Detalles del Dispositivo Individual
+    if(document.getElementById('contenedor-detalle-disp')) cargarDetalleDispositivoCliente();
 });
