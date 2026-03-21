@@ -1123,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Función del botón "Ver" de cada dispositivo
 window.verDetalleDispositivo = function(idDispositivo) {
     // Aquí puedes cambiarlo para redirigir a donde quieras que vean los detalles de su equipo
-    window.location.href = `/FrontEnd-PCEXTREME/detalle_dispositivo.html?id=${idDispositivo}`;
+    window.location.href = `/FrontEnd-PCEXTREME/detalleDispositivo.html?id=${idDispositivo}`;
 };
 
 // ==========================================
