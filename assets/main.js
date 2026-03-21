@@ -872,9 +872,6 @@ async function cargarComponentes() {
 }
 
 // ==========================================
-// MÓDULO 10: PERFIL Y DISPOSITIVOS DEL CLIENTE
-// ==========================================
-// ==========================================
 // MÓDULO 10: PERFIL, DISPOSITIVOS Y EDICIÓN
 // ==========================================
 let clienteActualGlobal = null; // Guardamos los datos del cliente para pasarlos a la vista de edición
@@ -959,6 +956,8 @@ window.abrirEdicionPerfil = async function() {
     document.getElementById('edit-estado').value = clienteActualGlobal.estado || '';
     document.getElementById('edit-ciudad').value = clienteActualGlobal.municipio || '';
     document.getElementById('edit-calle').value = clienteActualGlobal.calle || '';
+    document.getElementById('edit-nueva-password').value = '';
+    document.getElementById('edit-conf-password').value = '';
 
     document.getElementById('contenedor-edit-asentamiento').innerHTML = `<input type="text" id="edit-asentamiento" required readonly class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 text-gray-400 cursor-not-allowed">`;
 
