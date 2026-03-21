@@ -49,6 +49,92 @@ function mostrarNotificacion(mensaje, tipo = 'error') {
     }, 3000);
 }
 
+// Muestra una advertencia flotante para confirmar acciones importantes del cliente
+function mostrarConfirmacion(mensaje, tipo = 'advertencia') {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[70] px-4 opacity-0 transition-opacity duration-300';
+        
+        const colorBtn = tipo === 'peligro' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#7ed957] hover:bg-[#6bc148] text-black';
+        const icono = tipo === 'peligro' ? '⚠️' : '❓';
+
+        overlay.innerHTML = `
+            <div class="bg-[#111] border border-gray-700 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.9)] p-8 max-w-sm w-full transform scale-95 transition-transform duration-300 text-center">
+                <span class="text-5xl mb-4 block drop-shadow-lg">${icono}</span>
+                <h3 class="text-xl font-bold text-white mb-2">¿Estás seguro?</h3>
+                <p class="text-gray-400 text-sm mb-8 leading-relaxed">${mensaje}</p>
+                <div class="flex justify-center gap-4">
+                    <button id="btn-cancelar-conf" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-full font-bold transition text-sm">Cancelar</button>
+                    <button id="btn-aceptar-conf" class="px-6 py-2.5 ${colorBtn} rounded-full font-bold transition text-sm shadow-lg">Sí, continuar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.querySelector('div').classList.remove('scale-95');
+        }, 10);
+
+        const cerrar = (resultado) => {
+            overlay.classList.add('opacity-0');
+            overlay.querySelector('div').classList.add('scale-95');
+            setTimeout(() => { overlay.remove(); resolve(resultado); }, 300);
+        };
+
+        overlay.querySelector('#btn-aceptar-conf').addEventListener('click', () => cerrar(true));
+        overlay.querySelector('#btn-cancelar-conf').addEventListener('click', () => cerrar(false));
+    });
+}
+
+// Muestra una ventana flotante pidiendo la contraseña actual para verificar seguridad
+function pedirPasswordActual() {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[80] px-4 opacity-0 transition-opacity duration-300';
+
+        overlay.innerHTML = `
+            <div class="bg-[#111] border border-gray-700 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.9)] p-8 max-w-sm w-full transform scale-95 transition-transform duration-300 text-center">
+                <span class="text-5xl mb-4 block drop-shadow-lg">🔐</span>
+                <h3 class="text-xl font-bold text-white mb-2">Autenticación Requerida</h3>
+                <p class="text-gray-400 text-sm mb-6 leading-relaxed">Por seguridad, ingresa tu contraseña actual para confirmar los cambios.</p>
+
+                <div class="relative flex items-center mb-8 text-left">
+                    <input type="password" id="input-pass-seguridad" placeholder="Tu contraseña actual" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 pr-10 text-white focus:border-[#7ed957] focus:outline-none transition">
+                    <button type="button" id="btn-ojo-seguridad" class="absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </button>
+                </div>
+
+                <div class="flex justify-center gap-4">
+                    <button id="btn-cancelar-pass" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-full font-bold transition text-sm">Cancelar</button>
+                    <button id="btn-aceptar-pass" class="px-6 py-2.5 bg-[#7ed957] hover:bg-[#6bc148] text-black rounded-full font-bold transition text-sm shadow-lg">Confirmar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.querySelector('div').classList.remove('scale-95');
+        }, 10);
+
+        // Lógica del ojito interno
+        const inputPass = overlay.querySelector('#input-pass-seguridad');
+        const btnOjo = overlay.querySelector('#btn-ojo-seguridad');
+        btnOjo.addEventListener('mouseenter', () => inputPass.type = 'text');
+        btnOjo.addEventListener('mouseleave', () => inputPass.type = 'password');
+
+        const cerrar = (resultado) => {
+            overlay.classList.add('opacity-0');
+            overlay.querySelector('div').classList.add('scale-95');
+            setTimeout(() => { overlay.remove(); resolve(resultado); }, 300);
+        };
+
+        overlay.querySelector('#btn-aceptar-pass').addEventListener('click', () => cerrar(inputPass.value.trim()));
+        overlay.querySelector('#btn-cancelar-pass').addEventListener('click', () => cerrar(null));
+    });
+}
 // Convierte los botones con el icono de ojo para mostrar/ocultar las contraseñas
 function inicializarOjosPasswordGlobal() {
     const botonesOjo = document.querySelectorAll('.btn-ver-password');
@@ -788,27 +874,31 @@ async function cargarComponentes() {
 // ==========================================
 // MÓDULO 10: PERFIL Y DISPOSITIVOS DEL CLIENTE
 // ==========================================
+// ==========================================
+// MÓDULO 10: PERFIL, DISPOSITIVOS Y EDICIÓN
+// ==========================================
+let clienteActualGlobal = null; // Guardamos los datos del cliente para pasarlos a la vista de edición
+
 async function cargarPerfilYDispositivos() {
     const contenedorNombre = document.getElementById('perfil-nombre');
     const listaDisp = document.getElementById('lista-mis-dispositivos');
     
-    // Verificamos si estamos en la página del perfil
     if (!contenedorNombre || !listaDisp) return;
 
     const usuarioStr = localStorage.getItem('usuario');
-    if (!usuarioStr) return; // Si no hay sesión, el verificarSesion() ya se encarga de sacarlo
+    if (!usuarioStr) return; 
     
     const usuarioSesion = JSON.parse(usuarioStr);
-    
-    // Dependiendo de cómo lo guarde tu BD, puede ser idCliente o id
     const idCliente = usuarioSesion.idCliente || usuarioSesion.id; 
 
     try {
-        // --- 1. CARGAMOS LOS DATOS DEL PERFIL DEL CLIENTE ---
+        // 1. CARGAR PERFIL
         const resPerfil = await fetch(`${API_BASE_URL}/clientes/${idCliente}`);
         if (resPerfil.ok) {
             let datosCli = await resPerfil.json();
-            if (Array.isArray(datosCli)) datosCli = datosCli[0]; // Por si la API devuelve un array
+            if (Array.isArray(datosCli)) datosCli = datosCli[0];
+            
+            clienteActualGlobal = datosCli; // Lo guardamos en la variable global
 
             document.getElementById('perfil-nombre').innerText = datosCli.nombre || 'N/A';
             document.getElementById('perfil-apellidos').innerText = `${datosCli.aPaterno || ''} ${datosCli.aMaterno || ''}`.trim() || 'N/A';
@@ -816,25 +906,17 @@ async function cargarPerfilYDispositivos() {
             document.getElementById('perfil-correo').innerText = datosCli.email || datosCli.correo || 'N/A';
         }
 
-        // --- 2. CARGAMOS LOS DISPOSITIVOS DEL CLIENTE ---
+        // 2. CARGAR DISPOSITIVOS
         const resDisp = await fetch(`${API_BASE_URL}/dispositivos`);
-        
         if (resDisp.ok) {
             const todosDispositivos = await resDisp.json();
-            
-            // Filtramos en memoria para obtener solo los que le pertenecen a este idCliente
             const misDispositivos = todosDispositivos.filter(d => String(d.idCliente) === String(idCliente));
 
             if (misDispositivos.length === 0) {
-                listaDisp.innerHTML = `
-                    <div class="bg-gray-900/50 border border-gray-800 p-8 rounded-xl text-center flex flex-col items-center justify-center">
-                        <span class="text-4xl mb-4 opacity-50">💻</span>
-                        <p class="text-gray-400 font-medium">Aún no tienes dispositivos registrados.</p>
-                    </div>`;
+                listaDisp.innerHTML = `<div class="bg-gray-900/50 border border-gray-800 p-8 rounded-xl text-center"><span class="text-4xl mb-4 opacity-50">💻</span><p class="text-gray-400 font-medium">Aún no tienes dispositivos registrados.</p></div>`;
             } else {
                 let html = '';
                 misDispositivos.forEach(disp => {
-                    // Diseño de tarjeta individual para el dispositivo
                     html += `
                         <div class="bg-[#151515] border border-gray-800 p-5 rounded-xl flex justify-between items-center hover:border-[#7ed957] transition-all group">
                             <div class="flex items-center gap-4">
@@ -846,23 +928,198 @@ async function cargarPerfilYDispositivos() {
                                     <p class="text-sm text-gray-400">Mod. ${disp.modelo}</p>
                                 </div>
                             </div>
-                            <button onclick="verDetalleDispositivo(${disp.idDispositivo})" class="px-5 py-2.5 bg-gray-800 hover:bg-[#7ed957] text-gray-300 hover:text-black font-bold rounded-lg border border-gray-700 transition">
-                                Ver Detalles
-                            </button>
-                        </div>
-                    `;
+                            <button onclick="window.location.href='/FrontEnd-PCEXTREME/detalle_dispositivo.html?id=${disp.idDispositivo}'" class="px-5 py-2.5 bg-gray-800 hover:bg-[#7ed957] text-gray-300 hover:text-black font-bold rounded-lg border border-gray-700 transition">Ver Detalles</button>
+                        </div>`;
                 });
                 listaDisp.innerHTML = html;
             }
-        } else {
-            listaDisp.innerHTML = `<p class="text-red-500">Error al cargar la lista de dispositivos.</p>`;
         }
-
     } catch (error) {
-        console.error("Error cargando perfil o dispositivos:", error);
-        mostrarNotificacion("Hubo un error de conexión", "error");
+        mostrarNotificacion("Hubo un error de conexión al cargar tus datos.", "error");
     }
 }
+
+// --- LOGICA DE LA VISTA DE EDICIÓN ---
+
+// Cambia la pantalla y rellena el formulario con los datos actuales
+window.abrirEdicionPerfil = async function() {
+    if (!clienteActualGlobal) return;
+
+    document.getElementById('vista-perfil').classList.add('hidden');
+    document.getElementById('vista-edicion').classList.remove('hidden');
+
+    document.getElementById('edit-id-cliente').value = clienteActualGlobal.idCliente || clienteActualGlobal.id;
+    document.getElementById('edit-nombre').value = clienteActualGlobal.nombre || '';
+    document.getElementById('edit-ap-paterno').value = clienteActualGlobal.aPaterno || '';
+    document.getElementById('edit-ap-materno').value = clienteActualGlobal.aMaterno || '';
+    document.getElementById('edit-telefono').value = clienteActualGlobal.telefono || '';
+    document.getElementById('edit-correo').value = clienteActualGlobal.email || clienteActualGlobal.correo || '';
+    
+    document.getElementById('edit-cp').value = clienteActualGlobal.CPostal || '';
+    document.getElementById('edit-estado').value = clienteActualGlobal.estado || '';
+    document.getElementById('edit-ciudad').value = clienteActualGlobal.municipio || '';
+    document.getElementById('edit-calle').value = clienteActualGlobal.calle || '';
+
+    document.getElementById('contenedor-edit-asentamiento').innerHTML = `<input type="text" id="edit-asentamiento" required readonly class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 text-gray-400 cursor-not-allowed">`;
+
+    // Si tiene CP, ejecutamos SEPOMEX para que arme el SELECT de la colonia
+    if (clienteActualGlobal.CPostal && String(clienteActualGlobal.CPostal).length === 5) {
+        try {
+            const res = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${clienteActualGlobal.CPostal}`);
+            const datos = await res.json();
+            if (datos.zip_codes && datos.zip_codes.length > 0) {
+                let selectHtml = `<select id="edit-asentamiento" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-[#7ed957] focus:outline-none transition">`;
+                datos.zip_codes.forEach(lugar => {
+                    const seleccionado = (lugar.d_asenta === clienteActualGlobal.asentamiento) ? 'selected' : '';
+                    selectHtml += `<option value="${lugar.d_asenta}" ${seleccionado}>${lugar.d_asenta}</option>`;
+                });
+                selectHtml += `</select>`;
+                document.getElementById('contenedor-edit-asentamiento').innerHTML = selectHtml;
+            }
+        } catch (e) {}
+    }
+};
+
+window.cerrarEdicionPerfil = function() {
+    document.getElementById('vista-edicion').classList.add('hidden');
+    document.getElementById('vista-perfil').classList.remove('hidden');
+};
+
+// Activa el buscador de CP dentro de la vista de edición
+function inicializarSepomexEditarPerfil() {
+    const inputCPEdit = document.getElementById('edit-cp');
+    if (inputCPEdit) {
+        inputCPEdit.addEventListener('input', async (e) => {
+            const cp = e.target.value.trim();
+            if (cp.length === 5) {
+                mostrarNotificacion("Buscando código postal...", "exito");
+                try {
+                    const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);
+                    const datos = await respuesta.json();
+                    const lugares = datos.zip_codes;
+
+                    if (!lugares || lugares.length === 0) throw new Error("C.P. no encontrado");
+
+                    document.getElementById('edit-estado').value = lugares[0].d_estado;
+                    document.getElementById('edit-ciudad').value = lugares[0].d_mnpio;
+
+                    const contenedor = document.getElementById('contenedor-edit-asentamiento');
+                    let selectHtml = `<select id="edit-asentamiento" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-[#7ed957] focus:outline-none transition">`;
+                    selectHtml += `<option value="" disabled selected>Selecciona un asentamiento...</option>`;
+                    lugares.forEach(lugar => selectHtml += `<option value="${lugar.d_asenta}">${lugar.d_asenta}</option>`);
+                    selectHtml += `</select>`;
+                    contenedor.innerHTML = selectHtml;
+                } catch (error) {
+                    mostrarNotificacion("C.P. no válido o no encontrado", "error");
+                }
+            }
+        });
+    }
+}
+
+// Guarda los datos al confirmar
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializamos el SEPOMEX para esta pantalla
+    inicializarSepomexEditarPerfil();
+
+    const formEditar = document.getElementById('formulario-editar-perfil');
+    if (formEditar) {
+        formEditar.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 1. Verificamos si quiere cambiar la contraseña
+            const nuevaPass = document.getElementById('edit-nueva-password').value;
+            const confPass = document.getElementById('edit-conf-password').value;
+
+            if (nuevaPass || confPass) {
+                if (nuevaPass !== confPass) {
+                    return mostrarNotificacion("Las nuevas contraseñas no coinciden.", "error");
+                }
+            }
+
+            // 2. PRIMERA ADVERTENCIA: Confirmación normal
+            const confirmado = await mostrarConfirmacion("Tu información se actualizará y no se podrá devolver. ¿Deseas continuar?", "advertencia");
+            if (!confirmado) return; // Si cancela, no hacemos nada
+
+            // 3. SEGUNDA ADVERTENCIA: Pedir contraseña actual
+            const passwordActual = await pedirPasswordActual();
+            if (!passwordActual) return; // Si cancela el recuadro, no hacemos nada
+
+            const btnGuardar = e.target.querySelector('button[type="submit"]');
+            const textoOriginal = btnGuardar.innerHTML;
+            btnGuardar.innerHTML = "⏳ Verificando y Guardando...";
+            btnGuardar.disabled = true;
+
+            try {
+                // 4. VERIFICAMOS LA CONTRASEÑA EN LA API (Simulamos un login)
+                const emailActual = clienteActualGlobal.email || clienteActualGlobal.correo;
+                const resLogin = await fetch(`${API_BASE_URL}/auth/login/cliente`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailActual, password: passwordActual })
+                });
+
+                if (!resLogin.ok) {
+                    throw new Error("Contraseña incorrecta. No es posible actualizar tu información.");
+                }
+
+                // 5. SI LA CONTRASEÑA ES CORRECTA, GUARDAMOS LOS DATOS
+                const idCliente = document.getElementById('edit-id-cliente').value;
+                const nuevoCorreo = document.getElementById('edit-correo').value.trim();
+
+                const datosActualizados = {
+                    nombre: document.getElementById('edit-nombre').value.trim(),
+                    aPaterno: document.getElementById('edit-ap-paterno').value.trim(),
+                    aMaterno: document.getElementById('edit-ap-materno').value.trim(),
+                    telefono: document.getElementById('edit-telefono').value.trim(),
+                    CPostal: document.getElementById('edit-cp').value.trim(),
+                    estado: document.getElementById('edit-estado').value.trim(),
+                    municipio: document.getElementById('edit-ciudad').value.trim(),
+                    asentamiento: document.getElementById('edit-asentamiento').value.trim(),
+                    calle: document.getElementById('edit-calle').value.trim(),
+                    email: nuevoCorreo
+                };
+
+                // Si escribió una nueva contraseña, la inyectamos en el JSON para el backend
+                if (nuevaPass) {
+                    datosActualizados.password = nuevaPass;
+                }
+
+                const token = localStorage.getItem('token');
+                const respuestaPUT = await fetch(`${API_BASE_URL}/clientes/${idCliente}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(datosActualizados)
+                });
+
+                if (!respuestaPUT.ok) throw new Error("Error en el servidor al actualizar el perfil.");
+
+                // Actualizamos el LocalStorage si el nombre o el correo cambiaron
+                let usuarioSesion = JSON.parse(localStorage.getItem('usuario'));
+                usuarioSesion.nombre = datosActualizados.nombre;
+                usuarioSesion.email = nuevoCorreo;
+                localStorage.setItem('usuario', JSON.stringify(usuarioSesion));
+
+                mostrarNotificacion("¡Perfil actualizado con éxito!", "exito");
+                
+                // Cerramos edición, recargamos el perfil visual y el header
+                cerrarEdicionPerfil();
+                cargarPerfilYDispositivos();
+                verificarSesion();
+
+            } catch (error) {
+                // Si la contraseña fue incorrecta u otro error, se mostrará aquí
+                mostrarNotificacion(error.message, "error");
+            } finally {
+                btnGuardar.innerHTML = textoOriginal;
+                btnGuardar.disabled = false;
+            }
+        });
+    }
+});
 
 // Función del botón "Ver" de cada dispositivo
 window.verDetalleDispositivo = function(idDispositivo) {
