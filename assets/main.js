@@ -1153,7 +1153,7 @@ async function cargarDetalleDispositivoCliente() {
         document.getElementById('det-marca').innerText = disp.marca || 'N/A';
         document.getElementById('det-modelo').innerText = disp.modelo || 'N/A';
         // Buscamos número de serie, dependiendo de cómo lo llame tu backend (n_serie, numeroSerie, etc)
-        document.getElementById('det-sn').innerText = disp.numeroSerie || disp.n_serie || disp.serie || 'N/A';
+        document.getElementById('det-sn').innerText = disp.numSerie || 'N/A';
 
 
         // --- 2. CONSULTA: HISTORIAL DE REPARACIÓN ---
@@ -1178,19 +1178,30 @@ async function cargarDetalleDispositivoCliente() {
 
             // --- 3. CONSULTA: NOMBRE DEL TÉCNICO ---
             let nombreTecnico = "No asignado";
-            if (registro.idTrabajador) {
+            
+            // ¡AQUÍ ESTÁ LA MAGIA! Ahora leemos "idTecnico" del registro
+            if (registro.idTecnico) {
                 try {
                     const resTrab = await fetch(`${API_BASE_URL}/trabajadores`);
                     if (resTrab.ok) {
                         const trabajadores = await resTrab.json();
-                        const tec = trabajadores.find(t => String(t.idTrabajador || t.idEmpleado) === String(registro.idTrabajador));
-                        if (tec) nombreTecnico = `${tec.nombre} ${tec.aPaterno}`;
+                        
+                        // Emparejamos el idTrabajador del empleado con el idTecnico de la orden
+                        const tec = trabajadores.find(t => String(t.idTrabajador || t.idEmpleado) === String(registro.idTecnico));
+                        
+                        if (tec) {
+                            nombreTecnico = `${tec.nombre} ${tec.aPaterno}`;
+                        }
                     }
-                } catch (e) { console.warn("No se pudo cargar el técnico."); }
-            } else if (registro.trabajador) {
-                // Por si el backend ya manda el objeto del trabajador anidado
-                nombreTecnico = `${registro.trabajador.nombre} ${registro.trabajador.aPaterno}`;
+                } catch (e) { 
+                    console.warn("No se pudo cargar el técnico."); 
+                }
+            } else if (registro.tecnico || registro.trabajador) {
+                // Por si en algún momento tu backend manda el objeto completo anidado
+                const objTec = registro.tecnico || registro.trabajador;
+                nombreTecnico = `${objTec.nombre} ${objTec.aPaterno}`;
             }
+            
             document.getElementById('det-tecnico').innerText = nombreTecnico;
 
         } else {
