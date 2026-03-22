@@ -776,7 +776,7 @@ async function cargarDetalleProducto() {
 
 const P0 = 12;          
 const t_actual = 2.2;   
-const P_actual = 975;   
+const P_actual = 250;   
 const k = Math.log(P_actual / P0) / t_actual; 
 let miGraficoCrecimiento;
 
