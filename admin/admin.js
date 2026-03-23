@@ -1302,9 +1302,63 @@ window.guardarContacto = async function (evento) {
     }
 };
 
-
 // ==========================================
-// MÓDULO 9: ARRANQUE DE LA APLICACIÓN
+// MÓDULO 9: DASHBOARD PRINCIPAL
+// ==========================================
+async function cargarDashboardAdmin() {
+    const statProductos = document.getElementById('stat-productos');
+    if (!statProductos) return; // Asegura que solo corra en la página correcta
+
+    const token = localStorage.getItem('token');
+    const headersSeguros = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Mandamos el token de seguridad
+    };
+
+    try {
+        // 1. CARGAMOS LOS TOTALES
+        const resTotales = await fetch(`${baseUrl}/dashboard/totales`, { headers: headersSeguros });
+        if (resTotales.ok) {
+            const totales = await resTotales.json();
+            // Asegúrate de que las propiedades (total_productos, etc.) coincidan con el alias que le diste en tu SQL de Java/Node
+            document.getElementById('stat-productos').innerText = totales.total_productos || 0;
+            document.getElementById('stat-clientes').innerText = totales.total_clientes || 0;
+            document.getElementById('stat-reparaciones').innerText = totales.total_registros || 0;
+        }
+
+        // 2. CARGAMOS LAS ALERTAS DE STOCK BAJO
+        const resStock = await fetch(`${baseUrl}/dashboard/bajo-stock`, { headers: headersSeguros });
+        if (resStock.ok) {
+            const productosBajoStock = await resStock.json();
+            const alertaContenedor = document.getElementById('alerta-stock');
+            const listaStock = document.getElementById('lista-stock-bajo');
+
+            if (productosBajoStock.length > 0) {
+                // Si hay productos con poco stock, mostramos la alerta
+                alertaContenedor.classList.remove('hidden');
+                listaStock.innerHTML = ''; // Limpiamos la lista
+
+                productosBajoStock.forEach(prod => {
+                    listaStock.innerHTML += `
+                        <li>
+                            <strong class="text-yellow-500">${prod.nombre}</strong> 
+                            <span class="text-gray-400 text-xs ml-1">(Quedan: ${prod.stock})</span>
+                        </li>
+                    `;
+                });
+            } else {
+                // Si todo el stock está bien, ocultamos la caja
+                alertaContenedor.classList.add('hidden');
+            }
+        }
+
+    } catch (error) {
+        console.error("Error al cargar el dashboard:", error);
+        mostrarNotificacionAdmin("Error al conectar con las estadísticas", "error");
+    }
+}
+// ==========================================
+// MÓDULO 10: ARRANQUE DE LA APLICACIÓN
 // ==========================================
 // Se encarga de arrancar todas las funciones cuando la página carga
 document.addEventListener("DOMContentLoaded", () => {
@@ -1312,6 +1366,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarComponentesAdmin();
     inicializarSepomex();
     inicializarOjoPassword();
+    cargarDashboardAdmin();
     
     // Módulos según la página en la que te encuentres
     iniciarModuloClientes();

@@ -30,18 +30,13 @@
             </a>
         </div>
 
-        <div id="alerta-stock" class="bg-yellow-900/20 border border-yellow-600/50 text-yellow-500 p-6 rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.05)] mb-8 block transition-all">
+        <div id="alerta-stock" class="hidden bg-yellow-900/20 border border-yellow-600/50 text-yellow-500 p-6 rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.05)] mb-8 transition-all">
             <h4 class="font-bold text-lg mb-3 flex items-center gap-2">
                 ⚠️ Atención: Productos con Stock Bajo
             </h4>
             
             <ul id="lista-stock-bajo" class="list-disc list-inside space-y-1.5 ml-2 text-sm text-yellow-400/80 mb-5">
-                <li><strong class="text-yellow-500">Kit de limpieza</strong> <span class="text-gray-400 text-xs ml-1">(Quedan: 0)</span></li>
-                <li><strong class="text-yellow-500">Disipador Líquido Asus ROG Ryujin III 360</strong> <span class="text-gray-400 text-xs ml-1">(Quedan: 3)</span></li>
-                <li><strong class="text-yellow-500">Mouse Razer DeathAdder V3 Pro Faker Edition</strong> <span class="text-gray-400 text-xs ml-1">(Quedan: 5)</span></li>
-                <li><strong class="text-yellow-500">Volante Logitech G29 Driving Force</strong> <span class="text-gray-400 text-xs ml-1">(Quedan: 3)</span></li>
-                <li><strong class="text-yellow-500">Monitor Dell UltraSharp U2723QE 4K</strong> <span class="text-gray-400 text-xs ml-1">(Quedan: 4)</span></li>
-            </ul>
+                </ul>
 
             <a href="/FrontEnd-PCEXTREME/admin/admin_productos.html" class="inline-block bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-500 border border-yellow-600/50 font-bold text-sm py-2 px-4 rounded transition">
                 Ir a reabastecer →
@@ -52,19 +47,19 @@
             
             <div class="bg-[#1a1c20] p-6 rounded-xl shadow-lg border border-gray-800 border-t-4 border-t-[#7ed957] hover:bg-[#252830] hover:-translate-y-1 transition duration-300">
                 <h3 class="text-gray-400 font-bold text-sm uppercase tracking-wider">Productos</h3>
-                <p id="stat-productos" class="text-5xl font-black text-white my-3 drop-shadow-md">54</p>
+                <p id="stat-productos" class="text-5xl font-black text-white my-3 drop-shadow-md">...</p>
                 <span class="text-sm text-[#7ed957] font-semibold bg-[#7ed957]/10 px-2 py-1 rounded">En catálogo</span>
             </div>
 
             <div class="bg-[#1a1c20] p-6 rounded-xl shadow-lg border border-gray-800 border-t-4 border-t-blue-500 hover:bg-[#252830] hover:-translate-y-1 transition duration-300">
                 <h3 class="text-gray-400 font-bold text-sm uppercase tracking-wider">Clientes</h3>
-                <p id="stat-clientes" class="text-5xl font-black text-white my-3 drop-shadow-md">62</p>
+                <p id="stat-clientes" class="text-5xl font-black text-white my-3 drop-shadow-md">...</p>
                 <span class="text-sm text-blue-400 font-semibold bg-blue-500/10 px-2 py-1 rounded">Registrados</span>
             </div>
 
             <div class="bg-[#1a1c20] p-6 rounded-xl shadow-lg border border-gray-800 border-t-4 border-t-red-500 hover:bg-[#252830] hover:-translate-y-1 transition duration-300">
                 <h3 class="text-gray-400 font-bold text-sm uppercase tracking-wider">Reparaciones</h3>
-                <p id="stat-reparaciones" class="text-5xl font-black text-white my-3 drop-shadow-md">61</p>
+                <p id="stat-reparaciones" class="text-5xl font-black text-white my-3 drop-shadow-md">...</p>
                 <span class="text-sm text-red-400 font-semibold bg-red-500/10 px-2 py-1 rounded">Histórico total</span>
             </div>
 
