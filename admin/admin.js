@@ -424,6 +424,40 @@ async function gestionarSubmitReparacion(evento) {
             throw new Error(errorData.message || errorData.error || `Error del servidor: código ${respuesta.status}`);
         }
 
+        // ==========================================
+        // 4. LÓGICA DE EMAILJS
+        // ==========================================
+        if (quiereNotificar) {
+            // Intentamos sacar el correo de la memoria 
+            const correoCliente = reg.cliente?.correo || reg.cliente?.email || null;
+
+            if (correoCliente) {
+                const nombreModal = document.getElementById('info-cliente').innerText;
+                const equipoModal = document.getElementById('info-equipo').innerText;
+
+                const parametrosTemplate = {
+                    correo_destino: correoCliente,
+                    nombre_cliente: nombreModal,
+                    equipo: equipoModal,
+                    nuevo_estado: nuevoEstado
+                };
+
+                // Enviamos el correo 
+                emailjs.send('service_i4nla5o', 'template_6ltorks', parametrosTemplate)
+                    .then(function(response) {
+                        console.log('Correo enviado!', response.status, response.text);
+                        alert(` Estado actualizado a "${nuevoEstado}"\n Correo enviado exitosamente al cliente.`);
+                    }, function(error) {
+                        console.error('Error al enviar correo:', error);
+                        alert(` Estado actualizado a "${nuevoEstado}"\n Pero ocurrió un error al enviar el correo.`);
+                    });
+            } else {
+                alert(` Estado actualizado a "${nuevoEstado}"\n No se pudo enviar el correo porque el cliente no tiene uno registrado.`);
+            }
+        } else {
+            alert(` Estado actualizado a "${nuevoEstado}" con éxito.`);
+        }
+
         cerrarModalReparacion();
         await cargarTablaAdminReparaciones(); 
         
