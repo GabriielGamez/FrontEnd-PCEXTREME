@@ -239,6 +239,7 @@ async function mostrarPaginaReparaciones() {
                 if (resCli.ok) {
                     const cli = await resCli.json();
                     nombreCompleto = `${cli.nombre || ''} ${cli.aPaterno || ''}`.trim();
+                    reg.correoClienteMapeado = cli.email || cli.correo;
                 }
             } catch (error) {
                 console.warn(`No se pudo cargar el cliente ${idClienteFk}`);
@@ -354,8 +355,8 @@ function abrirModalReparacion(idRegistroBuscado) {
         return alert("No se encontró la información del registro en memoria.");
     }
 
-    const nombreClienteRenderizado = reg.nombreCompleto || "Desconocido";
-    const nombreEquipoRenderizado = reg.nombreEquipo || "Equipo sin definir";
+    const nombreClienteRenderizado = reg.nombreClienteMapeado || "Desconocido";
+    const nombreEquipoRenderizado = reg.nombreEquipoMapeado || "Equipo sin definir";
 
     // Inyección visual en el HTML
     document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
@@ -431,7 +432,7 @@ async function gestionarSubmitReparacion(evento) {
         // ==========================================
         if (quiereNotificar) {
             // Intentamos sacar el correo de la memoria 
-            const correoCliente = reg.cliente.email;
+            const correoCliente = reg.correoClienteMapeado;
 
             if (correoCliente) {
                 const nombreModal = document.getElementById('info-cliente').innerText;
