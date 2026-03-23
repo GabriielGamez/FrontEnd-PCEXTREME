@@ -1485,6 +1485,53 @@ async function cargarNosotrosCliente() {
         contenedor.innerHTML = `<p class="text-red-500 text-xl text-center">Error al conectar con el servidor.</p>`;
     }
 }
+
+// ==========================================
+// MÓDULO 12: UBICACIÓN Y MAPA (CLIENTE)
+// ==========================================
+async function cargarUbicacionCliente() {
+    const txtDireccion = document.getElementById('ubi-direccion');
+    const linkMaps = document.getElementById('ubi-link-maps');
+    const iframeMaps = document.getElementById('ubi-iframe');
+    const loadingMap = document.getElementById('ubi-loading-map');
+
+    // Verificamos si estamos en la página correcta
+    if (!txtDireccion) return;
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/contacto`);
+        if (!respuesta.ok) throw new Error("Error al cargar la información de contacto");
+
+        const datos = await respuesta.json();
+        
+        // La API puede devolver un arreglo o un objeto directo, lo manejamos por si acaso
+        const contacto = Array.isArray(datos) ? datos[0] : datos;
+
+        if (contacto) {
+            // Quitamos la animación de carga y ponemos la dirección real
+            txtDireccion.classList.remove('animate-pulse');
+            txtDireccion.innerText = contacto.direccion || 'Dirección no disponible por el momento.';
+
+            if (contacto.mapa_url) {
+                // Configuramos el botón azul
+                linkMaps.href = contacto.mapa_url;
+                
+                // Configuramos el mapa interactivo (iframe)
+                iframeMaps.src = contacto.mapa_url;
+                iframeMaps.classList.remove('hidden'); // Mostramos el mapa
+                loadingMap.classList.add('hidden'); // Ocultamos el texto de "Cargando..."
+            } else {
+                loadingMap.innerText = "Mapa no disponible";
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        txtDireccion.classList.remove('animate-pulse');
+        txtDireccion.classList.replace('text-[#7ed957]', 'text-red-500');
+        txtDireccion.innerText = 'Error de conexión. No se pudo cargar la ubicación.';
+        loadingMap.innerText = "Error al cargar el mapa";
+    }
+}
 // Disparador principal
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Cargamos cosas generales
@@ -1520,4 +1567,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("contenedor-detalle-disp"))
         cargarDetalleDispositivoCliente();
     if (document.getElementById("contenedor-nosotros")) cargarNosotrosCliente();
+    if(document.getElementById('ubi-direccion')) cargarUbicacionCliente();
 });
