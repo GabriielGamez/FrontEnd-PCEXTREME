@@ -204,8 +204,7 @@ async function cargarTablaAdminReparaciones() {
  */
 async function mostrarPaginaReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
-    // mensaje de carga - fetch por cada fila'
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Consultando clientes y equipos...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Consultando clientes y equipos a la velocidad de la luz... ⚡</td></tr>`;
 
     if(adminReparacionesData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay registros de reparación.</td></tr>`;
@@ -216,12 +215,7 @@ async function mostrarPaginaReparaciones() {
     const fin = inicio + itemsPorPaginaReparaciones;
     const reparacionesPagina = adminReparacionesData.slice(inicio, fin);
 
-    let htmlFilas = '';
-
-    // Iteramos sobre los registros 
-    for (const reg of reparacionesPagina) {
-        
-        // Capturamos los IDs API /registros
+    const promesasDeFilas = reparacionesPagina.map(async (reg) => {
         const idRegistro = reg.idFolio || reg.id || reg.folio;
         const idClienteFk = reg.idCliente || reg.clienteId || reg.cliente_id;
         const idDispositivoFk = reg.idDispositivo || reg.dispositivoId || reg.dispositivo_id;
@@ -232,54 +226,45 @@ async function mostrarPaginaReparaciones() {
         let nombreCompleto = "Cliente no encontrado";
         let nombreEquipo = "Equipo no encontrado";
 
-        // --- CONSUMO DE LA API DE CLIENTES ---
+        let promesaCliente = null;
+        let promesaDispositivo = null;
+
         if (idClienteFk) {
-            try {
-                const resCli = await fetch(`${baseUrl}/clientes/${idClienteFk}`);
-                if (resCli.ok) {
-                    const cli = await resCli.json();
-                    nombreCompleto = `${cli.nombre || ''} ${cli.aPaterno || ''}`.trim();
-                    reg.correoClienteMapeado = cli.email || cli.correo;
-                }
-            } catch (error) {
-                console.warn(`No se pudo cargar el cliente ${idClienteFk}`);
-            }
+            promesaCliente = fetch(`${baseUrl}/clientes/${idClienteFk}`)
+                .then(res => res.ok ? res.json() : null)
+                .catch(() => null);
         }
 
-        // --- CONSUMO DE LA API DE DISPOSITIVOS ---
         if (idDispositivoFk) {
-            try {
-                const resDisp = await fetch(`${baseUrl}/dispositivos/${idDispositivoFk}`);
-                if (resDisp.ok) {
-                    const disp = await resDisp.json();
-                    // Recuperamos solo marca y modelo concatenado como lo solicitaste
-                    nombreEquipo = `${disp.marca || ''} ${disp.modelo || ''}`.trim();
-                    if (nombreEquipo === "") nombreEquipo = disp.tipo || "Equipo sin marca";
-                }
-            } catch (error) {
-                console.warn(`No se pudo cargar el dispositivo ${idDispositivoFk}`);
-            }
+            promesaDispositivo = fetch(`${baseUrl}/dispositivos/${idDispositivoFk}`)
+                .then(res => res.ok ? res.json() : null)
+                .catch(() => null);
+        }
+
+        const [cli, disp] = await Promise.all([promesaCliente, promesaDispositivo]);
+
+        if (cli) {
+            nombreCompleto = `${cli.nombre || ''} ${cli.aPaterno || ''}`.trim();
+            reg.correoClienteMapeado = cli.email || cli.correo;
+        }
+
+        if (disp) {
+            nombreEquipo = `${disp.marca || ''} ${disp.modelo || ''}`.trim();
+            if (nombreEquipo === "") nombreEquipo = disp.tipo || "Equipo sin marca";
         }
 
         reg.nombreClienteMapeado = nombreCompleto;
         reg.nombreEquipoMapeado = nombreEquipo;
 
         // --- CLASES DE ESTADO ---
-       let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200'; // Valor por defecto
-        
-        if (estado === 'Entregado') {
-            colorEstado = 'bg-green-100 text-green-700 border-green-200';
-        } else if (estado === 'Listo para entregar') {
-            colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
-        } else if (estado === 'En Reparación') {
-            colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
-        } else if (estado === 'En Diagnóstico') {
-            colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
-        } else if (estado === 'Sin Reparación') {
-            colorEstado = 'bg-red-100 text-red-700 border-red-200';
-        }
-        // --- CONSTRUIMOS LA FILA ---
-        htmlFilas += `
+        let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200'; 
+        if (estado === 'Entregado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
+        else if (estado === 'Listo para entregar') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
+        else if (estado === 'En Reparación') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        else if (estado === 'En Diagnóstico') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
+        else if (estado === 'Sin Reparación') colorEstado = 'bg-red-100 text-red-700 border-red-200';
+
+        return `
             <tr class="hover:bg-gray-50 transition border-b border-gray-100">
                 <td class="p-4 text-gray-500 font-medium">#${idRegistro}</td>
                 <td class="p-4 font-semibold text-gray-900">${nombreCompleto}</td>
@@ -297,12 +282,11 @@ async function mostrarPaginaReparaciones() {
                 </td>
             </tr>
         `;
-    }
+    });
 
-    // vaciar filas ya procesadas en la tabla
-    tbody.innerHTML = htmlFilas;
+    const filasHtmlArray = await Promise.all(promesasDeFilas);
+    tbody.innerHTML = filasHtmlArray.join('');
 }
-
 /**
  * 3. Renderizar controles de paginación
  */
@@ -444,7 +428,7 @@ async function gestionarSubmitReparacion(evento) {
                     equipo: equipoModal,
                     nuevo_estado: nuevoEstado
                 };
-                
+
                 // Enviamos el correo 
                 emailjs.send('service_i4nla5o', 'template_6ltorks', parametrosTemplate)
                     .then(function(response) {
