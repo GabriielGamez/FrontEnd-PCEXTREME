@@ -257,27 +257,27 @@ async function mostrarPaginaReparaciones() {
         reg.nombreEquipoMapeado = nombreEquipo;
 
         // --- CLASES DE ESTADO ---
-        let colorEstado = 'bg-gray-100 text-gray-600 border-gray-200'; 
-        if (estado === 'Entregado') colorEstado = 'bg-green-100 text-green-700 border-green-200';
-        else if (estado === 'Listo para entregar') colorEstado = 'bg-blue-100 text-blue-700 border-blue-200';
-        else if (estado === 'En Reparación') colorEstado = 'bg-yellow-100 text-yellow-700 border-yellow-200';
-        else if (estado === 'En Diagnóstico') colorEstado = 'bg-orange-100 text-orange-700 border-orange-200';
-        else if (estado === 'Sin Reparación') colorEstado = 'bg-red-100 text-red-700 border-red-200';
+        let colorEstado = 'bg-gray-900 text-gray-400 border-gray-700'; 
+        if (estado === 'Entregado') colorEstado = 'bg-green-900/40 text-green-400 border-green-800';
+        else if (estado === 'Listo para entregar') colorEstado = 'bg-blue-900/40 text-blue-400 border-blue-800';
+        else if (estado === 'En Reparación') colorEstado = 'bg-yellow-900/40 text-yellow-500 border-yellow-800';
+        else if (estado === 'En Diagnóstico') colorEstado = 'bg-orange-900/40 text-orange-400 border-orange-800';
+        else if (estado === 'Sin Reparación') colorEstado = 'bg-red-900/40 text-red-400 border-red-800';
 
         return `
-            <tr class="hover:bg-gray-50 transition border-b border-gray-100">
-                <td class="p-4 text-gray-500 font-medium">#${idRegistro}</td>
-                <td class="p-4 font-semibold text-gray-900">${nombreCompleto}</td>
-                <td class="p-4 text-gray-600">${nombreEquipo}</td>
-                <td class="p-4 text-gray-500 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
+            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
+                <td class="p-4 text-gray-400 font-medium">#${idRegistro}</td>
+                <td class="p-4 font-semibold text-gray-200">${nombreCompleto}</td>
+                <td class="p-4 text-gray-400">${nombreEquipo}</td>
+                <td class="p-4 text-gray-400 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
                 <td class="p-4">
                     <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">
                         ${estado}
                     </span>
                 </td>
                 <td class="p-4 text-center">
-                    <button onclick="abrirModalReparacion(${idRegistro})" class="text-blue-600 hover:text-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto px-3 py-1.5 bg-white border border-black-200 rounded-lg hover:shadow-sm">
-                    Actualizar
+                    <button onclick="abrirModalReparacion(${idRegistro})" class="bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-1 mx-auto px-4 py-2 rounded shadow-sm text-xs tracking-wider">
+                        Editar
                     </button>
                 </td>
             </tr>
@@ -299,17 +299,17 @@ function renderizarControlesPaginacionReparaciones() {
 
     if (totalPaginas <= 1) return; 
 
-    const btnAnteriorDisabled = paginaActualReparaciones === 1 ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white hover:bg-gray-100 hover:text-gray-900';
-    const btnSiguienteDisabled = paginaActualReparaciones === totalPaginas ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'bg-white hover:bg-gray-100 hover:text-gray-900';
+    const btnAnteriorDisabled = paginaActualReparaciones === 1 ? 'opacity-50 cursor-not-allowed bg-[#1a1c20]' : 'bg-[#1a1c20] hover:bg-[#252830] hover:text-white';
+    const btnSiguienteDisabled = paginaActualReparaciones === totalPaginas ? 'opacity-50 cursor-not-allowed bg-[#1a1c20]' : 'bg-[#1a1c20] hover:bg-[#252830] hover:text-white';
 
     contenedor.innerHTML = `
-        <button onclick="cambiarPaginaReparaciones(-1)" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg transition shadow-sm ${btnAnteriorDisabled}" ${paginaActualReparaciones === 1 ? 'disabled' : ''}>
+        <button onclick="cambiarPaginaReparaciones(-1)" class="px-4 py-2 text-sm font-semibold text-gray-400 border border-gray-700 rounded-lg transition shadow-sm ${btnAnteriorDisabled}" ${paginaActualReparaciones === 1 ? 'disabled' : ''}>
             ← Anterior
         </button>
-        <span class="text-sm font-semibold text-gray-500">
-            Página <span class="text-[#6bc148] font-bold">${paginaActualReparaciones}</span> de <span class="text-gray-900">${totalPaginas}</span>
+        <span class="text-sm font-semibold text-gray-400">
+            Página <span class="text-[#7ed957] font-bold">${paginaActualReparaciones}</span> de <span class="text-white">${totalPaginas}</span>
         </span>
-        <button onclick="cambiarPaginaReparaciones(1)" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg transition shadow-sm ${btnSiguienteDisabled}" ${paginaActualReparaciones === totalPaginas ? 'disabled' : ''}>
+        <button onclick="cambiarPaginaReparaciones(1)" class="px-4 py-2 text-sm font-semibold text-gray-400 border border-gray-700 rounded-lg transition shadow-sm ${btnSiguienteDisabled}" ${paginaActualReparaciones === totalPaginas ? 'disabled' : ''}>
             Siguiente →
         </button>
     `;
@@ -335,8 +335,8 @@ function abrirModalReparacion(idRegistroBuscado) {
     const reg = adminReparacionesData.find(r => String(r.idFolio) === String(idRegistroBuscado));
     
     if (!reg) {
-        console.error("No se encontró el ID:", idRegistroBuscado, "en la memoria:", adminReparacionesData);
-        return alert("No se encontró la información del registro en memoria.");
+        console.error("No se encontró el ID...");
+        return mostrarNotificacionAdmin("No se encontró la información del registro en memoria.", "error");
     }
 
     const nombreClienteRenderizado = reg.nombreClienteMapeado || "Desconocido";
@@ -415,43 +415,33 @@ async function gestionarSubmitReparacion(evento) {
         // 4. LÓGICA DE EMAILJS
         // ==========================================
         if (quiereNotificar) {
-            // Intentamos sacar el correo de la memoria 
             const correoCliente = reg.correoClienteMapeado;
-
             if (correoCliente) {
-                const nombreModal = document.getElementById('info-cliente').innerText;
-                const equipoModal = document.getElementById('info-equipo').innerText;
-
                 const parametrosTemplate = {
                     correo_destino: correoCliente,
-                    nombre_cliente: nombreModal,
-                    equipo: equipoModal,
+                    nombre_cliente: document.getElementById('info-cliente').innerText,
+                    equipo: document.getElementById('info-equipo').innerText,
                     nuevo_estado: nuevoEstado
                 };
-
-                // Enviamos el correo 
+                
                 emailjs.send('service_i4nla5o', 'template_6ltorks', parametrosTemplate)
-                    .then(function(response) {
-                        console.log('Correo enviado!', response.status, response.text);
-                        alert(` Estado actualizado a "${nuevoEstado}"\n Correo enviado exitosamente al cliente.`);
-                    }, function(error) {
-                        console.error('Error al enviar correo:', error);
-                        alert(` Estado actualizado a "${nuevoEstado}"\n Pero ocurrió un error al enviar el correo.`);
+                    .then(function() {
+                        mostrarNotificacionAdmin(`Estado actualizado. Correo enviado al cliente.`, "exito");
+                    }, function() {
+                        mostrarNotificacionAdmin(`Estado actualizado, pero falló el envío del correo.`, "error");
                     });
             } else {
-                alert(` Estado actualizado a "${nuevoEstado}"\n No se pudo enviar el correo porque el cliente no tiene uno registrado.`);
+                mostrarNotificacionAdmin(`Estado actualizado. El cliente no tiene correo registrado.`, "error");
             }
         } else {
-            alert(` Estado actualizado a "${nuevoEstado}" con éxito.`);
+            mostrarNotificacionAdmin(`Estado actualizado a "${nuevoEstado}" con éxito.`, "exito");
         }
 
         cerrarModalReparacion();
         await cargarTablaAdminReparaciones(); 
         
-        alert(`Estado actualizado a "${nuevoEstado}" con éxito.`);
-        
     } catch (error) {
-        alert("Ocurrió un error al intentar actualizar el registro:\n" + error.message);
+        mostrarNotificacionAdmin("Error al actualizar el registro: " + error.message, "error");
     } finally {
         btnGuardar.disabled = false;
         btnGuardar.classList.remove('opacity-70', 'cursor-not-allowed');
@@ -1153,9 +1143,9 @@ window.guardarPortada = async function (evento) {
         if (!respuesta.ok) throw new Error("Error al actualizar la base de datos");
         if (inputVideo) inputVideo.value = "";
         if (inputImagen) inputImagen.value = "";
-        alert("✅ ¡Portada actualizada correctamente con éxito!");
+        mostrarNotificacionAdmin("¡Portada actualizada correctamente con éxito!", "exito");
     } catch (error) {
-        alert("❌ Hubo un error: " + error.message);
+        mostrarNotificacionAdmin("Hubo un error: " + error.message, "error");
     } finally {
         boton.innerHTML = textoOriginal;
         boton.disabled = false;
@@ -1272,12 +1262,11 @@ window.guardarEdicionNosotros = async function (evento) {
             body: JSON.stringify(datosBD)
         });
         if (!respuesta.ok) throw new Error("Error al actualizar");
-
-        alert("✅ ¡Sección actualizada correctamente!");
+        mostrarNotificacionAdmin("¡Sección actualizada correctamente!", "exito");
         cerrarEdicionNosotros();
-        cargarPestanaNosotros(); // Recargar la tabla para ver los cambios
+        cargarPestanaNosotros();
     } catch (error) {
-        alert("❌ Ocurrió un error al guardar los cambios.");
+        mostrarNotificacionAdmin("Ocurrió un error al guardar los cambios.", "error");
     } finally {
         boton.innerHTML = textoOriginal;
         boton.disabled = false;
@@ -1324,9 +1313,9 @@ window.guardarContacto = async function (evento) {
             body: JSON.stringify(datosContacto),
         });
         if (!respuesta.ok) throw new Error("Error de BD");
-        alert("✅ ¡Datos de contacto y mapa actualizados con éxito!");
+        mostrarNotificacionAdmin("¡Datos de contacto y mapa actualizados con éxito!", "exito");
     } catch (error) {
-        alert("❌ Hubo un error: " + error.message);
+        mostrarNotificacionAdmin("Hubo un error: " + error.message, "error");
     } finally {
         boton.innerHTML = textoOriginal;
         boton.disabled = false;
