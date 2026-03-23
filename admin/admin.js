@@ -388,7 +388,7 @@ async function gestionarSubmitReparacion(evento) {
     const nuevoEstado = document.getElementById('admin-estado-reparacion').value;
 
     const quiereNotificar = document.getElementById('admin-notificar-whatsapp').checked;
-    
+
     btnGuardar.disabled = true;
     btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
     btnGuardar.innerText = "Actualizando...";
@@ -398,7 +398,7 @@ async function gestionarSubmitReparacion(evento) {
         const reg = adminReparacionesData.find(r => String(r.idFolio) === String(id));
         if (!reg) throw new Error("No se encontró el registro en memoria para armar la petición.");
 
-        // 2. Rescatamos las llaves foráneas exactas que tu API Java exige
+        // 2. Rescatamos las llaves foráneas exactas
         const idClienteFk = reg.idCliente || (reg.cliente ? reg.cliente.idCliente : null);
         const idDispositivoFk = reg.idDispositivo || (reg.dispositivo ? reg.dispositivo.idDispositivo : null);
 
@@ -431,7 +431,7 @@ async function gestionarSubmitReparacion(evento) {
         // ==========================================
         if (quiereNotificar) {
             // Intentamos sacar el correo de la memoria 
-            const correoCliente = reg.cliente?.correo || reg.cliente?.email || null;
+            const correoCliente = reg.cliente.email;
 
             if (correoCliente) {
                 const nombreModal = document.getElementById('info-cliente').innerText;
