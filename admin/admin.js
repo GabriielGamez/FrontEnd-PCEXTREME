@@ -387,6 +387,8 @@ async function gestionarSubmitReparacion(evento) {
     const id = document.getElementById('admin-reparacion-id').value;
     const nuevoEstado = document.getElementById('admin-estado-reparacion').value;
 
+    const quiereNotificar = document.getElementById('admin-notificar-whatsapp').checked;
+    
     btnGuardar.disabled = true;
     btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
     btnGuardar.innerText = "Actualizando...";
