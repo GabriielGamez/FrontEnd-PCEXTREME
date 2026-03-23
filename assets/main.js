@@ -429,7 +429,7 @@ async function cargarPortada() {
             <p class="text-gray-300 text-lg max-w-lg">
                 ${datos.descripcion || '¡Recupérala al máximo rendimiento!'}
             </p>
-            <button class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-3 px-8 rounded-full transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+            <button src="/FrontEnd-PCEXTREME/public/contacto.html" class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-3 px-8 rounded-full transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
                 Contáctanos
             </button>
         `;
@@ -872,7 +872,7 @@ async function cargarComponentes() {
 }
 
 // ==========================================
-// MÓDULO 10: PERFIL, DISPOSITIVOS Y EDICIÓN
+// MÓDULO 9: PERFIL, DISPOSITIVOS Y EDICIÓN
 // ==========================================
 let clienteActualGlobal = null; // Guardamos los datos del cliente para pasarlos a la vista de edición
 
@@ -1121,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// MÓDULO 11: DETALLES DEL DISPOSITIVO (CLIENTE)
+// MÓDULO 10: DETALLES DEL DISPOSITIVO (CLIENTE)
 // ==========================================
 // Función del botón "Ver" de cada dispositivo
 window.verDetalleDispositivo = function(idDispositivo) {
@@ -1236,6 +1236,59 @@ function actualizarEstadoBadgeDetalle(badge, estado) {
         badge.classList.add('bg-gray-900', 'text-gray-400', 'border-gray-700');
     }
 }
+
+// ==========================================
+// MÓDULO 11: SOBRE NOSOTROS (CLIENTE)
+// ==========================================
+async function cargarNosotrosCliente() {
+    const contenedor = document.getElementById('contenedor-nosotros');
+    if (!contenedor) return;
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/nosotros`);
+        if (!respuesta.ok) throw new Error("Error al cargar la información");
+
+        const datos = await respuesta.json();
+
+        if (datos.length === 0) {
+            contenedor.innerHTML = `<p class="text-gray-500 text-xl text-center">Información no disponible por el momento.</p>`;
+            return;
+        }
+
+        contenedor.innerHTML = ''; // Limpiamos el texto de "Cargando..."
+
+        datos.forEach((item, index) => {
+            // Alternamos la dirección de la fila: Pares (0, 2) normales, Impares (1, 3) en reversa
+            const direccionFila = index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse';
+            
+            // Verificamos si la imagen viene como URL completa o solo el nombre del archivo de Cloudinary
+            let imagenUrl = item.imagen_url || item.imagen || "https://via.placeholder.com/600x400?text=PC+EXTREME";
+            if (imagenUrl && !imagenUrl.startsWith('http')) {
+                imagenUrl = `${CLOUD_BASE_IMG}${imagenUrl}`;
+            }
+
+            const seccionHTML = `
+                <section class="glass-card w-full max-w-5xl rounded-[2.5rem] p-10 md:p-12 relative overflow-hidden">
+                    <div class="flex flex-col ${direccionFila} items-center gap-12">
+                        <div class="w-full md:w-1/3">
+                            <img src="${imagenUrl}" alt="${item.titulo}" class="rounded-2xl shadow-lg border border-white/10 w-full h-auto object-cover aspect-video">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-neon-green text-2xl font-bold mb-4">${item.titulo}</h3>
+                            <p class="text-gray-300 leading-relaxed text-lg whitespace-pre-line">${item.descripcion}</p>
+                        </div>
+                    </div>
+                </section>
+            `;
+            
+            contenedor.innerHTML += seccionHTML;
+        });
+
+    } catch (error) {
+        console.error(error);
+        contenedor.innerHTML = `<p class="text-red-500 text-xl text-center">Error al conectar con el servidor.</p>`;
+    }
+}
 // Disparador principal
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Cargamos cosas generales
@@ -1268,4 +1321,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if(document.getElementById('perfil-nombre')) cargarPerfilYDispositivos();
     // 6. Llamada para la vista de Detalles del Dispositivo Individual
     if(document.getElementById('contenedor-detalle-disp')) cargarDetalleDispositivoCliente();
+    if(document.getElementById('contenedor-nosotros')) cargarNosotrosCliente();
 });

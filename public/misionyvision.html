@@ -30,9 +30,9 @@
     </style>
 </head>
 
-<body class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
-     
-    <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800"></header>
+<body class="bg-[#0a0a0a] bg-[url('/FrontEnd-PCEXTREME/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
+
+    <header id="encabezado-principal"></header>
 
     <main class="flex-grow flex flex-col items-center px-6 py-12 space-y-20">
 
@@ -43,57 +43,9 @@
             </div>
         </div>
 
-        <section class="glass-card w-full max-w-5xl rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden">
-            <div class="flex flex-col md:flex-row items-center gap-10">
-                <div class="flex-1">
-                    <h3 class="text-neon-green text-2xl font-bold mb-6">¿Quienes Somos?</h3>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        PC Extreme fue fundada en 2019 con el objetivo de ser un espacio con enfoque al mundo gamer",
-                        sin embargo después de una crisis económica derivado de la pandemia, después de un cierre
-                        parcial en 2021 vuelve abrir sus instalaciones con una nueva estructuración, convirtiéndose en
-                        una empresa de reparación y armado de computadoras de diferentes gamas, aliándose con marcas
-                        proveedoras de software y hardware.
-                    </p>
-                </div>
-                <div class="w-32 h-32 flex-shrink-0">
-                    <img src="https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/refs/heads/main/assets/logo.png" alt="Icono Empresa"
-                        class="rounded-2xl shadow-2xl grayscale">
-                </div>
-            </div>
-        </section>
-
-        <section class="glass-card w-full max-w-5xl rounded-[2.5rem] p-10 md:p-12">
-            <div class="flex flex-col md:flex-row items-center gap-12">
-                <div class="w-full md:w-1/3">
-                    <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?q=80&w=1974&auto=format&fit=crop"
-                        alt="Misión" class="rounded-2xl shadow-lg border border-white/10">
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-neon-green text-2xl font-bold mb-4">Mision</h3>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        Proporcionar asistencia técnica en los equipos de cómputo, brindando la mejor atención, calidad
-                        y una experiencia de usuario accesible generando confianza y recomendaciones para seguir
-                        creciendo como empresa.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section class="glass-card w-full max-w-5xl rounded-[2.5rem] p-10 md:p-12">
-            <div class="flex flex-col md:flex-row-reverse items-center gap-12">
-                <div class="w-full md:w-1/3">
-                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"
-                        alt="Visión" class="rounded-2xl shadow-lg border border-white/10">
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-neon-green text-2xl font-bold mb-4">Visión</h3>
-                    <p class="text-gray-300 leading-relaxed text-lg">
-                        Llegar a ser una empresa consolidada con muchas sucursales a nivel nacional, tener un sello
-                        propio que los distinga como empresa líder en la industria del mantenimiento de computadoras.
-                    </p>
-                </div>
-            </div>
-        </section>
+        <div id="contenedor-nosotros" class="w-full flex flex-col items-center space-y-20">
+            <p class="text-gray-500 animate-pulse text-xl">Cargando información...</p>
+        </div>
 
         <section class="glass-card w-full max-w-5xl rounded-[2.5rem] p-10 md:p-12">
             <div class="flex flex-col md:flex-row-reverse items-center gap-10">
@@ -106,7 +58,7 @@
                         Ya conoces nuestra historia y nuestros objetivos. Ahora déjanos ayudarte a llevar tu equipo al
                         siguiente nivel. Contamos con los mejores expertos listos para atenderte.
                     </p>
-                    <a href="#"
+                    <a href="/FrontEnd-PCEXTREME/public/contacto.html"
                         class="inline-flex items-center gap-3 bg-[#25D366] hover:bg-green-600 text-white font-bold py-4 px-8 rounded-2xl transition shadow-xl transform hover:scale-105">
                         <i class="fa-brands fa-whatsapp text-2xl"></i>
                         Contáctanos
@@ -114,21 +66,10 @@
                 </div>
             </div>
         </section>
-        <section class="bg-[#111111] py-8 border-t border-b border-gray-800">
-            <div class="w-full px-8 md:px-16 lg:px-24 overflow-hidden">
-                <div id="carrusel-marcas"
-                    class="flex justify-between items-center opacity-40 grayscale hover:grayscale-0 transition duration-500 gap-8">
-                    <span class="text-xl font-bold">INTEL</span>
-                    <span class="text-xl font-bold">NVIDIA</span>
-                    <span class="text-xl font-bold">ASUS</span>
-                    <span class="text-xl font-bold">DELL</span>
-                    <span class="text-xl font-bold">HP</span>
-                </div>
-            </div>
-        </section>
+        
     </main>
 
-    <footer id="pie-de-pagina" class="bg-black py-12 px-8"></footer>
+    <footer id="pie-de-pagina"></footer>
 
     <script src="/FrontEnd-PCEXTREME/assets/main.js"></script>
 
