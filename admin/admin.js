@@ -444,7 +444,7 @@ async function gestionarSubmitReparacion(evento) {
                     equipo: equipoModal,
                     nuevo_estado: nuevoEstado
                 };
-
+                
                 // Enviamos el correo 
                 emailjs.send('service_i4nla5o', 'template_6ltorks', parametrosTemplate)
                     .then(function(response) {
