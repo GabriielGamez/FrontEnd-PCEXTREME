@@ -1495,7 +1495,6 @@ async function cargarUbicacionCliente() {
     const iframeMaps = document.getElementById('ubi-iframe');
     const loadingMap = document.getElementById('ubi-loading-map');
 
-    // Verificamos si estamos en la página correcta
     if (!txtDireccion) return;
 
     try {
@@ -1503,23 +1502,23 @@ async function cargarUbicacionCliente() {
         if (!respuesta.ok) throw new Error("Error al cargar la información de contacto");
 
         const datos = await respuesta.json();
-        
-        // La API puede devolver un arreglo o un objeto directo, lo manejamos por si acaso
         const contacto = Array.isArray(datos) ? datos[0] : datos;
 
         if (contacto) {
-            // Quitamos la animación de carga y ponemos la dirección real
             txtDireccion.classList.remove('animate-pulse');
-            txtDireccion.innerText = contacto.direccion || 'Dirección no disponible por el momento.';
+            txtDireccion.innerText = contacto.direccion || 'Dirección no disponible.';
 
             if (contacto.mapa_url) {
-                // Configuramos el botón azul
+                // 1. EL BOTÓN AZUL: Usa tu link normal de la BD (Funciona perfecto)
                 linkMaps.href = contacto.mapa_url;
                 
-                // Configuramos el mapa interactivo (iframe)
-                iframeMaps.src = contacto.mapa_url;
-                iframeMaps.classList.remove('hidden'); // Mostramos el mapa
-                loadingMap.classList.add('hidden'); // Ocultamos el texto de "Cargando..."
+                // 2. EL IFRAME (RECUADRO): Auto-generamos un link de inserción usando el texto de tu dirección
+                // Transformamos los espacios y comas en código (ej: %20) para que sea una URL válida
+                const direccionCodificada = encodeURIComponent(contacto.direccion);
+                iframeMaps.src = `https://maps.google.com/maps?q=${direccionCodificada}&output=embed`;
+                
+                iframeMaps.classList.remove('hidden'); 
+                loadingMap.classList.add('hidden'); 
             } else {
                 loadingMap.innerText = "Mapa no disponible";
             }
