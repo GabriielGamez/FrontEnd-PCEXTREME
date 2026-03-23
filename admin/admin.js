@@ -1176,18 +1176,32 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
         if (!respuesta.ok) throw new Error("Error de conexión");
         
         nosotrosGlobales = await respuesta.json();
-        if (nosotrosGlobales.length === 0) return contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">No hay secciones registradas.</td></tr>`;
+        if (nosotrosGlobales.length === 0) {
+            contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">No hay secciones registradas.</td></tr>`;
+            return; 
+        }
 
         let html = "";
         nosotrosGlobales.forEach((item) => {
-            let imagenSegura = item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
-            if (imagenSegura && !imagenSegura.startsWith('http')) imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`;
+            // 1. CORRECCIÓN: Usar la base de Cloudinary (CLOUD_BASE)
+            let imagenSegura = item.imagen || item.imagen_url || "https://via.placeholder.com/150?text=Sin+Imagen";
+            if (imagenSegura && !imagenSegura.startsWith('http')) {
+                imagenSegura = `${CLOUD_BASE}${imagenSegura}`;
+            }
 
             html += `
                 <tr class="hover:bg-[#252830] transition duration-200 border-b border-gray-800">
-                    <td class="p-4 align-top w-24"><img src="${imagenSegura}" alt="${item.titulo}" class="w-20 h-16 object-cover rounded shadow-sm border border-gray-700"></td>
-                    <td class="p-4 align-top"><strong class="text-gray-200 text-sm md:text-base block">${item.titulo}</strong></td>
-                    <td class="p-4 align-middle text-center w-24"><button onclick="abrirModalEditarNosotros('${item.idInfo}')" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded text-xs tracking-wider transition shadow-sm">Editar</button></td>
+                    <td class="p-4 align-top w-24">
+                        <img src="${imagenSegura}" alt="${item.titulo}" class="w-20 h-16 object-cover rounded shadow-sm border border-gray-700">
+                    </td>
+                    <td class="p-4 align-top">
+                        <strong class="text-gray-200 text-sm md:text-base block">${item.titulo}</strong>
+                    </td>
+                    <td class="p-4 align-middle text-center w-24">
+                        <button onclick="abrirModalEditarNosotros('${item.idInfo || item.id}')" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded text-xs tracking-wider transition shadow-sm">
+                            Editar
+                        </button>
+                    </td>
                 </tr>
             `;
         });
@@ -1198,7 +1212,8 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
 };
 
 window.abrirModalEditarNosotros = function (idBuscado) {
-    const item = nosotrosGlobales.find(n => String(n.idInfo) === String(idBuscado));
+    // Buscar por idInfo o id, dependiendo de cómo lo devuelva tu base de datos
+    const item = nosotrosGlobales.find(n => String(n.idInfo || n.id) === String(idBuscado));
     if (!item) return;
 
     document.getElementById("edit-id-nosotros").value = idBuscado;
@@ -1206,16 +1221,25 @@ window.abrirModalEditarNosotros = function (idBuscado) {
     document.getElementById("edit-titulo-nosotros").value = item.titulo;
     document.getElementById("edit-desc-nosotros").value = item.descripcion;
 
-    let imagenSegura = item.imagen || "https://via.placeholder.com/150?text=Sin+Imagen";
-    if (imagenSegura && !imagenSegura.startsWith('http')) imagenSegura = `/FrontEnd-PCEXTREME/assets/${imagenSegura}`;
+    // 2. CORRECCIÓN: Usar la base de Cloudinary (CLOUD_BASE) también en el modal de edición
+    let imagenSegura = item.imagen || item.imagen_url || "https://via.placeholder.com/150?text=Sin+Imagen";
+    if (imagenSegura && !imagenSegura.startsWith('http')) {
+        imagenSegura = `${CLOUD_BASE}${imagenSegura}`;
+    }
     
-    document.getElementById("edit-preview-nosotros").src = imagenSegura;
-    document.getElementById("edit-img-nosotros").value = "";
-    document.getElementById("panel-edicion-nosotros").classList.remove("hidden");
+    // Asegurarse de que el elemento img existe antes de asignarle el src
+    const imgPreview = document.getElementById("edit-preview-nosotros");
+    if(imgPreview) imgPreview.src = imagenSegura;
+    
+    document.getElementById("edit-img-nosotros").value = ""; // Limpiar el input file
+    
+    const panelEdicion = document.getElementById("panel-edicion-nosotros");
+    if(panelEdicion) panelEdicion.classList.remove("hidden");
 };
 
 window.cerrarEdicionNosotros = function () {
-    document.getElementById("panel-edicion-nosotros").classList.add("hidden");
+    const panelEdicion = document.getElementById("panel-edicion-nosotros");
+    if(panelEdicion) panelEdicion.classList.add("hidden");
 };
 
 window.guardarEdicionNosotros = async function (evento) {
@@ -1232,7 +1256,10 @@ window.guardarEdicionNosotros = async function (evento) {
 
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
-        if (inputImagen.files.length > 0) datosBD.imagen_url = await subirACloudinary(inputImagen.files[0]);
+        // 3. Subir la imagen y guardar la URL que nos devuelve Cloudinary
+        if (inputImagen.files.length > 0) {
+            datosBD.imagen_url = await subirACloudinary(inputImagen.files[0]);
+        }
 
         const id = document.getElementById("edit-id-nosotros").value;
         const respuesta = await fetch(`${baseUrl}/nosotros/${id}`, {
@@ -1244,7 +1271,7 @@ window.guardarEdicionNosotros = async function (evento) {
 
         alert("✅ ¡Sección actualizada correctamente!");
         cerrarEdicionNosotros();
-        cargarPestanaNosotros();
+        cargarPestanaNosotros(); // Recargar la tabla para ver los cambios
     } catch (error) {
         alert("❌ Ocurrió un error al guardar los cambios.");
     } finally {
