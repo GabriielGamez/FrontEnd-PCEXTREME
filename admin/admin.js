@@ -204,7 +204,7 @@ async function cargarTablaAdminReparaciones() {
  */
 async function mostrarPaginaReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Consultando clientes y equipos a la velocidad de la luz... ⚡</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Consultando clientes y equipos </td></tr>`;
 
     if(adminReparacionesData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay registros de reparación.</td></tr>`;
