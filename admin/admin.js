@@ -1357,8 +1357,213 @@ async function cargarDashboardAdmin() {
         mostrarNotificacionAdmin("Error al conectar con las estadísticas", "error");
     }
 }
+
+ // ==========================================
+// MÓDULO 10: GESTIÓN DE MENSAJES (CRM DE SOPORTE)
 // ==========================================
-// MÓDULO 10: ARRANQUE DE LA APLICACIÓN
+let mensajesData = [];
+
+// 1. Descargar los mensajes del Backend
+async function iniciarModuloMensajes() {
+    // Buscamos el cuerpo de la tabla por su etiqueta en HTML
+    const tbody = document.querySelector('tbody.divide-y.divide-gray-800'); 
+    if (!tbody) return;
+
+    try {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 animate-pulse">Cargando buzón...</td></tr>`;
+        
+        const respuesta = await fetch(`${baseUrl}/mensajes`);
+        if (!respuesta.ok) throw new Error("Error al obtener los mensajes");
+        
+        mensajesData = await respuesta.json();
+        dibujarTablaMensajes();
+
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-red-500 font-semibold">Error al cargar el buzón. Revisa la conexión.</td></tr>`;
+    }
+}
+
+// 2. Dibujar la bandeja de entrada
+function dibujarTablaMensajes() {
+    const tbody = document.querySelector('tbody.divide-y.divide-gray-800');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+
+    // ¡Filtro Universitario! Solo mostramos los mensajes ENTRANTES
+    const mensajesEntrantes = mensajesData.filter(m => m.tipo_mensaje !== 'SALIENTE');
+
+    if(mensajesEntrantes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 font-medium">Bandeja de entrada limpia. No hay mensajes.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    mensajesEntrantes.forEach(msg => {
+        const id = msg.idMensaje || msg.id;
+        const nombre = msg.nombre || "Desconocido";
+        const correo = msg.correo || msg.email || "Sin correo";
+        const telefono = msg.telefono || "Sin teléfono";
+        const asunto = msg.asunto || "Sin asunto";
+        const contenido = msg.mensaje || msg.contenido || "";
+        
+        // Formateo de fecha seguro
+        const fechaObj = msg.fecha ? new Date(msg.fecha) : new Date();
+        const fecha = fechaObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        const hora = fechaObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        // Etiqueta visual de estado
+        const estado = msg.estado_mensaje || "PENDIENTE";
+        const colorEstado = estado === 'RESPONDIDO' ? 'text-green-400 border-green-700' : 'text-orange-400 border-orange-700';
+
+        html += `
+            <tr class="hover:bg-[#252830] transition-colors duration-200">
+                <td class="px-6 py-5 text-gray-500 font-medium align-top">
+                    ${fecha} <br><span class="text-xs">${hora}</span>
+                    <br><span class="${colorEstado} border py-0.5 px-2 mt-2 inline-block rounded-full text-[9px] font-bold tracking-wide">${estado}</span>
+                </td>
+                <td class="px-6 py-5 align-top">
+                    <span class="font-bold text-gray-200 block truncate">${nombre}</span>
+                    <div class="text-gray-400 text-xs mt-1"><i class="fas fa-envelope mr-1 text-blue-400"></i> ${correo}</div>
+                    <div class="text-gray-400 text-xs mt-1"><i class="fas fa-phone mr-1 text-green-400"></i> ${telefono}</div>
+                </td>
+                <td class="px-6 py-5 align-top">
+                    <div class="text-[#7ed957] font-bold mb-2 text-base">${asunto}</div>
+                    <div class="bg-[#0f1115] border border-gray-700 rounded-lg p-3 text-gray-400 leading-relaxed shadow-inner text-xs">
+                        ${contenido}
+                    </div>
+                </td>
+                <td class="px-6 py-5 align-top">
+                    <div class="flex flex-col space-y-2 items-center">
+                        <button onclick="abrirModalRespuesta(${id})" class="w-full max-w-[120px] bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
+                            <i class="fas fa-reply mr-2"></i> RESPONDER
+                        </button>
+                        <button onclick="eliminarMensajeBuzon(${id})" class="w-full max-w-[120px] bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
+                            <i class="fas fa-trash-alt mr-2"></i> ELIMINAR
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+// 3. Control del Modal
+window.abrirModalRespuesta = function(id) {
+    const msg = mensajesData.find(m => (m.idMensaje || m.id) === id);
+    if (!msg) return;
+
+    document.getElementById('resp-id-mensaje').value = id;
+    document.getElementById('resp-nombre').value = msg.nombre;
+    document.getElementById('resp-correo').value = msg.correo || msg.email;
+    document.getElementById('resp-mensaje-original').value = msg.mensaje || msg.contenido;
+    
+    document.getElementById('resp-display-nombre').innerText = msg.nombre;
+    document.getElementById('resp-display-correo').innerText = msg.correo || msg.email;
+    document.getElementById('resp-texto').value = '';
+
+    document.getElementById('modal-respuesta').classList.remove('hidden');
+};
+
+window.cerrarModalRespuesta = function() {
+    document.getElementById('modal-respuesta').classList.add('hidden');
+};
+
+// 4. El flujo maestro de envío y guardado
+window.enviarRespuestaMensaje = async function(evento) {
+    evento.preventDefault();
+    
+    const btn = evento.target.querySelector('button[type="submit"]');
+    const textoBtn = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `Enviando...`;
+
+    const idOriginal = document.getElementById('resp-id-mensaje').value;
+    const correoDestino = document.getElementById('resp-correo').value;
+    const nombreCliente = document.getElementById('resp-nombre').value;
+    const msjOriginal = document.getElementById('resp-mensaje-original').value;
+    const respuestaAdmin = document.getElementById('resp-texto').value;
+
+    const token = localStorage.getItem('token');
+    const headersAEnviar = { 'Content-Type': 'application/json' };
+    if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
+
+    try {
+        // ACCIÓN 1: Disparar EmailJS
+        const parametrosEmail = {
+            correo_cliente: correoDestino,
+            nombre_cliente: nombreCliente,
+            mensaje_original: msjOriginal,
+            respuesta_admin: respuestaAdmin
+        };
+        // OJO: REEMPLAZA CON TU TEMPLATE ID REAL
+        await emailjs.send('service_i4nla5o', 'template_ipz365x', parametrosEmail);
+
+        // ACCIÓN 2: Guardar la respuesta en DB
+        const payloadRespuesta = {
+            nombre: "Soporte PC EXTREME",
+            correo: "pcextreme@correo.com", 
+            telefono: "N/A",
+            asunto: "RE: Mensaje del Cliente",
+            mensaje: respuestaAdmin,
+            tipo_mensaje: "SALIENTE",
+            estado_mensaje: "ENVIADO",
+            id_mensaje_padre: parseInt(idOriginal)
+        };
+
+        await fetch(`${baseUrl}/mensajes`, {
+            method: 'POST',
+            headers: headersAEnviar,
+            body: JSON.stringify(payloadRespuesta)
+        });
+
+        // ACCIÓN 3: Marcar el original como RESPONDIDO
+        const payloadActualizacion = { estado_mensaje: "RESPONDIDO" };
+        await fetch(`${baseUrl}/mensajes/${idOriginal}`, {
+            method: 'PUT',
+            headers: headersAEnviar,
+            body: JSON.stringify(payloadActualizacion)
+        });
+        
+        mostrarNotificacionAdmin("Respuesta enviada y guardada en historial", "exito");
+        cerrarModalRespuesta();
+        await iniciarModuloMensajes(); 
+        
+    } catch (error) {
+        console.error("Error:", error);
+        mostrarNotificacionAdmin("Error al enviar el mensaje", "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = textoBtn;
+    }
+};
+
+window.eliminarMensajeBuzon = async function(id) {
+    const confirmado = await mostrarConfirmacionAdmin("¿Seguro que deseas eliminar este mensaje?", "peligro");
+    if(!confirmado) return;
+
+    try {
+        const token = localStorage.getItem('token');
+        const headersAEnviar = {};
+        if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
+
+        const respuesta = await fetch(`${baseUrl}/mensajes/${id}`, { 
+            method: 'DELETE',
+            headers: headersAEnviar
+        });
+        
+        if (!respuesta.ok) throw new Error("Error al eliminar");
+        
+        mostrarNotificacionAdmin("Mensaje eliminado", "exito");
+        await iniciarModuloMensajes(); 
+    } catch (error) {
+        mostrarNotificacionAdmin("Error al eliminar el mensaje", "error");
+    }
+};
+
+// ==========================================
+// ARRANQUE DE LA APLICACIÓN
 // ==========================================
 // Se encarga de arrancar todas las funciones cuando la página carga
 document.addEventListener("DOMContentLoaded", () => {
@@ -1372,7 +1577,11 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
-
+    if(document.querySelector('title').innerText.includes('Buzón')) {
+        iniciarModuloMensajes();
+        const formResp = document.getElementById('formulario-respuesta');
+        if (formResp) formResp.addEventListener('submit', enviarRespuestaMensaje);
+    }
     if(document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
