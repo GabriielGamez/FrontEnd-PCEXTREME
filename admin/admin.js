@@ -1256,12 +1256,16 @@ window.guardarEdicionNosotros = async function (evento) {
 
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
-        // 3. Subir la imagen y guardar la URL que nos devuelve Cloudinary
+        
+        // CORRECCIÓN: Mandamos la URL en ambas propiedades para que el backend la atrape sí o sí
         if (inputImagen.files.length > 0) {
-            datosBD.imagen_url = await subirACloudinary(inputImagen.files[0]);
+            const urlCloudinary = await subirACloudinary(inputImagen.files[0]);
+            datosBD.imagen = urlCloudinary; 
+            datosBD.imagen_url = urlCloudinary;
         }
 
         const id = document.getElementById("edit-id-nosotros").value;
+        // ... (el resto del fetch queda igual)
         const respuesta = await fetch(`${baseUrl}/nosotros/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
