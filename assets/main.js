@@ -832,34 +832,28 @@ async function cargarDetalleProducto() {
 
         contenedor.innerHTML = `
             <div class="bg-black border border-gray-800 rounded-2xl p-6 flex items-center justify-center">
-                <img src="${imagenUrl}" alt="${datos.nombre
-            }" class="max-w-full max-h-96 object-contain hover:scale-105 transition-transform duration-500">
+                <img src="${imagenUrl}" alt="${datos.nombre}" class="max-w-full max-h-96 object-contain hover:scale-105 transition-transform duration-500">
             </div>
             <div class="flex flex-col justify-center">
-                <span class="inline-block bg-gray-800 text-gray-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider w-max mb-4">${datos.categoria
-            }</span>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-6 leading-tight">${datos.nombre
-            }</h1>
-                <div class="text-[#7ed957] text-4xl font-black mb-6">$${parseFloat(
-                datos.precio
-            ).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+                <span class="inline-block bg-gray-800 text-gray-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider w-max mb-4">${datos.categoria}</span>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-6 leading-tight">${datos.nombre}</h1>
+                <div class="text-[#7ed957] text-4xl font-black mb-6">$${parseFloat(datos.precio).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
                 <div class="bg-[#1a1a1a] border border-gray-800 rounded-xl p-4 mb-8">
                     <p class="text-gray-400 text-sm mb-2">Estado del stock:</p>
                     <div class="flex items-center gap-3">
-                        <span class="bg-blue-600/20 text-blue-400 border border-blue-600/50 px-3 py-1 rounded-full text-xs font-bold uppercase">${datos.estado || "Disponible"
-            }</span>
-                        <span class="text-gray-500 text-sm">(Cantidad: ${datos.stock || 1
-            })</span>
+                        <span class="bg-blue-600/20 text-blue-400 border border-blue-600/50 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                            ${datos.estado_stock || "Desconocido"}
+                        </span>
+                        <span class="text-gray-500 text-sm">(Cantidad: ${datos.stock || 0})</span>
                     </div>
                 </div>
                 <div class="mb-8">
                     <h3 class="text-white font-semibold mb-2 border-b border-gray-800 pb-2">Descripción del producto</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">${datos.descripcion || "Sin descripción disponible."
-            }</p>
+                    <p class="text-gray-400 text-sm leading-relaxed">${datos.descripcion || "Sin descripción disponible."}</p>
                 </div>
                 <a href="https://wa.me/${telefonoEmpresa}?text=${mensajeWa}" target="_blank" 
                    class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-black text-center font-bold py-4 px-8 rounded-full transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.2)] flex items-center justify-center gap-3">
-                   Me interesa este artículo
+                    Me interesa este artículo
                 </a>
             </div>
         `;
