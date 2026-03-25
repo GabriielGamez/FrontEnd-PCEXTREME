@@ -1255,7 +1255,7 @@ window.guardarEdicionNosotros = async function (evento) {
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
         
-        // CORRECCIÓN: Mandamos la URL en ambas propiedades para que el backend la atrape sí o sí
+        // CORRECCIÓN: Mandamos la URL en ambas propiedades para que el backend la atrape sí o síz|
         if (inputImagen.files.length > 0) {
             const urlCloudinary = await subirACloudinary(inputImagen.files[0]);
             datosBD.imagen = urlCloudinary; 

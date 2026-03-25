@@ -13,6 +13,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
     </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("ckRTR8J7Y0HejBb-9");
+        })();
+    </script>
 </head>
 <body class="bg-[#0f1115] text-gray-200 antialiased flex flex-col min-h-screen">
 
@@ -91,7 +97,44 @@
             </table>
         </div>
     </main>
+    <div id="modal-respuesta" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 px-4 transition-opacity">
+        <div class="bg-[#1a1c20] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl border border-gray-700">
+            
+            <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-reply"></i> Responder al Cliente
+                </h3>
+                <button onclick="cerrarModalRespuesta()" class="text-white hover:text-gray-200 transition text-xl">&times;</button>
+            </div>
 
+            <div class="p-6">
+                <form id="formulario-respuesta" class="space-y-4">
+                    <input type="hidden" id="resp-id-mensaje">
+                    <input type="hidden" id="resp-correo">
+                    <input type="hidden" id="resp-nombre">
+                    <input type="hidden" id="resp-mensaje-original">
+
+                    <div class="bg-[#0f1115] p-3 rounded-lg border border-gray-800">
+                        <p class="text-xs text-gray-500 font-bold mb-1 uppercase">Para:</p>
+                        <p id="resp-display-nombre" class="text-gray-200 font-semibold text-sm"></p>
+                        <p id="resp-display-correo" class="text-blue-400 text-xs mt-1"></p>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Tu Respuesta</label>
+                        <textarea id="resp-texto" required rows="5" placeholder="Escribe tu respuesta aquí..." class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-3 text-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition resize-none"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-800">
+                        <button type="button" onclick="cerrarModalRespuesta()" class="px-6 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-medium transition">Cancelar</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-lg transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Enviar Respuesta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <footer id="admin-piePagina" class="mt-auto"></footer>
 
     <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
