@@ -1525,6 +1525,57 @@ async function cargarUbicacionCliente() {
         loadingMap.innerText = "Error al cargar el mapa";
     }
 }
+
+// ==========================================
+// MÓDULO 13 : FORMULARIO DE CONTACTO PÚBLICO
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const formContacto = document.getElementById('formulario-contacto-publico');
+    
+    if (formContacto) {
+        formContacto.addEventListener('submit', async (evento) => {
+            evento.preventDefault(); // Evita que la página intente recargarse
+
+            const boton = formContacto.querySelector('button[type="submit"]');
+            const textoOriginal = boton.innerHTML;
+            boton.innerHTML = " Enviando mensaje...";
+            boton.disabled = true;
+
+            // Empaquetamos exactamente lo que pide el Backend
+            const payload = {
+                correo: document.getElementById('cont-correo').value.trim(),
+                asunto: document.getElementById('cont-asunto').value.trim(),
+                mensaje: document.getElementById('cont-mensaje').value.trim(),
+                tipo_mensaje: "ENTRANTE",
+                estado_mensaje: "PENDIENTE"
+            };
+
+            try {
+                // Hacemos el POST directo a tu API en Vercel
+                const respuesta = await fetch("https://app-web-java.vercel.app/api/mensajes", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!respuesta.ok) throw new Error("Error del servidor al guardar el mensaje");
+
+                // Notificamos al cliente y limpiamos las cajas
+                alert("✅ ¡Mensaje enviado con éxito! Te responderemos pronto a tu correo.");
+                formContacto.reset();
+
+            } catch (error) {
+                console.error("Error al enviar formulario:", error);
+                alert(" Ocurrió un error al enviar tu mensaje. Por favor intenta más tarde.");
+            } finally {
+                // Restauramos el botón a la normalidad
+                boton.innerHTML = textoOriginal;
+                boton.disabled = false;
+            }
+        });
+    }
+});
+
 // Disparador principal
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Cargamos cosas generales

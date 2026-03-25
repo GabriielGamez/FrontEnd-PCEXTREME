@@ -41,30 +41,29 @@
                 <div class="bg-white rounded-2xl p-8 text-gray-800 shadow-xl">
                     <h3 class="text-center text-xl font-bold text-gray-600 mb-8">Envíanos un mensaje</h3>
 
-                    <form action="#" class="space-y-6">
+                    <form id="formulario-contacto-publico" class="space-y-6">
+                        
                         <div>
-                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Tu Correo
-                                Electrónico:</label>
-                            <input type="email" placeholder="ejemplo@correo.com"
-                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Tu Correo Electrónico:</label>
+                            <input type="email" id="cont-correo" required placeholder="ejemplo@correo.com"
+                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-900">
                         </div>
 
                         <div>
                             <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Asunto:</label>
-                            <input type="text" placeholder="Ej: Cotización de PC"
-                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <input type="text" id="cont-asunto" required placeholder="Ej: Cotización de PC"
+                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-900">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Detalles del
-                                Mensaje:</label>
-                            <textarea rows="4" placeholder="Escribe aquí tus dudas..."
-                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
+                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Detalles del Mensaje:</label>
+                            <textarea id="cont-mensaje" required rows="4" placeholder="Escribe aquí tus dudas..."
+                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition resize-none text-gray-900"></textarea>
                         </div>
 
                         <button type="submit"
-                            class="w-full bg-[#333] hover:bg-black text-white font-bold py-4 rounded-xl transition shadow-lg uppercase tracking-widest text-sm">
-                            Enviar Mensaje
+                            class="w-full bg-[#333] hover:bg-black text-white font-bold py-4 rounded-xl transition shadow-lg uppercase tracking-widest text-sm flex justify-center items-center gap-2">
+                            <span>Enviar Mensaje</span>
                         </button>
                     </form>
                 </div>
