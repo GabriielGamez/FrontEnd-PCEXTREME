@@ -472,7 +472,7 @@ async function cargarPortada() {
             <p class="text-gray-300 text-lg max-w-lg">
                 ${datos.descripcion || "¡Recupérala al máximo rendimiento!"}
             </p>
-            <button src="/FrontEnd-PCEXTREME/public/contacto.html" class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-3 px-8 rounded-full transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+            <button aref="/FrontEnd-PCEXTREME/public/contacto.html" class="bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
                 Contáctanos
             </button>
         `;
