@@ -722,7 +722,7 @@ async function cargarCatalogoProductos() {
         // Sacamos las categorías sin repetirlas
         const categoriasSet = new Set(productosGlobales.map((p) => p.categoria));
         const categoriasUnicas = ["Todos", ...Array.from(categoriasSet)];
-
+        contenedorCategorias.innerHTML = "";
         categoriasUnicas.forEach((categoria, index) => {
             const btn = document.createElement("button");
             const esActivo = index === 0;
