@@ -879,7 +879,8 @@ window.calcularCrecimiento = function () {
 
     const t_futuro = parseFloat(inputTiempo.value);
     if (isNaN(t_futuro) || t_futuro < 0) {
-        alert("Por favor ingresa un tiempo válido mayor o igual a 0.");
+        // === CAMBIO: Alerta nativa cambiada por notificación flotante ===
+        mostrarNotificacion("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
         return;
     }
 
@@ -1599,13 +1600,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (!respuesta.ok) throw new Error("Error del servidor al guardar el mensaje");
 
-                // Notificamos al cliente y limpiamos las cajas
-                alert("¡Mensaje enviado con éxito! Te responderemos pronto a tu correo.");
+                // === CAMBIO: Alerta de éxito convertida a flotante ===
+                mostrarNotificacion("¡Mensaje enviado con éxito! Te responderemos pronto a tu correo.", "exito");
                 formContacto.reset();
 
             } catch (error) {
                 console.error("Error al enviar formulario:", error);
-                alert(" Ocurrió un error al enviar tu mensaje. Por favor intenta más tarde.");
+                // === CAMBIO: Alerta de error convertida a flotante ===
+                mostrarNotificacion("Ocurrió un error al enviar tu mensaje. Por favor intenta más tarde.", "error");
             } finally {
                 // Restauramos el botón a la normalidad
                 boton.innerHTML = textoOriginal;
