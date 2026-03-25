@@ -727,8 +727,8 @@ async function cargarCatalogoProductos() {
             const btn = document.createElement("button");
             const esActivo = index === 0;
             btn.className = `px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 border ${esActivo
-                    ? "bg-[#7ed957] text-black border-[#7ed957]"
-                    : "bg-transparent text-gray-400 border-gray-700 hover:border-[#7ed957] hover:text-[#7ed957]"
+                ? "bg-[#7ed957] text-black border-[#7ed957]"
+                : "bg-transparent text-gray-400 border-gray-700 hover:border-[#7ed957] hover:text-[#7ed957]"
                 }`;
             btn.innerText = categoria.toUpperCase();
 
@@ -954,10 +954,13 @@ function iniciarModuloCrecimiento() {
 // Función para inyectar el HTML de la barra superior y pie de página
 async function cargarComponentes() {
     try {
-        const resHeader = await fetch("/FrontEnd-PCEXTREME/components/header.html");
-        if (resHeader.ok)
-            document.getElementById("encabezado-principal").innerHTML =
-                await resHeader.text();
+        const btnMenuMovil = document.getElementById("btn-menu-movil");
+        const menuMovil = document.getElementById("menu-movil");
+        if (btnMenuMovil && menuMovil) {
+            btnMenuMovil.addEventListener("click", () => {
+                menuMovil.classList.toggle("hidden");
+            });
+        }
 
         inicializarMenuCuenta();
         verificarSesion();
@@ -1451,7 +1454,7 @@ async function cargarNosotrosCliente() {
         datos.forEach((item, index) => {
             // Alternamos la dirección de la fila: Pares (0, 2) normales, Impares (1, 3) en reversa
             const direccionFila = index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse';
-            
+
             // Verificamos si la imagen viene como URL completa o solo el nombre del archivo de Cloudinary
             let imagenUrl = item.imagen_url || item.imagen || "https://via.placeholder.com/600x400?text=PC+EXTREME";
             if (imagenUrl && !imagenUrl.startsWith('http')) {
@@ -1471,7 +1474,7 @@ async function cargarNosotrosCliente() {
                     </div>
                 </section>
             `;
-            
+
             contenedor.innerHTML += seccionHTML;
         });
 
@@ -1506,14 +1509,14 @@ async function cargarUbicacionCliente() {
             if (contacto.mapa_url) {
                 // 1. EL BOTÓN AZUL: Usa tu link normal de la BD (Funciona perfecto)
                 linkMaps.href = contacto.mapa_url;
-                
+
                 // 2. EL IFRAME (RECUADRO): Auto-generamos un link de inserción usando el texto de tu dirección
                 // Transformamos los espacios y comas en código (ej: %20) para que sea una URL válida
                 const direccionCodificada = encodeURIComponent(contacto.direccion);
                 iframeMaps.src = `https://maps.google.com/maps?q=${direccionCodificada}&output=embed`;
-                
-                iframeMaps.classList.remove('hidden'); 
-                loadingMap.classList.add('hidden'); 
+
+                iframeMaps.classList.remove('hidden');
+                loadingMap.classList.add('hidden');
             } else {
                 loadingMap.innerText = "Mapa no disponible";
             }
@@ -1534,9 +1537,9 @@ async function cargarInfoContactoPublico() {
     try {
         const respuesta = await fetch("https://app-web-java.vercel.app/api/contacto");
         if (!respuesta.ok) return;
-        
+
         const datos = await respuesta.json();
-        
+
         if (datos) {
             const contacto = Array.isArray(datos) ? datos[0] : datos;
 
@@ -1560,7 +1563,7 @@ async function cargarInfoContactoPublico() {
                 // Limpiamos todo lo que no sea número para el link de WhatsApp
                 const numeroLimpio = contacto.whatsapp.replace(/\D/g, '');
                 // Asumimos código de país 52 (México), cámbialo si es otro
-                linkWa.href = `https://wa.me/52${numeroLimpio}`; 
+                linkWa.href = `https://wa.me/52${numeroLimpio}`;
             }
         }
     } catch (error) {
@@ -1571,7 +1574,7 @@ async function cargarInfoContactoPublico() {
 document.addEventListener("DOMContentLoaded", () => {
     cargarInfoContactoPublico();
     const formContacto = document.getElementById('formulario-contacto-publico');
-    
+
     if (formContacto) {
         formContacto.addEventListener('submit', async (evento) => {
             evento.preventDefault(); // Evita que la página intente recargarse
@@ -1652,5 +1655,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("contenedor-detalle-disp"))
         cargarDetalleDispositivoCliente();
     if (document.getElementById("contenedor-nosotros")) cargarNosotrosCliente();
-    if(document.getElementById('ubi-direccion')) cargarUbicacionCliente();
+    if (document.getElementById('ubi-direccion')) cargarUbicacionCliente();
 });
