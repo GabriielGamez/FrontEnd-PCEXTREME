@@ -716,6 +716,13 @@ window.gestionarSubmitProducto = async function(evento) {
     const inputFile = document.getElementById('admin-imagen-file');
     let nombreImagenFinal = document.getElementById('nombre-imagen-actual').innerText;
 
+    // 1. CAPTURAR EL PRECIO Y VALIDARLO (Espejo de tus Triggers)
+    const precioIngresado = parseFloat(document.getElementById('admin-precio').value);
+    
+    if (precioIngresado <= 0) {
+        return mostrarNotificacionAdmin("Error: No se permiten productos con precio menor o igual a cero.", "error");
+    }
+
     if (id) {
         const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas modificar los datos de este producto?", "advertencia");
         if (!confirmado) return;
@@ -745,7 +752,7 @@ window.gestionarSubmitProducto = async function(evento) {
         const payload = {
             nombre: document.getElementById('admin-nombre').value,
             categoria: document.getElementById('admin-categoria').value,
-            precio: parseFloat(document.getElementById('admin-precio').value),
+            precio: precioIngresado, // Usamos la variable que ya validamos arriba
             stock: parseInt(document.getElementById('admin-stock').value),
             descripcion: document.getElementById('admin-descripcion').value,
             imagen_url: nombreImagenFinal 
@@ -765,7 +772,13 @@ window.gestionarSubmitProducto = async function(evento) {
             body: JSON.stringify(payload)
         });
 
-        if (!respuesta.ok) throw new Error("Error al guardar el producto");
+        // 2. MANEJO DE ERRORES DEL TRIGGER DESDE EL BACKEND
+        // Si por alguna razón el usuario se salta la validación de JS (ej. usando Postman),
+        // el trigger de la base de datos se activará y el backend nos devolverá un error.
+        if (!respuesta.ok) {
+            const dataError = await respuesta.json().catch(() => ({}));
+            throw new Error(dataError.message || dataError.error || "Error al guardar el producto");
+        }
 
         mostrarNotificacionAdmin(`Producto ${id ? 'actualizado' : 'creado'} con éxito`, 'exito');
         cerrarModalProducto();
