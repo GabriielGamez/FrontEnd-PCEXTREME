@@ -1568,6 +1568,7 @@ async function cargarInfoContactoPublico() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    cargarInfoContactoPublico();
     const formContacto = document.getElementById('formulario-contacto-publico');
     
     if (formContacto) {
@@ -1579,7 +1580,7 @@ document.addEventListener("DOMContentLoaded", () => {
             boton.innerHTML = " Enviando mensaje...";
             boton.disabled = true;
 
-            // Empaquetamos exactamente lo que pide el Backend
+            // Empaquetamos
             const payload = {
                 correo: document.getElementById('cont-correo').value.trim(),
                 asunto: document.getElementById('cont-asunto').value.trim(),
@@ -1589,7 +1590,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             try {
-                // Hacemos el POST directo a tu API en Vercel
+                // Hacemos el POST directo a API en Vercel
                 const respuesta = await fetch("https://app-web-java.vercel.app/api/mensajes", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
