@@ -1255,7 +1255,6 @@ window.guardarEdicionNosotros = async function (evento) {
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
         
-        // CORRECCIÓN: Mandamos la URL en ambas propiedades para que el backend la atrape sí o síz|
         if (inputImagen.files.length > 0) {
             const urlCloudinary = await subirACloudinary(inputImagen.files[0]);
             datosBD.imagen = urlCloudinary; 
@@ -1478,11 +1477,9 @@ window.abrirModalRespuesta = function(id) {
     if (!msg) return;
 
     document.getElementById('resp-id-mensaje').value = id;
-    document.getElementById('resp-nombre').value = msg.nombre;
     document.getElementById('resp-correo').value = msg.correo || msg.email;
     document.getElementById('resp-mensaje-original').value = msg.mensaje || msg.contenido;
     
-    document.getElementById('resp-display-nombre').innerText = msg.nombre;
     document.getElementById('resp-display-correo').innerText = msg.correo || msg.email;
     document.getElementById('resp-texto').value = '';
 
@@ -1504,7 +1501,6 @@ window.enviarRespuestaMensaje = async function(evento) {
 
     const idOriginal = document.getElementById('resp-id-mensaje').value;
     const correoDestino = document.getElementById('resp-correo').value;
-    const nombreCliente = document.getElementById('resp-nombre').value;
     const msjOriginal = document.getElementById('resp-mensaje-original').value;
     const respuestaAdmin = document.getElementById('resp-texto').value;
 
@@ -1512,21 +1508,19 @@ window.enviarRespuestaMensaje = async function(evento) {
     const headersAEnviar = { 'Content-Type': 'application/json' };
     if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-    try {
-        // ACCIÓN 1: Disparar EmailJS
+   try {
+        //  Disparar EmailJS 
         const parametrosEmail = {
             correo_cliente: correoDestino,
-            nombre_cliente: nombreCliente,
             mensaje_original: msjOriginal,
             respuesta_admin: respuestaAdmin
         };
-        await emailjs.send('service_i4nla5o', 'template_ipz365x', parametrosEmail);
+        
+        await emailjs.send('service_i4nla5o', 'template_xvh63sq', parametrosEmail);
 
-        // ACCIÓN 2: Guardar la respuesta en DB
+        //  Guardar la respuesta en DB 
         const payloadRespuesta = {
-            nombre: "Soporte PC EXTREME",
             correo: "pcextreme@correo.com", 
-            telefono: "N/A",
             asunto: "RE: Mensaje del Cliente",
             mensaje: respuestaAdmin,
             tipo_mensaje: "SALIENTE",
@@ -1540,7 +1534,7 @@ window.enviarRespuestaMensaje = async function(evento) {
             body: JSON.stringify(payloadRespuesta)
         });
 
-        // ACCIÓN 3: Marcar el original como RESPONDIDO
+        //  Marcar el original como RESPONDIDO
         const payloadActualizacion = { estado_mensaje: "RESPONDIDO" };
         await fetch(`${baseUrl}/mensajes/${idOriginal}`, {
             method: 'PUT',
@@ -1550,7 +1544,7 @@ window.enviarRespuestaMensaje = async function(evento) {
         
         mostrarNotificacionAdmin("Respuesta enviada y guardada en historial", "exito");
         cerrarModalRespuesta();
-        await iniciarModuloMensajes(); 
+        await iniciarModuloMensajes();
         
     } catch (error) {
         console.error("Error:", error);
