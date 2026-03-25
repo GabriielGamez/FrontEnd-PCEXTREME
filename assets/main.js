@@ -1529,6 +1529,44 @@ async function cargarUbicacionCliente() {
 // ==========================================
 // MÓDULO 13 : FORMULARIO DE CONTACTO PÚBLICO
 // ==========================================
+async function cargarInfoContactoPublico() {
+    try {
+        const respuesta = await fetch("https://app-web-java.vercel.app/api/contacto");
+        if (!respuesta.ok) return;
+        
+        const datos = await respuesta.json();
+        
+        if (datos) {
+            const contacto = Array.isArray(datos) ? datos[0] : datos;
+
+            // 1. Inyectar Email
+            const linkEmail = document.getElementById('publico-email');
+            if (linkEmail && contacto.email) {
+                linkEmail.href = `mailto:${contacto.email}`;
+                linkEmail.innerText = contacto.email;
+            }
+
+            // 2. Inyectar Teléfono
+            const linkTel = document.getElementById('publico-telefono');
+            if (linkTel && contacto.telefono) {
+                linkTel.href = `tel:${contacto.telefono.replace(/\D/g, '')}`;
+                linkTel.innerText = contacto.telefono;
+            }
+
+            // 3. Inyectar WhatsApp
+            const linkWa = document.getElementById('publico-whatsapp');
+            if (linkWa && contacto.whatsapp) {
+                // Limpiamos todo lo que no sea número para el link de WhatsApp
+                const numeroLimpio = contacto.whatsapp.replace(/\D/g, '');
+                // Asumimos código de país 52 (México), cámbialo si es otro
+                linkWa.href = `https://wa.me/52${numeroLimpio}`; 
+            }
+        }
+    } catch (error) {
+        console.error("No se pudo cargar la información dinámica de contacto:", error);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const formContacto = document.getElementById('formulario-contacto-publico');
     
@@ -1561,7 +1599,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!respuesta.ok) throw new Error("Error del servidor al guardar el mensaje");
 
                 // Notificamos al cliente y limpiamos las cajas
-                alert("✅ ¡Mensaje enviado con éxito! Te responderemos pronto a tu correo.");
+                alert("¡Mensaje enviado con éxito! Te responderemos pronto a tu correo.");
                 formContacto.reset();
 
             } catch (error) {
