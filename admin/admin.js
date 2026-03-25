@@ -1151,10 +1151,6 @@ window.guardarPortada = async function (evento) {
         
         if (inputVideo) inputVideo.value = "";
         if (inputImagen) inputImagen.value = "";
-<<<<<<< Updated upstream
-=======
-        
->>>>>>> Stashed changes
         mostrarNotificacionAdmin("¡Portada actualizada correctamente con éxito!", "exito");
     } catch (error) {
         mostrarNotificacionAdmin("Hubo un error: " + error.message, "error");
@@ -1185,21 +1181,15 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
 
         let html = "";
         nosotrosGlobales.forEach((item) => {
-<<<<<<< Updated upstream
             // 1. CORRECCIÓN: Usar la base de Cloudinary (CLOUD_BASE)
             let imagenSegura = item.imagen || item.imagen_url || "https://via.placeholder.com/150?text=Sin+Imagen";
             if (imagenSegura && !imagenSegura.startsWith('http')) {
                 imagenSegura = `${CLOUD_BASE}${imagenSegura}`;
             }
-=======
-            // Reconstruimos la URL de Cloudinary como en productos
-            let imagenSegura = item.imagen ? `https://res.cloudinary.com/${CLOUD_NAME_WEB}/image/upload/${item.imagen}` : "https://via.placeholder.com/150?text=Sin+Imagen";
->>>>>>> Stashed changes
 
             html += `
                 <tr class="hover:bg-[#252830] transition duration-200 border-b border-gray-800">
                     <td class="p-4 align-top w-24">
-<<<<<<< Updated upstream
                         <img src="${imagenSegura}" alt="${item.titulo}" class="w-20 h-16 object-cover rounded shadow-sm border border-gray-700">
                     </td>
                     <td class="p-4 align-top">
@@ -1210,14 +1200,6 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
                             Editar
                         </button>
                     </td>
-=======
-                        <div class="w-20 h-16 bg-[#0f1115] rounded border border-gray-700 p-1 flex items-center justify-center">
-                            <img src="${imagenSegura}" alt="${item.titulo}" class="max-w-full max-h-full object-contain rounded">
-                        </div>
-                    </td>
-                    <td class="p-4 align-middle"><strong class="text-gray-200 text-sm md:text-base block">${item.titulo}</strong></td>
-                    <td class="p-4 align-middle text-center w-24"><button onclick="abrirModalEditarNosotros('${item.idInfo || item.id}')" class="bg-[#3f51b5] hover:bg-blue-800 text-white font-bold py-2 px-4 rounded text-xs tracking-wider transition shadow-sm">Editar</button></td>
->>>>>>> Stashed changes
                 </tr>
             `;
         });
@@ -1228,10 +1210,7 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
 };
 
 window.abrirModalEditarNosotros = function (idBuscado) {
-<<<<<<< Updated upstream
     // Buscar por idInfo o id, dependiendo de cómo lo devuelva tu base de datos
-=======
->>>>>>> Stashed changes
     const item = nosotrosGlobales.find(n => String(n.idInfo || n.id) === String(idBuscado));
     if (!item) return;
 
@@ -1240,16 +1219,11 @@ window.abrirModalEditarNosotros = function (idBuscado) {
     document.getElementById("edit-titulo-nosotros").value = item.titulo;
     document.getElementById("edit-desc-nosotros").value = item.descripcion;
 
-<<<<<<< Updated upstream
     // 2. CORRECCIÓN: Usar la base de Cloudinary (CLOUD_BASE) también en el modal de edición
     let imagenSegura = item.imagen || item.imagen_url || "https://via.placeholder.com/150?text=Sin+Imagen";
     if (imagenSegura && !imagenSegura.startsWith('http')) {
         imagenSegura = `${CLOUD_BASE}${imagenSegura}`;
     }
-=======
-    // Reconstruimos la URL para la previsualización
-    let imagenSegura = item.imagen ? `https://res.cloudinary.com/${CLOUD_NAME_WEB}/image/upload/${item.imagen}` : "https://via.placeholder.com/150?text=Sin+Imagen";
->>>>>>> Stashed changes
     
     // Asegurarse de que el elemento img existe antes de asignarle el src
     const imgPreview = document.getElementById("edit-preview-nosotros");
@@ -1281,17 +1255,11 @@ window.guardarEdicionNosotros = async function (evento) {
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
         
-<<<<<<< Updated upstream
         // CORRECCIÓN: Mandamos la URL en ambas propiedades para que el backend la atrape sí o sí
         if (inputImagen.files.length > 0) {
             const urlCloudinary = await subirACloudinary(inputImagen.files[0]);
             datosBD.imagen = urlCloudinary; 
             datosBD.imagen_url = urlCloudinary;
-=======
-        // Si hay una foto nueva, la subimos y guardamos SOLO el nombre generado
-        if (inputImagen.files.length > 0) {
-            datosBD.imagen = await subirACloudinaryWeb(inputImagen.files[0]);
->>>>>>> Stashed changes
         }
 
         const id = document.getElementById("edit-id-nosotros").value;
@@ -1302,10 +1270,6 @@ window.guardarEdicionNosotros = async function (evento) {
             body: JSON.stringify(datosBD)
         });
         if (!respuesta.ok) throw new Error("Error al actualizar");
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
         mostrarNotificacionAdmin("¡Sección actualizada correctamente!", "exito");
         cerrarEdicionNosotros();
         cargarPestanaNosotros();
