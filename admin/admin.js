@@ -1123,7 +1123,10 @@ async function iniciarModuloWeb() {
             document.getElementById("input-titulo-portada").value = portada.titulo || "";
             document.getElementById("input-desc-portada").value = portada.descripcion || "";
             document.getElementById("input-boton-portada").value = portada.texto_boton || "";
-            // Nota: Aquí podrías mostrar el nombre del video/imagen actual si agregas contenedores HTML para ello
+            
+            // ¡LÓGICA DE PRODUCTOS! Inyectamos los nombres actuales en los inputs ocultos
+            document.getElementById("portada-video-actual").value = portada.video_url || "";
+            document.getElementById("portada-imagen-actual").value = portada.imagen_fondo || "";
         }
     } catch (error) {}
 }
@@ -1132,27 +1135,31 @@ window.guardarPortada = async function (evento) {
     evento.preventDefault();
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = "⏳ Subiendo archivos y guardando...";
+    boton.innerHTML = "Subiendo archivos y guardando...";
     boton.disabled = true;
 
-    // Solo mandamos los textos por defecto
-    const datosParaBD = {
-        titulo: document.getElementById("input-titulo-portada").value,
-        descripcion: document.getElementById("input-desc-portada").value,
-        texto_boton: document.getElementById("input-boton-portada").value
-    };
+    // Rescatamos los nombres de los archivos desde los inputs ocultos
+    let videoFinal = document.getElementById("portada-video-actual").value;
+    let imagenFinal = document.getElementById("portada-imagen-actual").value;
 
     try {
         const inputVideo = document.getElementById("input-video-portada");
         const inputImagen = document.getElementById("input-imagen-portada");
 
-        // Si el usuario seleccionó archivos, los subimos y agregamos los nombres al JSON
         if (inputVideo && inputVideo.files.length > 0) {
-            datosParaBD.video_url = await subirACloudinaryWeb(inputVideo.files[0]);
+            videoFinal = await subirACloudinaryWeb(inputVideo.files[0]);
         }
         if (inputImagen && inputImagen.files.length > 0) {
-            datosParaBD.imagen_fondo = await subirACloudinaryWeb(inputImagen.files[0]);
+            imagenFinal = await subirACloudinaryWeb(inputImagen.files[0]);
         }
+
+        const datosParaBD = {
+            titulo: document.getElementById("input-titulo-portada").value,
+            descripcion: document.getElementById("input-desc-portada").value,
+            texto_boton: document.getElementById("input-boton-portada").value,
+            video_url: videoFinal,
+            imagen_fondo: imagenFinal
+        };
 
         const respuesta = await fetch(`${baseUrl}/inicio/1`, {
             method: "PUT",
@@ -1164,6 +1171,10 @@ window.guardarPortada = async function (evento) {
         
         if (inputVideo) inputVideo.value = "";
         if (inputImagen) inputImagen.value = "";
+        
+        document.getElementById("portada-video-actual").value = videoFinal;
+        document.getElementById("portada-imagen-actual").value = imagenFinal;
+
         mostrarNotificacionAdmin("¡Portada actualizada correctamente con éxito!", "exito");
     } catch (error) {
         mostrarNotificacionAdmin("Hubo un error: " + error.message, "error");
@@ -1223,7 +1234,6 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
 };
 
 window.abrirModalEditarNosotros = function (idBuscado) {
-    // Buscar por idInfo o id, dependiendo de cómo lo devuelva tu base de datos
     const item = nosotrosGlobales.find(n => String(n.idInfo || n.id) === String(idBuscado));
     if (!item) return;
 
@@ -1232,56 +1242,53 @@ window.abrirModalEditarNosotros = function (idBuscado) {
     document.getElementById("edit-titulo-nosotros").value = item.titulo;
     document.getElementById("edit-desc-nosotros").value = item.descripcion;
 
-    // 2. CORRECCIÓN: Usar la base de Cloudinary (CLOUD_BASE) también en el modal de edición
-    let imagenSegura = item.imagen || item.imagen_url || "https://via.placeholder.com/150?text=Sin+Imagen";
-    if (imagenSegura && !imagenSegura.startsWith('http')) {
-        imagenSegura = `${CLOUD_BASE}${imagenSegura}`;
-    }
+    // Extraemos el nombre limpio que viene de la base de datos
+    const nombreImagenBD = item.imagen || item.imagen_url || "";
+    document.getElementById("edit-imagen-actual-nosotros").value = nombreImagenBD;
+
+    let imagenSegura = nombreImagenBD ? `https://res.cloudinary.com/${CLOUD_NAME_WEB}/image/upload/${nombreImagenBD}` : "https://via.placeholder.com/150?text=Sin+Imagen";
     
-    // Asegurarse de que el elemento img existe antes de asignarle el src
     const imgPreview = document.getElementById("edit-preview-nosotros");
     if(imgPreview) imgPreview.src = imagenSegura;
     
-    document.getElementById("edit-img-nosotros").value = ""; // Limpiar el input file
+    document.getElementById("edit-img-nosotros").value = ""; 
     
     const panelEdicion = document.getElementById("panel-edicion-nosotros");
     if(panelEdicion) panelEdicion.classList.remove("hidden");
-};
-
-window.cerrarEdicionNosotros = function () {
-    const panelEdicion = document.getElementById("panel-edicion-nosotros");
-    if(panelEdicion) panelEdicion.classList.add("hidden");
 };
 
 window.guardarEdicionNosotros = async function (evento) {
     evento.preventDefault();
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = "⏳ Guardando...";
+    boton.innerHTML = "Guardando...";
     boton.disabled = true;
 
-    const datosBD = { 
-        titulo: document.getElementById("edit-titulo-nosotros").value, 
-        descripcion: document.getElementById("edit-desc-nosotros").value 
-    };
+    const id = document.getElementById("edit-id-nosotros").value;
+    
+    let imagenFinal = document.getElementById("edit-imagen-actual-nosotros").value;
 
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
         
         if (inputImagen.files.length > 0) {
-            const urlCloudinary = await subirACloudinary(inputImagen.files[0]);
-            datosBD.imagen = urlCloudinary; 
-            datosBD.imagen_url = urlCloudinary;
+            imagenFinal = await subirACloudinaryWeb(inputImagen.files[0]);
         }
 
-        const id = document.getElementById("edit-id-nosotros").value;
-        // ... (el resto del fetch queda igual)
+        const datosBD = { 
+            titulo: document.getElementById("edit-titulo-nosotros").value, 
+            descripcion: document.getElementById("edit-desc-nosotros").value,
+            imagen: imagenFinal, 
+            imagen_url: imagenFinal
+        };
+
         const respuesta = await fetch(`${baseUrl}/nosotros/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datosBD)
         });
         if (!respuesta.ok) throw new Error("Error al actualizar");
+        
         mostrarNotificacionAdmin("¡Sección actualizada correctamente!", "exito");
         cerrarEdicionNosotros();
         cargarPestanaNosotros();
@@ -1292,7 +1299,6 @@ window.guardarEdicionNosotros = async function (evento) {
         boton.disabled = false;
     }
 };
-
 // --- CONTACTO ---
 window.cargarPestanaContacto = async function (evento, nombrePestana) {
     if (evento && nombrePestana) abrirPestana(evento, nombrePestana);
