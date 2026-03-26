@@ -442,7 +442,7 @@ function inicializarEventosLogin() {
                         estadoValidacion.email = false;
                     } else {
                         iconoEmail.innerHTML = checkSVG;
-                        msgEmail.innerText = "Correo disponible.";
+                        msgEmail.innerText = "";
                         msgEmail.className = "text-[11px] mt-1 font-bold text-[#7ed957]";
                         msgEmail.classList.remove("hidden");
                         estadoValidacion.email = true;
@@ -510,17 +510,17 @@ function inicializarEventosLogin() {
         });
         // ===============================================
 
-        // ENVÍO DE DATOS A LA BASE DE DATOS
+        // ===============================================
+        // --- ENVÍO DE DATOS Y VERIFICACIÓN DE CORREO ---
+        // ===============================================
+        let codigoGeneradoSecreto = "";
+        let datosPendientesBD = null;
+
         formRegistro.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            // Bloqueamos el botón y ponemos mensaje de espera
-            const textoOriginal = btnRegistrar.innerText;
-            btnRegistrar.innerText = "Creando cuenta...";
-            btnRegistrar.disabled = true;
-            btnRegistrar.classList.add("opacity-50", "cursor-not-allowed");
-
-            const datosCliente = {
+            // 1. Guardamos los datos temporalmente en JS (Sin enviarlos a la BD aún)
+            datosPendientesBD = {
                 nombre: document.getElementById("reg-nombre").value.trim(),
                 aPaterno: document.getElementById("reg-ap-paterno").value.trim(),
                 aMaterno: document.getElementById("reg-ap-materno").value.trim(),
@@ -531,38 +531,108 @@ function inicializarEventosLogin() {
                 asentamiento: document.getElementById("reg-asentamiento").value.trim(),
                 calle: document.getElementById("reg-calle").value.trim(),
                 email: document.getElementById("reg-email").value.trim(),
-                password: document.getElementById("reg-password").value, // Mandamos la contraseña segura
+                password: document.getElementById("reg-password").value, 
             };
+
+            const textoOriginal = btnRegistrar.innerText;
+            btnRegistrar.innerText = "⏳ Enviando código...";
+            btnRegistrar.disabled = true;
+
+            try {
+                // 2. Generamos un código aleatorio de 6 dígitos
+                codigoGeneradoSecreto = Math.floor(100000 + Math.random() * 900000).toString();
+
+                // 3. Reutilizamos tu template de "Responder Mensajes"
+                await emailjs.send('service_i4nla5o', 'template_xvh63sq', {
+                    correo_cliente: datosPendientesBD.email,
+                    mensaje_original: "Solicitud de seguridad: Creación de nueva cuenta en PC EXTREME.",
+                    respuesta_admin: `¡Hola ${datosPendientesBD.nombre}! Tu código de verificación de 6 dígitos es: ${codigoGeneradoSecreto} \n\nPor favor ingrésalo en la página para activar tu cuenta. Si no solicitaste esto, ignora este mensaje.`
+                });
+
+                mostrarNotificacion("Código enviado a tu correo.", "exito");
+                
+                // 4. Ocultamos el formulario y mostramos el cuadro de verificación
+                formRegistro.classList.add("hidden");
+                document.getElementById("bloque-verificacion").classList.remove("hidden");
+                document.getElementById("display-correo-verif").innerText = datosPendientesBD.email;
+
+            } catch (error) {
+                mostrarNotificacion("Error al enviar el código de verificación.", "error");
+            } finally {
+                btnRegistrar.innerText = textoOriginal;
+                btnRegistrar.disabled = false;
+            }
+        });
+
+        // --- LÓGICA DE LAS CAJITAS DE CÓDIGO ---
+        const inputsCodigo = document.querySelectorAll(".codigo-input");
+        inputsCodigo.forEach((input, index) => {
+            // Auto-avanzar al siguiente cuadro
+            input.addEventListener("input", (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Solo números
+                if (e.target.value !== '' && index < inputsCodigo.length - 1) {
+                    inputsCodigo[index + 1].focus();
+                }
+            });
+            // Retroceder con Backspace
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && e.target.value === '' && index > 0) {
+                    inputsCodigo[index - 1].focus();
+                }
+            });
+        });
+
+        // --- VALIDAR CÓDIGO Y CREAR CUENTA ---
+        document.getElementById("btn-confirmar-codigo").addEventListener("click", async () => {
+            // Recolectar lo que escribió el usuario
+            let codigoIngresado = "";
+            inputsCodigo.forEach(input => codigoIngresado += input.value);
+
+            if (codigoIngresado.length !== 6) {
+                return mostrarNotificacion("Ingresa los 6 dígitos del código.", "error");
+            }
+
+            if (codigoIngresado !== codigoGeneradoSecreto) {
+                return mostrarNotificacion("Código incorrecto. Verifica tu correo.", "error");
+            }
+
+            // 5. SI EL CÓDIGO ES CORRECTO, AHORA SÍ MANDAMOS A LA BASE DE DATOS
+            const btnConfirmar = document.getElementById("btn-confirmar-codigo");
+            btnConfirmar.innerHTML = "Creando cuenta...";
+            btnConfirmar.disabled = true;
 
             try {
                 const respuesta = await fetch(`${API_BASE_URL}/clientes`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(datosCliente),
+                    body: JSON.stringify(datosPendientesBD),
                 });
 
                 const datos = await respuesta.json();
-                if (!respuesta.ok)
-                    throw new Error(datos.message || "Error al crear la cuenta");
+                if (!respuesta.ok) throw new Error(datos.message || "Error al crear la cuenta");
 
-                mostrarNotificacion(
-                    "¡Cuenta creada con éxito! Ahora puedes iniciar sesión.",
-                    "exito"
-                );
+                mostrarNotificacion("¡Cuenta activada y creada con éxito!", "exito");
                 
                 formRegistro.reset();
-                // Limpiamos los requisitos visuales
-                estadoValidacion = { email: false, pass: false, match: false };
+                inputsCodigo.forEach(input => input.value = '');
+                estadoValidacion = { email: false, pass: false, match: false, phone: false };
                 actualizarBotonRegistro();
                 
+                // Lo mandamos al login
                 setTimeout(() => document.getElementById("ir-a-login").click(), 1500);
             } catch (error) {
                 mostrarNotificacion(error.message, "error");
-            } finally {
-                btnRegistrar.innerText = textoOriginal;
-                btnRegistrar.disabled = false;
-                btnRegistrar.classList.remove("opacity-50", "cursor-not-allowed");
+                btnConfirmar.innerHTML = "Verificar y Crear Cuenta";
+                btnConfirmar.disabled = false;
             }
+        });
+
+        // Botón para arrepentirse y corregir el correo
+        document.getElementById("btn-cancelar-verificacion").addEventListener("click", () => {
+            document.getElementById("bloque-verificacion").classList.add("hidden");
+            formRegistro.classList.remove("hidden");
+            inputsCodigo.forEach(input => input.value = '');
+            codigoGeneradoSecreto = ""; // Borramos el código anterior
         });
     }
 

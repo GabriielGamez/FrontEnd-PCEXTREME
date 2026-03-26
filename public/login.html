@@ -15,7 +15,12 @@
             font-family: 'Inter', sans-serif;
         }
     </style>
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("ckRTR8J7Y0HejBb-9");
+        })();
+    </script>
     <link rel="stylesheet" href="/FrontEnd-PCEXTREME/assets/styles.css" />
 </head>
 
@@ -79,7 +84,30 @@
                     </div>
                 </form>
             </div>
+            <div id="bloque-verificacion" class="hidden flex flex-col items-center justify-center py-8">
+                    <div class="w-16 h-16 bg-[#7ed957]/20 text-[#7ed957] rounded-full flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-envelope-open-text text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold mb-2 text-white text-center">Revisa tu correo</h3>
+                    <p class="text-gray-400 text-sm text-center mb-6">Hemos enviado un código de 6 dígitos a <br><span id="display-correo-verif" class="text-[#7ed957] font-bold"></span></p>
+                    
+                    <div class="flex gap-2 mb-6 justify-center" id="contenedor-codigo">
+                        <input type="text" maxlength="1" class="codigo-input w-12 h-14 text-center text-2xl font-black bg-[#ffffff] border border-gray-700 rounded-lg text-black focus:border-[#7ed957] focus:ring-2 focus:ring-[#7ed957] focus:outline-none transition">
+                        <input type="text" maxlength="1" class="codigo-input w-12 h-14 text-center text-2xl font-black bg-[#ffffff] border border-gray-700 rounded-lg text-black focus:border-[#7ed957] focus:ring-2 focus:ring-[#7ed957] focus:outline-none transition">
+                        <input type="text" maxlength="1" class="codigo-input w-12 h-14 text-center text-2xl font-black bg-[#ffffff] border border-gray-700 rounded-lg text-black focus:border-[#7ed957] focus:ring-2 focus:ring-[#7ed957] focus:outline-none transition">
+                        <input type="text" maxlength="1" class="codigo-input w-12 h-14 text-center text-2xl font-black bg-[#ffffff] border border-gray-700 rounded-lg text-black focus:border-[#7ed957] focus:ring-2 focus:ring-[#7ed957] focus:outline-none transition">
+                        <input type="text" maxlength="1" class="codigo-input w-12 h-14 text-center text-2xl font-black bg-[#ffffff] border border-gray-700 rounded-lg text-black focus:border-[#7ed957] focus:ring-2 focus:ring-[#7ed957] focus:outline-none transition">
+                        <input type="text" maxlength="1" class="codigo-input w-12 h-14 text-center text-2xl font-black bg-[#ffffff] border border-gray-700 rounded-lg text-black focus:border-[#7ed957] focus:ring-2 focus:ring-[#7ed957] focus:outline-none transition">
+                    </div>
 
+                    <button type="button" id="btn-confirmar-codigo" class="w-full max-w-xs bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+                        Verificar y Crear Cuenta
+                    </button>
+                    
+                    <button type="button" id="btn-cancelar-verificacion" class="mt-4 text-sm text-gray-500 hover:text-white transition">
+                        ← Corregir correo
+                    </button>
+                </div>
 
             <div id="bloque-registro" class="hidden transition-all duration-500">
                 <div class="text-center mb-8">
@@ -111,9 +139,12 @@
                                     class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
                             <div class="md:col-span-2">
-                                <label for="reg-telefono" class="block text-sm text-gray-400 mb-1">Teléfono:</label>
-                                <input type="tel" id="reg-telefono" required
-                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <label for="reg-telefono" class="block text-sm text-gray-400 mb-1">Teléfono (10 dígitos):</label>
+                                <div class="relative flex items-center">
+                                    <input type="tel" id="reg-telefono" maxlength="10" required placeholder="Ej. 7711234567" class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                    <div id="tel-icono" class="absolute right-3 hidden"></div>
+                                </div>
+                                <p id="tel-mensaje" class="text-[11px] mt-1 font-semibold hidden"></p>
                             </div>
                         </div>
                     </div>
