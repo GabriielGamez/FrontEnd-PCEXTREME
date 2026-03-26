@@ -145,7 +145,22 @@ async function cargarComponentesAdmin() {
                     };
                     rolAdminEl.innerText = diccionarioRoles[String(idDelRol)] || "Empleado";
                 }
-
+                //reponsiva
+                const btnMenuMovil = document.getElementById("btn-menu-admin-movil");
+                const menuMovil = document.getElementById("menu-admin-movil");
+                
+                if (btnMenuMovil && menuMovil) {
+                    btnMenuMovil.addEventListener("click", () => {
+                        menuMovil.classList.toggle("hidden");
+                    });
+                    
+                    // Oculta el menú automáticamente si agrandan la ventana (modo PC)
+                    window.addEventListener("resize", () => {
+                        if (window.innerWidth >= 1024) { 
+                            menuMovil.classList.add("hidden");
+                        }
+                    });
+                }
                 // Activa el botón de salir
                 const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
                 if (btnCerrarSesion) {

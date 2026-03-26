@@ -1,5 +1,6 @@
 <header id="admin-encabezado" class="bg-[#1e1e1e] text-white w-full sticky top-0 z-50 shadow-md">
-    <div class="flex items-center justify-between px-6 h-16">
+    
+    <div class="flex items-center justify-between px-6 h-16 relative z-50 bg-[#1e1e1e]">
         
         <div class="flex items-center gap-3">
             <img src="/FrontEnd-PCEXTREME/assets/logo.png" alt="PC Extreme" class="h-8 object-contain">
@@ -16,13 +17,41 @@
             <a href="/FrontEnd-PCEXTREME/admin/admin_personal.html" class="px-4 py-2 rounded-md hover:bg-[#333] transition">Personal</a>
         </nav>
 
-        <div class="flex items-center gap-4">
-            <span class="bg-[#7ed957] text-black text-xs font-bold px-2 py-1 rounded"id="admin-nombre-rol"></span>
-            <span class="text-sm hidden md:block" id="admin-nombre-usuario"></span>
-            <button id="btn-cerrar-sesion" class="bg-red-900/80 hover:bg-red-700 text-red-100 text-sm font-semibold py-1.5 px-4 rounded transition border border-red-700">
+        <div class="flex items-center gap-3">
+            
+            <div class="flex items-center gap-2">
+                <span class="bg-[#7ed957] text-black text-xs font-bold px-2 py-1 rounded" id="admin-nombre-rol"></span>
+                <span class="text-sm hidden md:block" id="admin-nombre-usuario"></span>
+            </div>
+            
+            <button id="btn-cerrar-sesion" class="hidden lg:block bg-red-900/80 hover:bg-red-700 text-red-100 text-sm font-semibold py-1.5 px-4 rounded transition border border-red-700">
                 Cerrar Sesión
             </button>
+
+            <button id="btn-menu-admin-movil" class="lg:hidden text-gray-300 hover:text-white transition focus:outline-none ml-2">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            
         </div>
-        
+    </div>
+
+    <div id="menu-admin-movil" class="hidden lg:hidden absolute top-16 left-0 w-full bg-[#1e1e1e] border-b border-gray-800 shadow-2xl z-40">
+        <nav class="flex flex-col px-6 py-4 gap-2 text-sm font-medium text-right">
+            <a href="/FrontEnd-PCEXTREME/admin/dashboard.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Inicio</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_reparaciones.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Reparaciones</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_clientes.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Clientes</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_mensajes.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Mensajes</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_productos.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Productos</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_web.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Gestionar Web</a>
+            <a href="/FrontEnd-PCEXTREME/admin/admin_personal.html" class="px-4 py-3 rounded-md hover:bg-[#333] transition block">Personal</a>
+            
+            <div class="mt-4 pt-4 border-t border-gray-700 flex justify-end">
+                <button id="btn-cerrar-sesion-movil" class="bg-red-900/80 hover:bg-red-700 text-red-100 text-sm font-semibold py-2 px-6 rounded transition border border-red-700">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </nav>
     </div>
 </header>
