@@ -32,38 +32,38 @@
 
     <header id="encabezado-principal"></header>
 
-    <main class="flex-grow flex flex-col items-center justify-center p-6 mb-20">
+    <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-6 mb-20">
 
-        <h1 class="text-5xl font-extrabold mb-10 tracking-tight">Contáctanos</h1>
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-8 md:mb-10 tracking-tight text-center">Contáctanos</h1>
 
-        <div class="glass-container w-full max-w-6xl rounded-[2.5rem] p-10 md:p-14 shadow-2xl">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div class="glass-container w-full max-w-6xl rounded-[2.5rem] p-6 md:p-14 shadow-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
 
-                <div class="bg-white rounded-2xl p-8 text-gray-800 shadow-xl">
-                    <h3 class="text-center text-xl font-bold text-gray-600 mb-8">Envíanos un mensaje</h3>
+                <div class="bg-white rounded-2xl p-6 md:p-8 text-gray-800 shadow-xl">
+                    <h3 class="text-center text-xl font-bold text-gray-600 mb-6 md:mb-8">Envíanos un mensaje</h3>
 
-                    <form id="formulario-contacto-publico" class="space-y-6">
+                    <form id="formulario-contacto-publico" class="space-y-5 md:space-y-6">
                         
                         <div>
-                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Tu Correo Electrónico:</label>
+                            <label class="block text-xs md:text-sm font-extrabold mb-2 uppercase tracking-wide">Tu Correo Electrónico:</label>
                             <input type="email" id="cont-correo" required placeholder="ejemplo@correo.com"
-                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-900">
+                                class="w-full border border-gray-200 rounded-lg p-4 outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-900 text-base">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Asunto:</label>
+                            <label class="block text-xs md:text-sm font-extrabold mb-2 uppercase tracking-wide">Asunto:</label>
                             <input type="text" id="cont-asunto" required placeholder="Ej: Cotización de PC"
-                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-900">
+                                class="w-full border border-gray-200 rounded-lg p-4 outline-none focus:ring-2 focus:ring-blue-500 transition text-gray-900 text-base">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-extrabold mb-2 uppercase tracking-wide">Detalles del Mensaje:</label>
+                            <label class="block text-xs md:text-sm font-extrabold mb-2 uppercase tracking-wide">Detalles del Mensaje:</label>
                             <textarea id="cont-mensaje" required rows="4" placeholder="Escribe aquí tus dudas..."
-                                class="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition resize-none text-gray-900"></textarea>
+                                class="w-full border border-gray-200 rounded-lg p-4 outline-none focus:ring-2 focus:ring-blue-500 transition resize-none text-gray-900 text-base"></textarea>
                         </div>
 
                         <button type="submit"
-                            class="w-full bg-[#333] hover:bg-black text-white font-bold py-4 rounded-xl transition shadow-lg uppercase tracking-widest text-sm flex justify-center items-center gap-2">
+                            class="w-full bg-[#333] hover:bg-black text-white font-bold py-4 mt-2 rounded-xl transition shadow-lg uppercase tracking-widest text-sm flex justify-center items-center gap-2">
                             <span>Enviar Mensaje</span>
                         </button>
                     </form>
@@ -71,32 +71,32 @@
 
                 <div class="flex flex-col justify-center space-y-6">
 
-                    <div class="bg-white rounded-xl p-6 flex items-center gap-6 text-gray-800 shadow-lg">
-                        <div class="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-lg">
+                    <div class="bg-white rounded-xl p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 md:gap-6 text-gray-800 shadow-lg">
+                        <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center border border-gray-100 rounded-lg">
                             <i class="fa-solid fa-envelope text-2xl"></i>
                         </div>
-                        <div>
-                            <span class="font-bold text-lg">Email:</span>
-                            <a href="#" id="publico-email" class="block text-blue-600 font-semibold underline">Cargando...</a>
+                        <div class="w-full overflow-hidden">
+                            <span class="font-bold text-lg block mb-1">Email:</span>
+                            <a href="#" id="publico-email" class="block text-blue-600 font-semibold underline break-all">Cargando...</a>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-xl p-6 flex items-center gap-6 text-gray-800 shadow-lg">
-                        <div class="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-lg transform -rotate-12">
+                    <div class="bg-white rounded-xl p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 md:gap-6 text-gray-800 shadow-lg">
+                        <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center border border-gray-100 rounded-lg transform -rotate-12">
                             <i class="fa-solid fa-phone text-2xl"></i>
                         </div>
-                        <div>
-                            <span class="font-bold text-lg">Teléfono:</span>
+                        <div class="w-full">
+                            <span class="font-bold text-lg block mb-1">Teléfono:</span>
                             <a href="#" id="publico-telefono" class="block text-blue-600 font-semibold underline">Cargando...</a>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-xl p-6 flex items-center justify-between text-gray-800 shadow-lg">
-                        <div class="flex items-center gap-6">
-                            <i class="fa-brands fa-whatsapp text-3xl text-[#25D366]"></i>
+                    <div class="bg-white rounded-xl p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-gray-800 shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-center gap-3 md:gap-6">
+                            <i class="fa-brands fa-whatsapp text-4xl sm:text-3xl text-[#25D366]"></i>
                             <span class="font-bold text-lg">WhatsApp:</span>
                         </div>
-                        <a href="#" id="publico-whatsapp" target="_blank" class="bg-[#25D366] hover:bg-green-600 text-white px-6 py-2 rounded-full font-bold text-sm transition">
+                        <a href="#" id="publico-whatsapp" target="_blank" class="w-full sm:w-auto bg-[#25D366] hover:bg-green-600 text-white px-6 py-3 sm:py-2 text-center rounded-full font-bold text-sm transition">
                             Enviar mensaje
                         </a>
                     </div>

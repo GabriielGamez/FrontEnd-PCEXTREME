@@ -499,23 +499,27 @@ async function cargarServicios() {
         contenedor.innerHTML = "";
 
         if (servicios.length === 0) {
-            contenedor.innerHTML = `<p class="text-gray-400 text-center col-span-full">No hay imágenes disponibles por el momento.</p>`;
+            contenedor.innerHTML = `<p class="text-gray-400 text-center col-span-full">No hay servicios disponibles por el momento.</p>`;
             return;
         }
 
         servicios.forEach((servicio) => {
             contenedor.innerHTML += `
-            <div class="bg-[#1f1f1f] rounded-xl overflow-hidden shadow-lg border border-transparent hover:border-[#7ed957] transition-all duration-300">
+            <div class="bg-[#1f1f1f] rounded-xl overflow-hidden shadow-lg border border-transparent hover:border-[#7ed957] transition-all duration-300 flex flex-col group">
                 <div class="h-52 w-full overflow-hidden">
                     <img src="${CLOUD_BASE_IMG}${servicio.imagen}" 
-                         alt="Imagen del servicio" 
-                         class="w-full h-full object-cover opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-500">
+                         alt="${servicio.titulo || 'Servicio'}" 
+                         class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+                </div>
+                <div class="p-6 flex flex-col flex-grow text-center items-center justify-center border-t border-gray-800">
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-[#7ed957] transition-colors">${servicio.titulo || servicio.nombre || 'Servicio'}</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">${servicio.descripcion || ''}</p>
                 </div>
             </div>
         `;
         });
     } catch (error) {
-        contenedor.innerHTML = `<p class="text-red-500 col-span-full text-center">No se pudieron cargar las imágenes.</p>`;
+        contenedor.innerHTML = `<p class="text-red-500 col-span-full text-center">No se pudieron cargar los servicios.</p>`;
     }
 }
 
