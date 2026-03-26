@@ -11,11 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function() {
+        (function () {
             emailjs.init("ckRTR8J7Y0HejBb-9");
         })();
     </script>
@@ -27,14 +29,17 @@
 
     <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <h1 class="text-3xl font-extrabold text-white">Gestión de <span class="text-[#7ed957]">Reparaciones</span></h1>
+            <h1 class="text-3xl font-extrabold text-white">Gestión de <span class="text-[#7ed957]">Reparaciones</span>
+            </h1>
         </div>
 
         <div class="bg-[#1a1c20] border border-gray-800 rounded-2xl overflow-hidden shadow-lg">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#252830] text-gray-400 text-xs uppercase tracking-wider border-b border-gray-800">
+            <div class="w-full">
+                <table class="w-full text-left border-collapse block md:table">
+
+                    <thead class="hidden md:table-header-group">
+                        <tr
+                            class="bg-[#252830] text-gray-400 text-xs uppercase tracking-wider border-b border-gray-800">
                             <th class="p-4 font-semibold">Folio</th>
                             <th class="p-4 font-semibold">Cliente</th>
                             <th class="p-4 font-semibold">Equipo</th>
@@ -43,35 +48,44 @@
                             <th class="p-4 font-semibold text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-reparaciones" class="text-sm divide-y divide-gray-800">
-                        <tr>
-                            <td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Cargando registros...</td>
+
+                    <tbody id="lista-reparaciones" class="text-sm divide-y divide-gray-800 block md:table-row-group">
+                        <tr class="block md:table-row">
+                            <td colspan="6" class="text-center py-8 text-gray-500 animate-pulse block md:table-cell">
+                                Cargando registros...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            
-            <div id="controles-paginacion-reparaciones" class="flex justify-between items-center bg-[#0f1115] px-6 py-3 border-t border-gray-800">
+
+            <div id="controles-paginacion-reparaciones"
+                class="flex flex-col sm:flex-row justify-between items-center bg-[#0f1115] px-6 py-4 border-t border-gray-800 gap-3">
             </div>
-        </div>      
+        </div>
     </main>
 
-    <div id="modal-reparacion" class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-        <div class="bg-[#1a1c20] border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] transform transition-all">
+    <div id="modal-reparacion"
+        class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+        <div
+            class="bg-[#1a1c20] border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] transform transition-all">
             <div class="p-6 md:p-8">
-                <h2 class="text-2xl font-bold mb-6 text-white border-b border-gray-800 pb-4">Actualizar Reparación #<span id="modal-folio-display"></span></h2>
+                <h2 class="text-2xl font-bold mb-6 text-white border-b border-gray-800 pb-4">Actualizar Reparación
+                    #<span id="modal-folio-display"></span></h2>
 
                 <form id="formulario-reparacion" class="space-y-5">
                     <input type="hidden" id="admin-reparacion-id">
 
                     <div class="bg-[#252830] p-4 rounded-lg border border-gray-700 text-sm">
-                        <p><span class="font-bold text-gray-400">Cliente:</span> <span id="info-cliente" class="text-white font-semibold"></span></p>
-                        <p class="mt-1"><span class="font-bold text-gray-400">Equipo:</span> <span id="info-equipo" class="text-white font-semibold"></span></p>
+                        <p><span class="font-bold text-gray-400">Cliente:</span> <span id="info-cliente"
+                                class="text-white font-semibold"></span></p>
+                        <p class="mt-1"><span class="font-bold text-gray-400">Equipo:</span> <span id="info-equipo"
+                                class="text-white font-semibold"></span></p>
                     </div>
 
-                   <div>
+                    <div>
                         <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Estado del Equipo</label>
-                        <select id="admin-estado-reparacion" required class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition cursor-pointer">
+                        <select id="admin-estado-reparacion" required
+                            class="w-full bg-[#0f1115] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition cursor-pointer">
                             <option value="En Diagnóstico">En Diagnóstico</option>
                             <option value="En Reparación">En Reparación</option>
                             <option value="Listo para entregar">Listo para entregar</option>
@@ -80,16 +94,22 @@
                         </select>
                     </div>
 
-                    <div class="mt-4 flex items-center bg-green-900/20 p-4 rounded-lg border border-green-800 hover:bg-green-900/40 transition cursor-pointer">
-                        <input type="checkbox" id="admin-notificar-whatsapp" class="w-5 h-5 text-[#7ed957] bg-[#0f1115] border-gray-600 rounded focus:ring-[#7ed957] cursor-pointer">
-                        <label for="admin-notificar-whatsapp" class="ml-3 text-sm font-semibold text-gray-300 cursor-pointer w-full">
+                    <div
+                        class="mt-4 flex items-center bg-green-900/20 p-4 rounded-lg border border-green-800 hover:bg-green-900/40 transition cursor-pointer">
+                        <input type="checkbox" id="admin-notificar-whatsapp"
+                            class="w-5 h-5 text-[#7ed957] bg-[#0f1115] border-gray-600 rounded focus:ring-[#7ed957] cursor-pointer">
+                        <label for="admin-notificar-whatsapp"
+                            class="ml-3 text-sm font-semibold text-gray-300 cursor-pointer w-full">
                             Notificar actualización al cliente por correo
                         </label>
                     </div>
 
                     <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-800">
-                        <button type="button" onclick="cerrarModalReparacion()" class="px-6 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white font-medium transition">Cancelar</button>
-                        <button type="submit" class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold px-6 py-2 rounded-lg transition shadow-lg">Actualizar Estado</button>
+                        <button type="button" onclick="cerrarModalReparacion()"
+                            class="px-6 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white font-medium transition">Cancelar</button>
+                        <button type="submit"
+                            class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold px-6 py-2 rounded-lg transition shadow-lg">Actualizar
+                            Estado</button>
                     </div>
                 </form>
             </div>
@@ -100,4 +120,5 @@
 
     <script src="/FrontEnd-PCEXTREME/admin/admin.js"></script>
 </body>
+
 </html>

@@ -535,7 +535,7 @@ function inicializarEventosLogin() {
             };
 
             const textoOriginal = btnRegistrar.innerText;
-            btnRegistrar.innerText = "⏳ Enviando código...";
+            btnRegistrar.innerText = "Enviando código...";
             btnRegistrar.disabled = true;
 
             try {
@@ -596,7 +596,7 @@ function inicializarEventosLogin() {
                 return mostrarNotificacion("Código incorrecto. Verifica tu correo.", "error");
             }
 
-            // 5. SI EL CÓDIGO ES CORRECTO, AHORA SÍ MANDAMOS A LA BASE DE DATOS
+            // 5. SI EL CÓDIGO ES CORRECTO, MANDAMOS A LA BASE DE DATOS
             const btnConfirmar = document.getElementById("btn-confirmar-codigo");
             btnConfirmar.innerHTML = "Creando cuenta...";
             btnConfirmar.disabled = true;
@@ -613,6 +613,9 @@ function inicializarEventosLogin() {
 
                 mostrarNotificacion("¡Cuenta activada y creada con éxito!", "exito");
                 
+                document.getElementById("bloque-verificacion").classList.add("hidden");
+                formRegistro.classList.remove("hidden");
+
                 formRegistro.reset();
                 inputsCodigo.forEach(input => input.value = '');
                 estadoValidacion = { email: false, pass: false, match: false, phone: false };

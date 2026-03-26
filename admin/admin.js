@@ -283,19 +283,30 @@ async function mostrarPaginaReparaciones() {
         else if (estado === 'Sin Reparación') colorEstado = 'bg-red-900/40 text-red-400 border-red-800';
 
         return `
-            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
-                <td class="p-4 text-gray-400 font-medium">#${idRegistro}</td>
-                <td class="p-4 font-semibold text-gray-200">${nombreCompleto}</td>
-                <td class="p-4 text-gray-400">${nombreEquipo}</td>
-                <td class="p-4 text-gray-400 text-sm truncate max-w-xs" title="${falla}">${falla}</td>
-                <td class="p-4">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">
-                        ${estado}
-                    </span>
+            <tr class="block md:table-row hover:bg-[#252830] transition border-b border-gray-800 p-4 md:p-0">
+                <td class="block md:table-cell md:p-4 text-gray-400 font-medium mb-2 md:mb-0">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Folio:</span> 
+                    #${idRegistro}
                 </td>
-                <td class="p-4 text-center">
-                    <button onclick="abrirModalReparacion(${idRegistro})" class="bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-1 mx-auto px-4 py-2 rounded shadow-sm text-xs tracking-wider">
-                        Editar
+                <td class="block md:table-cell md:p-4 font-semibold text-gray-200 mb-2 md:mb-0">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Cliente:</span> 
+                    ${nombreCompleto}
+                </td>
+                <td class="block md:table-cell md:p-4 text-gray-400 mb-2 md:mb-0">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Equipo:</span> 
+                    ${nombreEquipo}
+                </td>
+                <td class="block md:table-cell md:p-4 text-gray-400 text-sm mb-3 md:mb-0">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Falla:</span> 
+                    <span class="truncate max-w-[200px] sm:max-w-xs align-middle inline-block" title="${falla}">${falla}</span>
+                </td>
+                <td class="flex items-center md:table-cell md:p-4 mb-4 md:mb-0">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Estado:</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">${estado}</span>
+                </td>
+                <td class="block md:table-cell md:p-4 text-center mt-4 md:mt-0 pt-4 md:pt-0 border-t border-gray-800 md:border-transparent">
+                    <button onclick="abrirModalReparacion(${idRegistro})" class="w-full md:w-auto bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-2 mx-auto px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
+                        ✏️ Editar
                     </button>
                 </td>
             </tr>
@@ -321,13 +332,13 @@ function renderizarControlesPaginacionReparaciones() {
     const btnSiguienteDisabled = paginaActualReparaciones === totalPaginas ? 'opacity-50 cursor-not-allowed bg-[#1a1c20]' : 'bg-[#1a1c20] hover:bg-[#252830] hover:text-white';
 
     contenedor.innerHTML = `
-        <button onclick="cambiarPaginaReparaciones(-1)" class="px-4 py-2 text-sm font-semibold text-gray-400 border border-gray-700 rounded-lg transition shadow-sm ${btnAnteriorDisabled}" ${paginaActualReparaciones === 1 ? 'disabled' : ''}>
+        <button onclick="cambiarPaginaReparaciones(-1)" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-gray-400 border border-gray-700 rounded-lg transition shadow-sm ${btnAnteriorDisabled}" ${paginaActualReparaciones === 1 ? 'disabled' : ''}>
             ← Anterior
         </button>
-        <span class="text-sm font-semibold text-gray-400">
+        <span class="text-sm font-semibold text-gray-400 text-center w-full sm:w-auto my-1 sm:my-0 block sm:inline">
             Página <span class="text-[#7ed957] font-bold">${paginaActualReparaciones}</span> de <span class="text-white">${totalPaginas}</span>
         </span>
-        <button onclick="cambiarPaginaReparaciones(1)" class="px-4 py-2 text-sm font-semibold text-gray-400 border border-gray-700 rounded-lg transition shadow-sm ${btnSiguienteDisabled}" ${paginaActualReparaciones === totalPaginas ? 'disabled' : ''}>
+        <button onclick="cambiarPaginaReparaciones(1)" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-gray-400 border border-gray-700 rounded-lg transition shadow-sm ${btnSiguienteDisabled}" ${paginaActualReparaciones === totalPaginas ? 'disabled' : ''}>
             Siguiente →
         </button>
     `;
