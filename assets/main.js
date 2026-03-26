@@ -466,7 +466,7 @@ async function cargarPortada() {
         const datos = arrayDatos[0];
 
         contenedor.innerHTML = `
-            <h2 class="text-5xl md:text-6xl font-extrabold leading-tight">
+            <h2 class="text-3xl md:text-4xl font-extrabold leading-tight">
                 ${datos.titulo || "¿Tu PC necesita<br>mantenimiento?"}
             </h2>
             <p class="text-gray-300 text-lg max-w-lg">
