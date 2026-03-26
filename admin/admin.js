@@ -9,8 +9,8 @@
 // Variables para conectar con la base de datos y Cloudinary
 const baseUrl = "https://app-web-java.vercel.app/api";
 const CLOUD_BASE = 'https://res.cloudinary.com/dswljrmnu/image/upload/';
-const CLOUD_NAME_BASE = 'dswljrmnu'; 
-const UPLOAD_PRESET = 'qgnakwni'; 
+const CLOUD_NAME_BASE = 'dswljrmnu';
+const UPLOAD_PRESET = 'qgnakwni';
 
 // Variables de Cloudinary exclusivas para el Gestor Web
 const CLOUD_NAME_WEB = "dbkqbazp7";
@@ -52,7 +52,7 @@ function mostrarConfirmacionAdmin(mensaje, tipo = 'peligro') {
     return new Promise((resolve) => {
         const overlay = document.createElement('div');
         overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] px-4 opacity-0 transition-opacity duration-300';
-        
+
         const colorModal = tipo === 'peligro' ? 'border-red-600' : 'border-yellow-500';
         const colorBtn = tipo === 'peligro' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-black';
         const icono = tipo === 'peligro' ? '🗑️' : '✏️';
@@ -116,11 +116,11 @@ async function cargarComponentesAdmin() {
                 headerEl.innerHTML = await resH.text();
 
                 const usuarioStr = localStorage.getItem('usuario');
-                
+
                 // Si no hay sesión iniciada, te manda a la página pública
                 if (!usuarioStr) {
                     window.location.replace('../index.html');
-                    return; 
+                    return;
                 }
 
                 // Si no eres empleado, no tienes acceso a esta zona
@@ -148,28 +148,31 @@ async function cargarComponentesAdmin() {
                 //reponsiva
                 const btnMenuMovil = document.getElementById("btn-menu-admin-movil");
                 const menuMovil = document.getElementById("menu-admin-movil");
-                
+
                 if (btnMenuMovil && menuMovil) {
                     btnMenuMovil.addEventListener("click", () => {
                         menuMovil.classList.toggle("hidden");
                     });
-                    
+
                     // Oculta el menú automáticamente si agrandan la ventana (modo PC)
                     window.addEventListener("resize", () => {
-                        if (window.innerWidth >= 1024) { 
+                        if (window.innerWidth >= 1024) {
                             menuMovil.classList.add("hidden");
                         }
                     });
                 }
                 // Activa el botón de salir
+                const hacerLogout = () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('usuario');
+                    window.location.replace('../index.html');
+                };
+
                 const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
-                if (btnCerrarSesion) {
-                    btnCerrarSesion.addEventListener('click', () => {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('usuario');
-                        window.location.replace('../index.html'); 
-                    });
-                }
+                const btnCerrarSesionMovil = document.getElementById('btn-cerrar-sesion-movil');
+
+                if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', hacerLogout);
+                if (btnCerrarSesionMovil) btnCerrarSesionMovil.addEventListener('click', hacerLogout);
             }
         }
 
@@ -201,9 +204,9 @@ async function cargarTablaAdminReparaciones() {
         // Obtenemos todos los registros tal cual llegan
         const respuesta = await fetch(`${baseUrl}/registros`);
         if (!respuesta.ok) throw new Error("Error al obtener los registros");
-        
+
         adminReparacionesData = await respuesta.json();
-        
+
         // Como mostrar la página ahora hace peticiones a la API, esperamos a que termine
         await mostrarPaginaReparaciones();
         renderizarControlesPaginacionReparaciones();
@@ -221,7 +224,7 @@ async function mostrarPaginaReparaciones() {
     const tbody = document.getElementById('lista-reparaciones');
     tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 animate-pulse">Consultando clientes y equipos </td></tr>`;
 
-    if(adminReparacionesData.length === 0) {
+    if (adminReparacionesData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">No hay registros de reparación.</td></tr>`;
         return;
     }
@@ -234,7 +237,7 @@ async function mostrarPaginaReparaciones() {
         const idRegistro = reg.idFolio || reg.id || reg.folio;
         const idClienteFk = reg.idCliente || reg.clienteId || reg.cliente_id;
         const idDispositivoFk = reg.idDispositivo || reg.dispositivoId || reg.dispositivo_id;
-        
+
         const falla = reg.detalles || reg.problema || "Sin descripción";
         const estado = reg.estadoEquipo || "Recibido";
 
@@ -272,7 +275,7 @@ async function mostrarPaginaReparaciones() {
         reg.nombreEquipoMapeado = nombreEquipo;
 
         // --- CLASES DE ESTADO ---
-        let colorEstado = 'bg-gray-900 text-gray-400 border-gray-700'; 
+        let colorEstado = 'bg-gray-900 text-gray-400 border-gray-700';
         if (estado === 'Entregado') colorEstado = 'bg-green-900/40 text-green-400 border-green-800';
         else if (estado === 'Listo para entregar') colorEstado = 'bg-blue-900/40 text-blue-400 border-blue-800';
         else if (estado === 'En Reparación') colorEstado = 'bg-yellow-900/40 text-yellow-500 border-yellow-800';
@@ -307,12 +310,12 @@ async function mostrarPaginaReparaciones() {
  */
 function renderizarControlesPaginacionReparaciones() {
     const contenedor = document.getElementById('controles-paginacion-reparaciones');
-    if(!contenedor) return;
+    if (!contenedor) return;
 
     const totalPaginas = Math.ceil(adminReparacionesData.length / itemsPorPaginaReparaciones);
-    contenedor.innerHTML = ''; 
+    contenedor.innerHTML = '';
 
-    if (totalPaginas <= 1) return; 
+    if (totalPaginas <= 1) return;
 
     const btnAnteriorDisabled = paginaActualReparaciones === 1 ? 'opacity-50 cursor-not-allowed bg-[#1a1c20]' : 'bg-[#1a1c20] hover:bg-[#252830] hover:text-white';
     const btnSiguienteDisabled = paginaActualReparaciones === totalPaginas ? 'opacity-50 cursor-not-allowed bg-[#1a1c20]' : 'bg-[#1a1c20] hover:bg-[#252830] hover:text-white';
@@ -337,18 +340,18 @@ async function cambiarPaginaReparaciones(direccion) {
 
     if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
         paginaActualReparaciones = nuevaPagina;
-        await mostrarPaginaReparaciones();          
-        renderizarControlesPaginacionReparaciones();   
+        await mostrarPaginaReparaciones();
+        renderizarControlesPaginacionReparaciones();
     }
 }
 
 /* 4. Gestión de Modal */
 function abrirModalReparacion(idRegistroBuscado) {
     const modal = document.getElementById('modal-reparacion');
-    
+
     // ¡AQUÍ ESTÁ LA CORRECCIÓN! Buscamos usando la variable real: r.idFolio
     const reg = adminReparacionesData.find(r => String(r.idFolio) === String(idRegistroBuscado));
-    
+
     if (!reg) {
         console.error("No se encontró el ID...");
         return mostrarNotificacionAdmin("No se encontró la información del registro en memoria.", "error");
@@ -361,12 +364,12 @@ function abrirModalReparacion(idRegistroBuscado) {
     document.getElementById('modal-folio-display').innerText = idRegistroBuscado;
     document.getElementById('info-cliente').innerText = nombreClienteRenderizado;
     document.getElementById('info-equipo').innerText = nombreEquipoRenderizado;
-    
+
     // Inyección del ID oculto para el formulario
     document.getElementById('admin-reparacion-id').value = idRegistroBuscado;
-    
+
     // ¡CORRECCIÓN! Usamos el nombre real de tu base de datos: reg.estadoEquipo
-    document.getElementById('admin-estado-reparacion').value = reg.estadoEquipo || 'En Diagnóstico'; 
+    document.getElementById('admin-estado-reparacion').value = reg.estadoEquipo || 'En Diagnóstico';
 
     modal.classList.remove('hidden');
 }
@@ -380,10 +383,10 @@ function cerrarModalReparacion() {
  */
 async function gestionarSubmitReparacion(evento) {
     evento.preventDefault();
-    
+
     const btnGuardar = evento.target.querySelector('button[type="submit"]');
     const textoOriginalBtn = btnGuardar.innerText;
-    
+
     const id = document.getElementById('admin-reparacion-id').value;
     const nuevoEstado = document.getElementById('admin-estado-reparacion').value;
 
@@ -421,7 +424,7 @@ async function gestionarSubmitReparacion(evento) {
         });
 
         if (!respuesta.ok) {
-            const errorData = await respuesta.json().catch(() => ({})); 
+            const errorData = await respuesta.json().catch(() => ({}));
             // Si el backend envía el detalle del error en su JSON, lo mostramos
             throw new Error(errorData.message || errorData.error || `Error del servidor: código ${respuesta.status}`);
         }
@@ -438,11 +441,11 @@ async function gestionarSubmitReparacion(evento) {
                     equipo: document.getElementById('info-equipo').innerText,
                     nuevo_estado: nuevoEstado
                 };
-                
+
                 emailjs.send('service_i4nla5o', 'template_6ltorks', parametrosTemplate)
-                    .then(function() {
+                    .then(function () {
                         mostrarNotificacionAdmin(`Estado actualizado. Correo enviado al cliente.`, "exito");
-                    }, function() {
+                    }, function () {
                         mostrarNotificacionAdmin(`Estado actualizado, pero falló el envío del correo.`, "error");
                     });
             } else {
@@ -453,8 +456,8 @@ async function gestionarSubmitReparacion(evento) {
         }
 
         cerrarModalReparacion();
-        await cargarTablaAdminReparaciones(); 
-        
+        await cargarTablaAdminReparaciones();
+
     } catch (error) {
         mostrarNotificacionAdmin("Error al actualizar el registro: " + error.message, "error");
     } finally {
@@ -599,7 +602,7 @@ async function cargarTablaAdminProductos() {
     try {
         const respuesta = await fetch(`${baseUrl}/productos`);
         if (!respuesta.ok) throw new Error("Error al obtener productos");
-        
+
         adminProductosData = await respuesta.json();
         prodPaginaActual = 1;
         mostrarPaginaProductos();
@@ -613,7 +616,7 @@ function mostrarPaginaProductos() {
     const tbody = document.getElementById('tabla-productos-admin');
     if (!tbody) return;
 
-    if(adminProductosData.length === 0) {
+    if (adminProductosData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-500">No hay productos registrados.</td></tr>`;
         document.getElementById('paginacion-productos').innerHTML = '';
         return;
@@ -635,7 +638,7 @@ function mostrarPaginaProductos() {
                 </td>
                 <td class="p-4 font-bold text-white align-middle">${prod.nombre}</td>
                 <td class="p-4 align-middle"><span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300 font-bold border border-gray-700 tracking-wide uppercase">${prod.categoria}</span></td>
-                <td class="p-4 text-[#7ed957] font-extrabold align-middle">$${parseFloat(prod.precio).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="p-4 text-[#7ed957] font-extrabold align-middle">$${parseFloat(prod.precio).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
                 <td class="p-4 text-gray-300 font-semibold align-middle">${prod.stock}</td>
                 <td class="p-4 text-center space-x-3 align-middle">
                     <button onclick="abrirModalProducto(${prod.idProducto})" class="text-blue-400 hover:text-blue-300 font-semibold transition" title="Editar">✏️ Editar</button>
@@ -679,7 +682,7 @@ window.cambiarPaginaProductos = function (dir) {
 };
 
 // Abre la ventana de creación/edición de productos y carga la info
-window.abrirModalProducto = function(idProducto = null) {
+window.abrirModalProducto = function (idProducto = null) {
     const modal = document.getElementById('modal-producto');
     const form = document.getElementById('formulario-producto');
     const titulo = document.getElementById('modal-titulo');
@@ -687,8 +690,8 @@ window.abrirModalProducto = function(idProducto = null) {
     const contenedorImgActual = document.getElementById('contenedor-imagen-actual');
     const nombreImgActual = document.getElementById('nombre-imagen-actual');
 
-    form.reset(); 
-    inputFile.value = ''; 
+    form.reset();
+    inputFile.value = '';
 
     if (idProducto) {
         const prod = adminProductosData.find(p => p.idProducto === idProducto);
@@ -701,7 +704,7 @@ window.abrirModalProducto = function(idProducto = null) {
         document.getElementById('admin-precio').value = prod.precio;
         document.getElementById('admin-stock').value = prod.stock;
         document.getElementById('admin-descripcion').value = prod.descripcion || '';
-        
+
         if (prod.imagen_url) {
             contenedorImgActual.classList.remove('hidden');
             nombreImgActual.innerText = prod.imagen_url;
@@ -718,12 +721,12 @@ window.abrirModalProducto = function(idProducto = null) {
     modal.classList.remove('hidden');
 };
 
-window.cerrarModalProducto = function() {
+window.cerrarModalProducto = function () {
     document.getElementById('modal-producto').classList.add('hidden');
 };
 
 // Guarda o actualiza un producto, subiendo primero la foto a Cloudinary
-window.gestionarSubmitProducto = async function(evento) {
+window.gestionarSubmitProducto = async function (evento) {
     evento.preventDefault();
     const btnGuardar = evento.target.querySelector('button[type="submit"]');
     const textoOriginalBtn = btnGuardar.innerText;
@@ -733,7 +736,7 @@ window.gestionarSubmitProducto = async function(evento) {
 
     // 1. CAPTURAR EL PRECIO Y VALIDARLO (Espejo de tus Triggers)
     const precioIngresado = parseFloat(document.getElementById('admin-precio').value);
-    
+
     if (precioIngresado <= 0) {
         return mostrarNotificacionAdmin("Error: No se permiten productos con precio menor o igual a cero.", "error");
     }
@@ -760,7 +763,7 @@ window.gestionarSubmitProducto = async function(evento) {
 
             if (!resCloudinary.ok) throw new Error("Fallo al subir a Cloudinary.");
             const dataCloudinary = await resCloudinary.json();
-            nombreImagenFinal = dataCloudinary.secure_url.split('/').pop(); 
+            nombreImagenFinal = dataCloudinary.secure_url.split('/').pop();
         }
 
         btnGuardar.innerText = "Guardando...";
@@ -770,10 +773,10 @@ window.gestionarSubmitProducto = async function(evento) {
             precio: precioIngresado, // Usamos la variable que ya validamos arriba
             stock: parseInt(document.getElementById('admin-stock').value),
             descripcion: document.getElementById('admin-descripcion').value,
-            imagen_url: nombreImagenFinal 
+            imagen_url: nombreImagenFinal
         };
 
-        if (id) payload.idProducto = parseInt(id); 
+        if (id) payload.idProducto = parseInt(id);
 
         const metodo = id ? 'PUT' : 'POST';
         const url = id ? `${baseUrl}/productos/${id}` : `${baseUrl}/productos`;
@@ -797,7 +800,7 @@ window.gestionarSubmitProducto = async function(evento) {
 
         mostrarNotificacionAdmin(`Producto ${id ? 'actualizado' : 'creado'} con éxito`, 'exito');
         cerrarModalProducto();
-        cargarTablaAdminProductos(); 
+        cargarTablaAdminProductos();
     } catch (error) {
         mostrarNotificacionAdmin(error.message, "error");
     } finally {
@@ -807,24 +810,24 @@ window.gestionarSubmitProducto = async function(evento) {
 };
 
 // Borra un producto del catálogo
-window.eliminarProducto = async function(id) {
+window.eliminarProducto = async function (id) {
     const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas ELIMINAR este producto? Esta acción lo borrará permanentemente del catálogo.", "peligro");
-    if(!confirmado) return;
+    if (!confirmado) return;
 
     try {
         const token = localStorage.getItem('token');
         const headersAEnviar = {};
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/productos/${id}`, { 
+        const respuesta = await fetch(`${baseUrl}/productos/${id}`, {
             method: 'DELETE',
             headers: headersAEnviar
         });
-        
+
         if (!respuesta.ok) throw new Error("Error al eliminar el producto");
-        
+
         mostrarNotificacionAdmin("Producto eliminado correctamente", "exito");
-        cargarTablaAdminProductos(); 
+        cargarTablaAdminProductos();
     } catch (error) {
         mostrarNotificacionAdmin(error.message, "error");
     }
@@ -880,7 +883,7 @@ async function iniciarModuloPersonal() {
 
         const [resRoles, resPersonal] = await Promise.all([
             fetch(`${baseUrl}/roles`),
-            fetch(`${baseUrl}/trabajadores`) 
+            fetch(`${baseUrl}/trabajadores`)
         ]);
 
         if (!resRoles.ok || !resPersonal.ok) throw new Error("Error al cargar las APIs");
@@ -914,7 +917,7 @@ function mostrarListaPersonal() {
         const tel = emp.telefono || "Sin teléfono";
 
         let colorRol = "bg-gray-900 text-gray-300 border-gray-700";
-        let esAdmin = false; 
+        let esAdmin = false;
 
         if (nombreRol.toLowerCase().includes("admin")) {
             colorRol = "bg-green-900 text-green-300 border-green-700";
@@ -925,7 +928,7 @@ function mostrarListaPersonal() {
             colorRol = "bg-blue-900 text-blue-300 border-blue-700";
         }
 
-        let botonesAccion = esAdmin 
+        let botonesAccion = esAdmin
             ? `<span class="text-gray-600 text-sm font-semibold flex items-center justify-end gap-1 cursor-not-allowed select-none" title="Cuenta de administrador protegida">🔒 Protegido</span>`
             : `<button onclick="abrirModalPersonal(${idEmp})" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
                <button onclick="confirmarEliminacionPersonal(${idEmp})" class="text-red-500 hover:text-red-400 transition font-semibold ml-3">Eliminar</button>`;
@@ -949,12 +952,12 @@ function mostrarListaPersonal() {
 }
 
 // Ventana flotante para agregar o editar a un empleado
-window.abrirModalPersonal = async function(id = null) {
+window.abrirModalPersonal = async function (id = null) {
     const modal = document.getElementById("modal-personal");
     const form = document.getElementById("formulario-personal");
     if (!modal) return;
-    if (form) form.reset(); 
-    
+    if (form) form.reset();
+
     document.getElementById('contenedor-asentamiento').innerHTML = `<input type="text" id="emp-asentamiento" required placeholder="Escribe el C.P. primero" readonly class="w-full bg-[#1a1c20] border border-gray-700 text-gray-400 px-4 py-2 rounded focus:outline-none cursor-not-allowed">`;
 
     if (id) {
@@ -966,8 +969,8 @@ window.abrirModalPersonal = async function(id = null) {
             document.getElementById('emp-ap-materno').value = emp.aMaterno || '';
             document.getElementById('emp-rol').value = emp.idRol;
             document.getElementById('emp-telefono').value = emp.telefono || '';
-            document.getElementById('emp-calle').value = emp.calle || emp.direccion || ''; 
-            
+            document.getElementById('emp-calle').value = emp.calle || emp.direccion || '';
+
             if (emp.email) document.getElementById('emp-email-user').value = emp.email.split('@')[0];
 
             document.getElementById('emp-cp').value = emp.CPostal || '';
@@ -987,7 +990,7 @@ window.abrirModalPersonal = async function(id = null) {
                         selectHtml += `</select>`;
                         document.getElementById('contenedor-asentamiento').innerHTML = selectHtml;
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
         }
     } else {
@@ -996,15 +999,15 @@ window.abrirModalPersonal = async function(id = null) {
     modal.classList.remove("hidden");
 };
 
-window.cerrarModalPersonal = function() {
+window.cerrarModalPersonal = function () {
     const modal = document.getElementById("modal-personal");
     if (modal) modal.classList.add("hidden");
 };
 
 // Crea o modifica a un empleado en la base de datos
-window.guardarEmpleado = async function(evento) {
+window.guardarEmpleado = async function (evento) {
     evento.preventDefault();
-    
+
     const idEmp = document.getElementById('emp-id').value;
     const emailUsuario = document.getElementById('emp-email-user').value.trim();
     const password = document.getElementById('emp-password').value;
@@ -1013,7 +1016,7 @@ window.guardarEmpleado = async function(evento) {
 
     if (idEmp) {
         const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas modificar los datos y accesos de este empleado?", "advertencia");
-        if (!confirmado) return; 
+        if (!confirmado) return;
     }
 
     const btnSubmit = evento.target.querySelector('button[type="submit"]');
@@ -1031,15 +1034,15 @@ window.guardarEmpleado = async function(evento) {
         CPostal: document.getElementById('emp-cp').value.trim(),
         estado: document.getElementById('emp-estado').value.trim(),
         municipio: document.getElementById('emp-municipio').value.trim(),
-        asentamiento: document.getElementById('emp-asentamiento').value.trim(), 
-        calle: document.getElementById('emp-calle').value.trim()      
+        asentamiento: document.getElementById('emp-asentamiento').value.trim(),
+        calle: document.getElementById('emp-calle').value.trim()
     };
 
     if (password) datosTrabajador.password = password;
 
     try {
         let url = idEmp ? `${baseUrl}/trabajadores/${idEmp}` : `${baseUrl}/trabajadores`;
-        let method = idEmp ? 'PUT' : 'POST'; 
+        let method = idEmp ? 'PUT' : 'POST';
         const token = localStorage.getItem('token');
 
         const respuesta = await fetch(url, {
@@ -1052,7 +1055,7 @@ window.guardarEmpleado = async function(evento) {
 
         mostrarNotificacionAdmin(`Empleado ${idEmp ? 'actualizado' : 'registrado'} correctamente`, 'exito');
         cerrarModalPersonal();
-        iniciarModuloPersonal(); 
+        iniciarModuloPersonal();
 
     } catch (error) {
         mostrarNotificacionAdmin(error.message, "error");
@@ -1062,19 +1065,19 @@ window.guardarEmpleado = async function(evento) {
     }
 };
 
-window.confirmarEliminacionPersonal = async function(id) {
+window.confirmarEliminacionPersonal = async function (id) {
     const confirmado = await mostrarConfirmacionAdmin("¿Estás seguro de que deseas ELIMINAR a este empleado?<br><br>Esta acción no se puede deshacer y perderá su acceso al sistema.", "peligro");
-    
+
     if (confirmado) {
         try {
-            const token = localStorage.getItem('token'); 
+            const token = localStorage.getItem('token');
             const respuesta = await fetch(`${baseUrl}/trabajadores/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!respuesta.ok) throw new Error("Error al eliminar el empleado");
             mostrarNotificacionAdmin("Empleado eliminado correctamente", "exito");
-            iniciarModuloPersonal(); 
+            iniciarModuloPersonal();
         } catch (error) {
             mostrarNotificacionAdmin(error.message, "error");
         }
@@ -1108,16 +1111,16 @@ window.abrirPestana = function (evento, nombrePestana) {
 async function subirACloudinaryWeb(archivo) {
     const formData = new FormData();
     formData.append("file", archivo);
-    formData.append("upload_preset", PRESET_WEB); 
+    formData.append("upload_preset", PRESET_WEB);
 
     // Usamos auto/upload para que acepte tanto imágenes (Nosotros) como Videos (Portada)
     const respuesta = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_WEB}/auto/upload`, {
         method: "POST",
         body: formData,
     });
-    
+
     if (!respuesta.ok) throw new Error("Error al subir el archivo a Cloudinary");
-    
+
     const data = await respuesta.json();
     // Extraemos SOLO el nombre del archivo generado, igual que en Productos
     return data.secure_url.split('/').pop();
@@ -1138,12 +1141,12 @@ async function iniciarModuloWeb() {
             document.getElementById("input-titulo-portada").value = portada.titulo || "";
             document.getElementById("input-desc-portada").value = portada.descripcion || "";
             document.getElementById("input-boton-portada").value = portada.texto_boton || "";
-            
+
             // ¡LÓGICA DE PRODUCTOS! Inyectamos los nombres actuales en los inputs ocultos
             document.getElementById("portada-video-actual").value = portada.video_url || "";
             document.getElementById("portada-imagen-actual").value = portada.imagen_fondo || "";
         }
-    } catch (error) {}
+    } catch (error) { }
 }
 
 window.guardarPortada = async function (evento) {
@@ -1183,10 +1186,10 @@ window.guardarPortada = async function (evento) {
         });
 
         if (!respuesta.ok) throw new Error("Error al actualizar la base de datos");
-        
+
         if (inputVideo) inputVideo.value = "";
         if (inputImagen) inputImagen.value = "";
-        
+
         document.getElementById("portada-video-actual").value = videoFinal;
         document.getElementById("portada-imagen-actual").value = imagenFinal;
 
@@ -1211,11 +1214,11 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
         contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">⏳ Cargando información...</td></tr>`;
         const respuesta = await fetch(`${baseUrl}/nosotros`);
         if (!respuesta.ok) throw new Error("Error de conexión");
-        
+
         nosotrosGlobales = await respuesta.json();
         if (nosotrosGlobales.length === 0) {
             contenedor.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-gray-500">No hay secciones registradas.</td></tr>`;
-            return; 
+            return;
         }
 
         let html = "";
@@ -1261,14 +1264,14 @@ window.abrirModalEditarNosotros = function (idBuscado) {
     document.getElementById("edit-imagen-actual-nosotros").value = nombreImagenBD;
 
     let imagenSegura = `https://res.cloudinary.com/${CLOUD_NAME_WEB}/image/upload/${nombreImagenBD}`;
-    
+
     const imgPreview = document.getElementById("edit-preview-nosotros");
-    if(imgPreview) imgPreview.src = imagenSegura;
-    
-    document.getElementById("edit-img-nosotros").value = ""; 
-    
+    if (imgPreview) imgPreview.src = imagenSegura;
+
+    document.getElementById("edit-img-nosotros").value = "";
+
     const panelEdicion = document.getElementById("panel-edicion-nosotros");
-    if(panelEdicion) panelEdicion.classList.remove("hidden");
+    if (panelEdicion) panelEdicion.classList.remove("hidden");
 };
 
 window.guardarEdicionNosotros = async function (evento) {
@@ -1279,20 +1282,20 @@ window.guardarEdicionNosotros = async function (evento) {
     boton.disabled = true;
 
     const id = document.getElementById("edit-id-nosotros").value;
-    
+
     let imagenFinal = document.getElementById("edit-imagen-actual-nosotros").value;
 
     try {
         const inputImagen = document.getElementById("edit-img-nosotros");
-        
+
         if (inputImagen.files.length > 0) {
             imagenFinal = await subirACloudinaryWeb(inputImagen.files[0]);
         }
 
-        const datosBD = { 
-            titulo: document.getElementById("edit-titulo-nosotros").value, 
+        const datosBD = {
+            titulo: document.getElementById("edit-titulo-nosotros").value,
             descripcion: document.getElementById("edit-desc-nosotros").value,
-            imagen: imagenFinal, 
+            imagen: imagenFinal,
             imagen_url: imagenFinal
         };
 
@@ -1302,7 +1305,7 @@ window.guardarEdicionNosotros = async function (evento) {
             body: JSON.stringify(datosBD)
         });
         if (!respuesta.ok) throw new Error("Error al actualizar");
-        
+
         mostrarNotificacionAdmin("¡Sección actualizada correctamente!", "exito");
         cerrarEdicionNosotros();
         cargarPestanaNosotros();
@@ -1328,7 +1331,7 @@ window.cargarPestanaContacto = async function (evento, nombrePestana) {
             document.getElementById("input-direccion").value = contacto.direccion || "";
             document.getElementById("input-mapa").value = contacto.mapa_url || "";
         }
-    } catch (error) {}
+    } catch (error) { }
 };
 
 window.guardarContacto = async function (evento) {
@@ -1417,7 +1420,7 @@ async function cargarDashboardAdmin() {
     }
 }
 
- // ==========================================
+// ==========================================
 // MÓDULO 10: GESTIÓN DE MENSAJES (CRM DE SOPORTE)
 // ==========================================
 let mensajesData = [];
@@ -1425,15 +1428,15 @@ let mensajesData = [];
 // 1. Descargar los mensajes del Backend
 async function iniciarModuloMensajes() {
     // Buscamos el cuerpo de la tabla por su etiqueta en HTML
-    const tbody = document.querySelector('tbody.divide-y.divide-gray-800'); 
+    const tbody = document.querySelector('tbody.divide-y.divide-gray-800');
     if (!tbody) return;
 
     try {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 animate-pulse">Cargando buzón...</td></tr>`;
-        
+
         const respuesta = await fetch(`${baseUrl}/mensajes`);
         if (!respuesta.ok) throw new Error("Error al obtener los mensajes");
-        
+
         mensajesData = await respuesta.json();
         dibujarTablaMensajes();
 
@@ -1446,13 +1449,13 @@ async function iniciarModuloMensajes() {
 function dibujarTablaMensajes() {
     const tbody = document.querySelector('tbody.divide-y.divide-gray-800');
     if (!tbody) return;
-    
+
     tbody.innerHTML = '';
 
     // ¡Filtro Universitario! Solo mostramos los mensajes ENTRANTES
     const mensajesEntrantes = mensajesData.filter(m => m.tipo_mensaje !== 'SALIENTE');
 
-    if(mensajesEntrantes.length === 0) {
+    if (mensajesEntrantes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 font-medium">Bandeja de entrada limpia. No hay mensajes.</td></tr>`;
         return;
     }
@@ -1463,12 +1466,12 @@ function dibujarTablaMensajes() {
         const correo = msg.correo || msg.email || "Sin correo";
         const asunto = msg.asunto || "Sin asunto";
         const contenido = msg.mensaje || msg.contenido || "";
-        
+
         // Formateo de fecha seguro
         const fechaObj = msg.fecha ? new Date(msg.fecha) : new Date();
         const fecha = fechaObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
         const hora = fechaObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        
+
         // Etiqueta visual de estado
         const estado = msg.estado_mensaje || "PENDIENTE";
         const colorEstado = estado === 'RESPONDIDO' ? 'text-green-400 border-green-700' : 'text-orange-400 border-orange-700';
@@ -1505,28 +1508,28 @@ function dibujarTablaMensajes() {
 }
 
 // 3. Control del Modal
-window.abrirModalRespuesta = function(id) {
+window.abrirModalRespuesta = function (id) {
     const msg = mensajesData.find(m => (m.idMensaje || m.id) === id);
     if (!msg) return;
 
     document.getElementById('resp-id-mensaje').value = id;
     document.getElementById('resp-correo').value = msg.correo || msg.email;
     document.getElementById('resp-mensaje-original').value = msg.mensaje || msg.contenido;
-    
+
     document.getElementById('resp-display-correo').innerText = msg.correo || msg.email;
     document.getElementById('resp-texto').value = '';
 
     document.getElementById('modal-respuesta').classList.remove('hidden');
 };
 
-window.cerrarModalRespuesta = function() {
+window.cerrarModalRespuesta = function () {
     document.getElementById('modal-respuesta').classList.add('hidden');
 };
 
 // 4. El flujo maestro de envío y guardado
-window.enviarRespuestaMensaje = async function(evento) {
+window.enviarRespuestaMensaje = async function (evento) {
     evento.preventDefault();
-    
+
     const btn = evento.target.querySelector('button[type="submit"]');
     const textoBtn = btn.innerHTML;
     btn.disabled = true;
@@ -1541,19 +1544,19 @@ window.enviarRespuestaMensaje = async function(evento) {
     const headersAEnviar = { 'Content-Type': 'application/json' };
     if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-   try {
+    try {
         //  Disparar EmailJS 
         const parametrosEmail = {
             correo_cliente: correoDestino,
             mensaje_original: msjOriginal,
             respuesta_admin: respuestaAdmin
         };
-        
+
         await emailjs.send('service_i4nla5o', 'template_xvh63sq', parametrosEmail);
 
         //  Guardar la respuesta en DB 
         const payloadRespuesta = {
-            correo: "pcextreme@correo.com", 
+            correo: "pcextreme@correo.com",
             asunto: "RE: Mensaje del Cliente",
             mensaje: respuestaAdmin,
             tipo_mensaje: "SALIENTE",
@@ -1574,11 +1577,11 @@ window.enviarRespuestaMensaje = async function(evento) {
             headers: headersAEnviar,
             body: JSON.stringify(payloadActualizacion)
         });
-        
+
         mostrarNotificacionAdmin("Respuesta enviada y guardada en historial", "exito");
         cerrarModalRespuesta();
         await iniciarModuloMensajes();
-        
+
     } catch (error) {
         console.error("Error:", error);
         mostrarNotificacionAdmin("Error al enviar el mensaje", "error");
@@ -1588,24 +1591,24 @@ window.enviarRespuestaMensaje = async function(evento) {
     }
 };
 
-window.eliminarMensajeBuzon = async function(id) {
+window.eliminarMensajeBuzon = async function (id) {
     const confirmado = await mostrarConfirmacionAdmin("¿Seguro que deseas eliminar este mensaje?", "peligro");
-    if(!confirmado) return;
+    if (!confirmado) return;
 
     try {
         const token = localStorage.getItem('token');
         const headersAEnviar = {};
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/mensajes/${id}`, { 
+        const respuesta = await fetch(`${baseUrl}/mensajes/${id}`, {
             method: 'DELETE',
             headers: headersAEnviar
         });
-        
+
         if (!respuesta.ok) throw new Error("Error al eliminar");
-        
+
         mostrarNotificacionAdmin("Mensaje eliminado", "exito");
-        await iniciarModuloMensajes(); 
+        await iniciarModuloMensajes();
     } catch (error) {
         mostrarNotificacionAdmin("Error al eliminar el mensaje", "error");
     }
@@ -1621,22 +1624,22 @@ document.addEventListener("DOMContentLoaded", () => {
     inicializarSepomex();
     inicializarOjoPassword();
     cargarDashboardAdmin();
-    
+
     // Módulos según la página en la que te encuentres
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
-    if(document.querySelector('title').innerText.includes('Buzón')) {
+    if (document.querySelector('title').innerText.includes('Buzón')) {
         iniciarModuloMensajes();
         const formResp = document.getElementById('formulario-respuesta');
         if (formResp) formResp.addEventListener('submit', enviarRespuestaMensaje);
     }
-    if(document.getElementById('tabla-productos-admin')) {
+    if (document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
     }
 
-    if(document.getElementById('lista-reparaciones')) {
+    if (document.getElementById('lista-reparaciones')) {
         cargarTablaAdminReparaciones();
         document.getElementById('formulario-reparacion').addEventListener('submit', gestionarSubmitReparacion);
     }
