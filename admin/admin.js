@@ -2,20 +2,18 @@
  * admin.js
  * Archivo principal del Panel de Administración - PC EXTREME
  */
-
 // ==========================================
 // MÓDULO 1: CONFIGURACIÓN GLOBAL
 // ==========================================
 // Variables para conectar con la base de datos y Cloudinary
 const baseUrl = "https://app-web-java.vercel.app/api";
 const CLOUD_BASE = 'https://res.cloudinary.com/dswljrmnu/image/upload/';
-const CLOUD_NAME_BASE = 'dswljrmnu';
+const CLOUD_NAME_BASE = 'dswljrmnu'; 
 const UPLOAD_PRESET = 'qgnakwni';
 
 // Variables de Cloudinary exclusivas para el Gestor Web
 const CLOUD_NAME_WEB = "dbkqbazp7";
 const PRESET_WEB = "Pc Extreme Web";
-
 
 // ==========================================
 // MÓDULO 2: UTILIDADES GENERALES
@@ -90,7 +88,7 @@ function mostrarConfirmacionAdmin(mensaje, tipo = 'peligro') {
     });
 }
 
-// Activa el botón de "ojito" para ver la contraseña en el formulario
+// Activa el botón de "ojito" para visualizar la contraseña en el formulario
 function inicializarOjoPassword() {
     const inputPassword = document.getElementById('emp-password');
     const btnOjo = document.getElementById('btn-ver-password');
@@ -176,7 +174,7 @@ async function cargarComponentesAdmin() {
             }
         }
 
-        // Carga la parte de hasta abajo de la página
+        // Carga de Footer
         const footerEl = document.getElementById("admin-piePagina");
         if (footerEl) {
             const resF = await fetch("/FrontEnd-PCEXTREME/admin/admin_footer.html");
@@ -202,7 +200,7 @@ async function cargarTablaAdminReparaciones() {
 
     try {
         // Obtenemos todos los registros tal cual llegan
-        const respuesta = await fetch(`${baseUrl}/registros`);
+        const respuesta = await fetch(`${baseUrl}/registros`); //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al obtener los registros");
 
         adminReparacionesData = await respuesta.json();
@@ -248,13 +246,13 @@ async function mostrarPaginaReparaciones() {
         let promesaDispositivo = null;
 
         if (idClienteFk) {
-            promesaCliente = fetch(`${baseUrl}/clientes/${idClienteFk}`)
+            promesaCliente = fetch(`${baseUrl}/clientes/${idClienteFk}`) //ENDPOINT
                 .then(res => res.ok ? res.json() : null)
                 .catch(() => null);
         }
 
         if (idDispositivoFk) {
-            promesaDispositivo = fetch(`${baseUrl}/dispositivos/${idDispositivoFk}`)
+            promesaDispositivo = fetch(`${baseUrl}/dispositivos/${idDispositivoFk}`)  //ENDPOINT
                 .then(res => res.ok ? res.json() : null)
                 .catch(() => null);
         }
@@ -428,7 +426,7 @@ async function gestionarSubmitReparacion(evento) {
         const headersAEnviar = { 'Content-Type': 'application/json' };
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/registros/${id}`, {
+        const respuesta = await fetch(`${baseUrl}/registros/${id}`, { //ENDPOINT PUT
             method: 'PUT',
             headers: headersAEnviar,
             body: JSON.stringify(payload)
@@ -494,7 +492,7 @@ async function iniciarModuloClientes() {
     try {
         contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">Cargando clientes...</td></tr>`;
 
-        const respuesta = await fetch(`${baseUrl}/clientes`);
+        const respuesta = await fetch(`${baseUrl}/clientes`); //ENDPOINT
         if (!respuesta.ok) throw new Error("Error en la API de clientes");
 
         cliGlobales = await respuesta.json();
@@ -631,7 +629,7 @@ async function cargarTablaAdminProductos() {
     if (!tbody) return;
 
     try {
-        const respuesta = await fetch(`${baseUrl}/productos`);
+        const respuesta = await fetch(`${baseUrl}/productos`); //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al obtener productos");
 
         adminProductosData = await respuesta.json();
@@ -658,7 +656,7 @@ function mostrarPaginaProductos() {
     let html = "";
 
     prodPagina.forEach(prod => {
-        const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
+        const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;  //ENDPOINT
         html += `
             <tr class="block md:table-row hover:bg-[#252830] transition border-b border-gray-800 p-4 md:p-0">
                 
@@ -827,7 +825,7 @@ window.gestionarSubmitProducto = async function (evento) {
             formData.append('file', inputFile.files[0]);
             formData.append('upload_preset', UPLOAD_PRESET);
 
-            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_BASE}/image/upload`, {
+            const resCloudinary = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_BASE}/image/upload`, { //ENDPOINT
                 method: 'POST',
                 body: formData
             });
@@ -850,7 +848,7 @@ window.gestionarSubmitProducto = async function (evento) {
         if (id) payload.idProducto = parseInt(id);
 
         const metodo = id ? 'PUT' : 'POST';
-        const url = id ? `${baseUrl}/productos/${id}` : `${baseUrl}/productos`;
+        const url = id ? `${baseUrl}/productos/${id}` : `${baseUrl}/productos`;  //ENDPOINT
         const token = localStorage.getItem('token');
         const headersAEnviar = { 'Content-Type': 'application/json' };
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
@@ -890,7 +888,7 @@ window.eliminarProducto = async function (id) {
         const headersAEnviar = {};
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/productos/${id}`, {
+        const respuesta = await fetch(`${baseUrl}/productos/${id}`, {  //ENDPOINT
             method: 'DELETE',
             headers: headersAEnviar
         });
@@ -920,7 +918,7 @@ function inicializarSepomex() {
             if (cp.length === 5) {
                 mostrarNotificacionAdmin("Buscando código postal...", "exito");
                 try {
-                    const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);
+                    const respuesta = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`);  //ENDPOINT
                     const datos = await respuesta.json();
                     const lugares = datos.zip_codes;
 
@@ -950,11 +948,11 @@ async function iniciarModuloPersonal() {
     if (!contenedor) return;
 
     try {
-        contenedor.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">⏳ Cargando personal...</td></tr>`;
+        contenedor.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500"> Cargando personal...</td></tr>`;
 
         const [resRoles, resPersonal] = await Promise.all([
-            fetch(`${baseUrl}/roles`),
-            fetch(`${baseUrl}/trabajadores`)
+            fetch(`${baseUrl}/roles`),  //ENDPOINT
+            fetch(`${baseUrl}/trabajadores`)  //ENDPOINT
         ]);
 
         if (!resRoles.ok || !resPersonal.ok) throw new Error("Error al cargar las APIs");
@@ -1069,7 +1067,7 @@ window.abrirModalPersonal = async function (id = null) {
 
             if (emp.CPostal && String(emp.CPostal).length === 5) {
                 try {
-                    const res = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${emp.CPostal}`);
+                    const res = await fetch(`https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${emp.CPostal}`); //ENDPOINT
                     const datos = await res.json();
                     if (datos.zip_codes && datos.zip_codes.length > 0) {
                         let selectHtml = `<select id="emp-asentamiento" required class="w-full bg-[#0f1115] border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#7ed957]">`;
@@ -1111,7 +1109,7 @@ window.guardarEmpleado = async function (evento) {
 
     const btnSubmit = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = btnSubmit.innerHTML;
-    btnSubmit.innerHTML = "⏳ Guardando...";
+    btnSubmit.innerHTML = " Guardando...";
     btnSubmit.disabled = true;
 
     const datosTrabajador = {
@@ -1131,7 +1129,7 @@ window.guardarEmpleado = async function (evento) {
     if (password) datosTrabajador.password = password;
 
     try {
-        let url = idEmp ? `${baseUrl}/trabajadores/${idEmp}` : `${baseUrl}/trabajadores`;
+        let url = idEmp ? `${baseUrl}/trabajadores/${idEmp}` : `${baseUrl}/trabajadores`; //ENDPOINT
         let method = idEmp ? 'PUT' : 'POST';
         const token = localStorage.getItem('token');
 
@@ -1161,7 +1159,7 @@ window.confirmarEliminacionPersonal = async function (id) {
     if (confirmado) {
         try {
             const token = localStorage.getItem('token');
-            const respuesta = await fetch(`${baseUrl}/trabajadores/${id}`, {
+            const respuesta = await fetch(`${baseUrl}/trabajadores/${id}`, { //ENDPOINT
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -1204,7 +1202,7 @@ async function subirACloudinaryWeb(archivo) {
     formData.append("upload_preset", PRESET_WEB);
 
     // Usamos auto/upload para que acepte tanto imágenes (Nosotros) como Videos (Portada)
-    const respuesta = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_WEB}/auto/upload`, {
+    const respuesta = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME_WEB}/auto/upload`, { //ENDPOINT
         method: "POST",
         body: formData,
     });
@@ -1222,7 +1220,7 @@ async function iniciarModuloWeb() {
     if (!formPortada) return;
 
     try {
-        const respuesta = await fetch(`${baseUrl}/inicio`);
+        const respuesta = await fetch(`${baseUrl}/inicio`); //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al cargar la información");
         const datos = await respuesta.json();
 
@@ -1232,7 +1230,7 @@ async function iniciarModuloWeb() {
             document.getElementById("input-desc-portada").value = portada.descripcion || "";
             document.getElementById("input-boton-portada").value = portada.texto_boton || "";
 
-            // ¡LÓGICA DE PRODUCTOS! Inyectamos los nombres actuales en los inputs ocultos
+            // Inyectamos los nombres actuales en los inputs ocultos
             document.getElementById("portada-video-actual").value = portada.video_url || "";
             document.getElementById("portada-imagen-actual").value = portada.imagen_fondo || "";
         }
@@ -1269,7 +1267,7 @@ window.guardarPortada = async function (evento) {
             imagen_fondo: imagenFinal
         };
 
-        const respuesta = await fetch(`${baseUrl}/inicio/1`, {
+        const respuesta = await fetch(`${baseUrl}/inicio/1`, {  //ENDPOINT
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datosParaBD),
@@ -1314,7 +1312,7 @@ window.cargarPestanaNosotros = async function (evento, nombrePestana) {
         let html = "";
         nosotrosGlobales.forEach((item) => {
             // 1. CORRECCIÓN: Usar la base de Cloudinary (CLOUD_BASE)
-            let imagenSegura = item.imagen || item.imagen_url || "https://via.placeholder.com/150?text=Sin+Imagen";
+            let imagenSegura = item.imagen || item.imagen_url;
             if (imagenSegura && !imagenSegura.startsWith('http')) {
                 imagenSegura = `${CLOUD_BASE}${imagenSegura}`;
             }
@@ -1353,7 +1351,7 @@ window.abrirModalEditarNosotros = function (idBuscado) {
     const nombreImagenBD = item.imagen || item.imagen_url || "";
     document.getElementById("edit-imagen-actual-nosotros").value = nombreImagenBD;
 
-    let imagenSegura = `https://res.cloudinary.com/${CLOUD_NAME_WEB}/image/upload/${nombreImagenBD}`;
+    let imagenSegura = `https://res.cloudinary.com/${CLOUD_NAME_WEB}/image/upload/${nombreImagenBD}`;  //ENDPOINT
 
     const imgPreview = document.getElementById("edit-preview-nosotros");
     if (imgPreview) imgPreview.src = imagenSegura;
@@ -1410,7 +1408,7 @@ window.guardarEdicionNosotros = async function (evento) {
 window.cargarPestanaContacto = async function (evento, nombrePestana) {
     if (evento && nombrePestana) abrirPestana(evento, nombrePestana);
     try {
-        const resContacto = await fetch(`${baseUrl}/contacto`);
+        const resContacto = await fetch(`${baseUrl}/contacto`);  //ENDPOINT
         if (!resContacto.ok) return;
         const datosContacto = await resContacto.json();
         if (datosContacto) {
@@ -1428,7 +1426,7 @@ window.guardarContacto = async function (evento) {
     evento.preventDefault();
     const boton = evento.target.querySelector('button[type="submit"]');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = "⏳ Guardando datos...";
+    boton.innerHTML = " Guardando datos...";
     boton.disabled = true;
 
     const datosContacto = {
@@ -1469,17 +1467,17 @@ async function cargarDashboardAdmin() {
 
     try {
         // 1. CARGAMOS LOS TOTALES
-        const resTotales = await fetch(`${baseUrl}/dashboard/totales`, { headers: headersSeguros });
+        const resTotales = await fetch(`${baseUrl}/dashboard/totales`, { headers: headersSeguros });  //ENDPOINT
         if (resTotales.ok) {
             const totales = await resTotales.json();
-            // Asegúrate de que las propiedades (total_productos, etc.) coincidan con el alias que le diste en tu SQL de Java/Node
+
             document.getElementById('stat-productos').innerText = totales.total_productos || 0;
             document.getElementById('stat-clientes').innerText = totales.total_clientes || 0;
             document.getElementById('stat-reparaciones').innerText = totales.total_registros || 0;
         }
 
         // 2. CARGAMOS LAS ALERTAS DE STOCK BAJO
-        const resStock = await fetch(`${baseUrl}/dashboard/bajo-stock`, { headers: headersSeguros });
+        const resStock = await fetch(`${baseUrl}/dashboard/bajo-stock`, { headers: headersSeguros });  //ENDPOINT
         if (resStock.ok) {
             const productosBajoStock = await resStock.json();
             const alertaContenedor = document.getElementById('alerta-stock');
@@ -1524,7 +1522,7 @@ async function iniciarModuloMensajes() {
     try {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 animate-pulse">Cargando buzón...</td></tr>`;
 
-        const respuesta = await fetch(`${baseUrl}/mensajes`);
+        const respuesta = await fetch(`${baseUrl}/mensajes`);  //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al obtener los mensajes");
 
         mensajesData = await respuesta.json();
@@ -1657,7 +1655,7 @@ window.enviarRespuestaMensaje = async function (evento) {
             respuesta_admin: respuestaAdmin
         };
 
-        await emailjs.send('service_i4nla5o', 'template_xvh63sq', parametrosEmail);
+        await emailjs.send('service_i4nla5o', 'template_xvh63sq', parametrosEmail);  //ENDPOINT
 
         //  Guardar la respuesta en DB 
         const payloadRespuesta = {
@@ -1669,7 +1667,7 @@ window.enviarRespuestaMensaje = async function (evento) {
             id_mensaje_padre: parseInt(idOriginal)
         };
 
-        await fetch(`${baseUrl}/mensajes`, {
+        await fetch(`${baseUrl}/mensajes`, {  //ENDPOINT
             method: 'POST',
             headers: headersAEnviar,
             body: JSON.stringify(payloadRespuesta)
@@ -1677,7 +1675,7 @@ window.enviarRespuestaMensaje = async function (evento) {
 
         //  Marcar el original como RESPONDIDO
         const payloadActualizacion = { estado_mensaje: "RESPONDIDO" };
-        await fetch(`${baseUrl}/mensajes/${idOriginal}`, {
+        await fetch(`${baseUrl}/mensajes/${idOriginal}`, { //ENDPOINT
             method: 'PUT',
             headers: headersAEnviar,
             body: JSON.stringify(payloadActualizacion)
@@ -1705,7 +1703,7 @@ window.eliminarMensajeBuzon = async function (id) {
         const headersAEnviar = {};
         if (token) headersAEnviar['Authorization'] = `Bearer ${token}`;
 
-        const respuesta = await fetch(`${baseUrl}/mensajes/${id}`, {
+        const respuesta = await fetch(`${baseUrl}/mensajes/${id}`, { //ENDPOINT
             method: 'DELETE',
             headers: headersAEnviar
         });

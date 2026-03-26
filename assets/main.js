@@ -1,6 +1,6 @@
 /**
  * main.js
- * Lógica principal del Frontend - PC EXTREME
+ * Lógica principal del Frontend - PC EXTREME publico
  */
 
 // ==========================================
@@ -181,7 +181,7 @@ function inicializarSepomexCliente() {
                 mostrarNotificacion("Buscando código postal...", "exito");
                 try {
                     const respuesta = await fetch(
-                        `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`
+                        `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}` //ENDPOINT
                     );
                     const datos = await respuesta.json();
                     const lugares = datos.zip_codes;
@@ -311,7 +311,7 @@ function inicializarEventosLogin() {
 
             try {
                 // Intenta entrar como cliente
-                let respuesta = await fetch(`${API_BASE_URL}/auth/login/cliente`, {
+                let respuesta = await fetch(`${API_BASE_URL}/auth/login/cliente`, { //ENDPOINT
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password }),
@@ -428,7 +428,7 @@ function inicializarEventosLogin() {
             // Espera 800 milisegundos para no saturar la API
             timeoutEmail = setTimeout(async () => {
                 try {
-                    const res = await fetch(`${API_BASE_URL}/clientes`);
+                    const res = await fetch(`${API_BASE_URL}/clientes`); //ENDPOINT
                     if (!res.ok) throw new Error();
                     const clientes = await res.json();
                     
@@ -480,7 +480,7 @@ function inicializarEventosLogin() {
             actualizarRequisito(reqNum, num);
 
             estadoValidacion.pass = len && up && low && num;
-            verificarMatch(); // Volvemos a revisar coincidencia si edita la de arriba
+            verificarMatch(); // Volver a revisar coincidencia si edita la de arriba
             actualizarBotonRegistro();
         });
 
@@ -508,8 +508,7 @@ function inicializarEventosLogin() {
             verificarMatch();
             actualizarBotonRegistro();
         });
-        // ===============================================
-
+ 
         // ===============================================
         // --- ENVÍO DE DATOS Y VERIFICACIÓN DE CORREO ---
         // ===============================================
@@ -542,8 +541,8 @@ function inicializarEventosLogin() {
                 // 2. Generamos un código aleatorio de 6 dígitos
                 codigoGeneradoSecreto = Math.floor(100000 + Math.random() * 900000).toString();
 
-                // 3. Reutilizamos tu template de "Responder Mensajes"
-                await emailjs.send('service_i4nla5o', 'template_xvh63sq', {
+                // 3. Reutilizamos en el template de "Responder Mensajes"
+                await emailjs.send('service_i4nla5o', 'template_xvh63sq', {  //ENDPOINT
                     correo_cliente: datosPendientesBD.email,
                     mensaje_original: "Solicitud de seguridad: Creación de nueva cuenta en PC EXTREME.",
                     respuesta_admin: `¡Hola ${datosPendientesBD.nombre}! Tu código de verificación de 6 dígitos es: ${codigoGeneradoSecreto} \n\nPor favor ingrésalo en la página para activar tu cuenta. Si no solicitaste esto, ignora este mensaje.`
@@ -602,7 +601,7 @@ function inicializarEventosLogin() {
             btnConfirmar.disabled = true;
 
             try {
-                const respuesta = await fetch(`${API_BASE_URL}/clientes`, {
+                const respuesta = await fetch(`${API_BASE_URL}/clientes`, {  //ENDPOINT
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datosPendientesBD),
@@ -678,7 +677,7 @@ async function cargarPortada() {
     if (!contenedor) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/inicio`);
+        const respuesta = await fetch(`${API_BASE_URL}/inicio`);  //ENDPOINT
         const arrayDatos = await respuesta.json();
         const datos = arrayDatos[0];
 
@@ -695,7 +694,7 @@ async function cargarPortada() {
         `;
 
         if (datos.video_url && video) {
-            video.innerHTML = `<source src="${CLOUD_BASE_VID}${datos.video_url}.mp4" type="video/mp4">`;
+            video.innerHTML = `<source src="${CLOUD_BASE_VID}${datos.video_url}.mp4" type="video/mp4">`;  //ENDPOINT
             video.load();
         }
     } catch (error) {
@@ -703,13 +702,13 @@ async function cargarPortada() {
     }
 }
 
-// Dibuja las tarjetas de los servicios que ofrece la empresa
+// Dibujar las tarjetas de los servicios que ofrece la empresa
 async function cargarServicios() {
     const contenedor = document.getElementById("lista-servicios");
     if (!contenedor) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/servicios`);
+        const respuesta = await fetch(`${API_BASE_URL}/servicios`);  //ENDPOINT
         let servicios = await respuesta.json();
         if (!Array.isArray(servicios)) servicios = [servicios];
 
@@ -746,7 +745,7 @@ async function cargarMarcas() {
     if (!contenedor) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/marcas`);
+        const respuesta = await fetch(`${API_BASE_URL}/marcas`);  //ENDPOINT
         if (!respuesta.ok) return;
 
         const marcas = await respuesta.json();
@@ -758,7 +757,7 @@ async function cargarMarcas() {
         marcasDuplicadas.forEach((marca) => {
             contenedor.innerHTML += `
                 <a href="${marca.url}" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">
-                <img src="${CLOUD_BASE_IMG}/${marca.logo}" alt="${marca.nombre}" 
+                <img src="${CLOUD_BASE_IMG}/${marca.logo}" alt="${marca.nombre}"   //ENDPOINT
                      class="h-8 md:h-12 w-auto object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300 cursor-pointer">
             `;
         });
@@ -795,7 +794,7 @@ async function rastrearEquipo(evento) {
     btnSubmit.innerHTML = `<div class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Buscando...</span></div>`;
 
     try {
-        const resConsulta = await fetch(`${API_BASE_URL}/registros/${folio}`);
+        const resConsulta = await fetch(`${API_BASE_URL}/registros/${folio}`);  //ENDPOINT
         if (!resConsulta.ok)
             throw new Error("Equipo no encontrado. Verifica el folio.");
 
@@ -812,7 +811,7 @@ async function rastrearEquipo(evento) {
         if (datosConsulta.idDispositivo) {
             try {
                 const resDispositivo = await fetch(
-                    `${API_BASE_URL}/dispositivos/${datosConsulta.idDispositivo}`
+                    `${API_BASE_URL}/dispositivos/${datosConsulta.idDispositivo}` //ENDPOINT
                 );
                 if (resDispositivo.ok) {
                     let datosDisp = await resDispositivo.json();
@@ -931,7 +930,7 @@ async function cargarCatalogoProductos() {
     estado.classList.remove("hidden");
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/productos`);
+        const respuesta = await fetch(`${API_BASE_URL}/productos`);  //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al cargar los productos");
 
         productosGlobales = await respuesta.json();
@@ -940,7 +939,7 @@ async function cargarCatalogoProductos() {
 
         estado.classList.add("hidden");
 
-        // Sacamos las categorías sin repetirlas
+        // categorías sin repetir
         const categoriasSet = new Set(productosGlobales.map((p) => p.categoria));
         const categoriasUnicas = ["Todos", ...Array.from(categoriasSet)];
         contenedorCategorias.innerHTML = "";
@@ -990,7 +989,7 @@ function renderizarCuadricula(filtroCategoria) {
     }
 
     productosFiltrados.forEach((prod) => {
-        const imagenUrl = `${CLOUD_BASE_IMG}/${prod.imagen_url}`;
+        const imagenUrl = `${CLOUD_BASE_IMG}/${prod.imagen_url}`;  //ENDPOINT
         cuadricula.innerHTML += `
             <div class="bg-[#151515] border border-gray-800 rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#7ed957] hover:shadow-[0_10px_30px_rgba(126,217,87,0.1)] transition-all duration-300 flex flex-col group cursor-pointer" onclick="window.location.href='detalle_producto.html?id=${prod.idProducto
             }'">
@@ -1034,9 +1033,9 @@ async function cargarDetalleProducto() {
         estado.innerHTML = `<p class="text-red-500">Producto no especificado.</p>`;
         return;
     }
-
+    // Dibujar el detalle producto
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/productos/${idProducto}`);
+        const respuesta = await fetch(`${API_BASE_URL}/productos/${idProducto}`);  //ENDPOINT
         if (!respuesta.ok) throw new Error("No se encontró el producto");
 
         let datos = await respuesta.json();
@@ -1045,7 +1044,7 @@ async function cargarDetalleProducto() {
         estado.classList.add("hidden");
         contenedor.classList.remove("hidden");
 
-        const imagenUrl = `${CLOUD_BASE_IMG}/${datos.imagen_url}`;
+        const imagenUrl = `${CLOUD_BASE_IMG}/${datos.imagen_url}`;  //ENDPOINT
         const telefonoEmpresa = datos.telefono_empresa || "7711784044";
         const mensajeWa = encodeURIComponent(
             `Hola PC EXTREME, me interesa el producto: ${datos.nombre}`
@@ -1100,7 +1099,7 @@ window.calcularCrecimiento = function () {
 
     const t_futuro = parseFloat(inputTiempo.value);
     if (isNaN(t_futuro) || t_futuro < 0) {
-        // === CAMBIO: Alerta nativa cambiada por notificación flotante ===
+       // Alerta nativa cambiada por notificación flotante 
         mostrarNotificacion("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
         return;
     }
@@ -1229,7 +1228,7 @@ async function cargarPerfilYDispositivos() {
 
     try {
         // 1. CARGAR PERFIL
-        const resPerfil = await fetch(`${API_BASE_URL}/clientes/${idCliente}`);
+        const resPerfil = await fetch(`${API_BASE_URL}/clientes/${idCliente}`); //ENDPOINT
         if (resPerfil.ok) {
             let datosCli = await resPerfil.json();
             if (Array.isArray(datosCli)) datosCli = datosCli[0];
@@ -1247,7 +1246,7 @@ async function cargarPerfilYDispositivos() {
         }
 
         // 2. CARGAR DISPOSITIVOS
-        const resDisp = await fetch(`${API_BASE_URL}/dispositivos`);
+        const resDisp = await fetch(`${API_BASE_URL}/dispositivos`);  //ENDPOINT
         if (resDisp.ok) {
             const todosDispositivos = await resDisp.json();
             const misDispositivos = todosDispositivos.filter(
@@ -1319,14 +1318,14 @@ window.abrirEdicionPerfil = async function () {
         "contenedor-edit-asentamiento"
     ).innerHTML = `<input type="text" id="edit-asentamiento" required readonly class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 text-gray-400 cursor-not-allowed">`;
 
-    // Si tiene CP, ejecutamos SEPOMEX para que arme el SELECT de la colonia
+    // Si tiene Código Postal, ejecutamos SEPOMEX para que arme el SELECT de la colonia
     if (
         clienteActualGlobal.CPostal &&
         String(clienteActualGlobal.CPostal).length === 5
     ) {
         try {
             const res = await fetch(
-                `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${clienteActualGlobal.CPostal}`
+                `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${clienteActualGlobal.CPostal}`  //ENDPOINT
             );
             const datos = await res.json();
             if (datos.zip_codes && datos.zip_codes.length > 0) {
@@ -1361,7 +1360,7 @@ function inicializarSepomexEditarPerfil() {
                 mostrarNotificacion("Buscando código postal...", "exito");
                 try {
                     const respuesta = await fetch(
-                        `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`
+                        `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}` //ENDPOINT
                     );
                     const datos = await respuesta.json();
                     const lugares = datos.zip_codes;
@@ -1434,7 +1433,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 4. VERIFICAMOS LA CONTRASEÑA EN LA API (Simulamos un login)
                 const emailActual =
                     clienteActualGlobal.email || clienteActualGlobal.correo;
-                const resLogin = await fetch(`${API_BASE_URL}/auth/login/cliente`, {
+                const resLogin = await fetch(`${API_BASE_URL}/auth/login/cliente`, { //ENDPOINT
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -1475,7 +1474,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const token = localStorage.getItem("token");
                 const respuestaPUT = await fetch(
-                    `${API_BASE_URL}/clientes/${idCliente}`,
+                    `${API_BASE_URL}/clientes/${idCliente}`,  //ENDPOINT
                     {
                         method: "PUT",
                         headers: {
@@ -1538,7 +1537,7 @@ async function cargarDetalleDispositivoCliente() {
     try {
         // --- 1. CONSULTA: DATOS DEL DISPOSITIVO ---
         const resDisp = await fetch(
-            `${API_BASE_URL}/dispositivos/${idDispositivo}`
+            `${API_BASE_URL}/dispositivos/${idDispositivo}` //ENDPOINT
         );
         if (!resDisp.ok)
             throw new Error("No se pudo cargar la información del dispositivo.");
@@ -1548,12 +1547,11 @@ async function cargarDetalleDispositivoCliente() {
 
         document.getElementById("det-marca").innerText = disp.marca || "N/A";
         document.getElementById("det-modelo").innerText = disp.modelo || "N/A";
-        // Buscamos número de serie, dependiendo de cómo lo llame tu backend (n_serie, numeroSerie, etc)
         document.getElementById("det-sn").innerText = disp.numSerie || "N/A";
 
         // --- 2. CONSULTA: HISTORIAL DE REPARACIÓN ---
         // Traemos todos los registros para buscar el que le pertenece a este equipo
-        const resReg = await fetch(`${API_BASE_URL}/registros`);
+        const resReg = await fetch(`${API_BASE_URL}/registros`);  //ENDPOINT
         let registros = await resReg.json();
 
         // Filtramos para encontrar el registro de este dispositivo.
@@ -1575,7 +1573,7 @@ async function cargarDetalleDispositivoCliente() {
                 registro.costo || 0
             ).toFixed(2)}`;
 
-            // Colores dinámicos del estado (reutilizamos la función que ya tenías para el rastreo)
+            // Colores dinámicos del estado 
             const badge = document.getElementById("det-estado");
             actualizarEstadoBadgeDetalle(
                 badge,
@@ -1585,10 +1583,9 @@ async function cargarDetalleDispositivoCliente() {
             // --- 3. CONSULTA: NOMBRE DEL TÉCNICO ---
             let nombreTecnico = "No asignado";
 
-            // ¡AQUÍ ESTÁ LA MAGIA! Ahora leemos "idTecnico" del registro
             if (registro.idTecnico) {
                 try {
-                    const resTrab = await fetch(`${API_BASE_URL}/trabajadores`);
+                    const resTrab = await fetch(`${API_BASE_URL}/trabajadores`);  //ENDPOINT
                     if (resTrab.ok) {
                         const trabajadores = await resTrab.json();
 
@@ -1675,7 +1672,7 @@ async function cargarNosotrosCliente() {
     if (!contenedor) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/nosotros`);
+        const respuesta = await fetch(`${API_BASE_URL}/nosotros`);  //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al cargar la información");
 
         const datos = await respuesta.json();
@@ -1685,16 +1682,16 @@ async function cargarNosotrosCliente() {
             return;
         }
 
-        contenedor.innerHTML = ''; // Limpiamos el texto de "Cargando..."
+        contenedor.innerHTML = ''; // Limpiamos el texto 
 
         datos.forEach((item, index) => {
             // Alternamos la dirección de la fila: Pares (0, 2) normales, Impares (1, 3) en reversa
             const direccionFila = index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse';
 
             // Verificamos si la imagen viene como URL completa o solo el nombre del archivo de Cloudinary
-            let imagenUrl = item.imagen_url || item.imagen || "https://via.placeholder.com/600x400?text=PC+EXTREME";
+            let imagenUrl = item.imagen_url || item.imagen;
             if (imagenUrl && !imagenUrl.startsWith('http')) {
-                imagenUrl = `${CLOUD_BASE_IMG}${imagenUrl}`;
+                imagenUrl = `${CLOUD_BASE_IMG}${imagenUrl}`; //ENDPOINT
             }
 
             const seccionHTML = `
@@ -1732,7 +1729,7 @@ async function cargarUbicacionCliente() {
     if (!txtDireccion) return;
 
     try {
-        const respuesta = await fetch(`${API_BASE_URL}/contacto`);
+        const respuesta = await fetch(`${API_BASE_URL}/contacto`);  //ENDPOINT
         if (!respuesta.ok) throw new Error("Error al cargar la información de contacto");
 
         const datos = await respuesta.json();
@@ -1743,11 +1740,8 @@ async function cargarUbicacionCliente() {
             txtDireccion.innerText = contacto.direccion || 'Dirección no disponible.';
 
             if (contacto.mapa_url) {
-                // 1. EL BOTÓN AZUL: Usa tu link normal de la BD (Funciona perfecto)
                 linkMaps.href = contacto.mapa_url;
 
-                // 2. EL IFRAME (RECUADRO): Auto-generamos un link de inserción usando el texto de tu dirección
-                // Transformamos los espacios y comas en código (ej: %20) para que sea una URL válida
                 const direccionCodificada = encodeURIComponent(contacto.direccion);
                 iframeMaps.src = `https://maps.google.com/maps?q=${direccionCodificada}&output=embed`;
 
@@ -1771,7 +1765,7 @@ async function cargarUbicacionCliente() {
 // ==========================================
 async function cargarInfoContactoPublico() {
     try {
-        const respuesta = await fetch("https://app-web-java.vercel.app/api/contacto");
+        const respuesta = await fetch("https://app-web-java.vercel.app/api/contacto");  //ENDPOINT
         if (!respuesta.ok) return;
 
         const datos = await respuesta.json();
@@ -1798,7 +1792,6 @@ async function cargarInfoContactoPublico() {
             if (linkWa && contacto.whatsapp) {
                 // Limpiamos todo lo que no sea número para el link de WhatsApp
                 const numeroLimpio = contacto.whatsapp.replace(/\D/g, '');
-                // Asumimos código de país 52 (México), cámbialo si es otro
                 linkWa.href = `https://wa.me/52${numeroLimpio}`;
             }
         }
@@ -1831,7 +1824,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 // Hacemos el POST directo a API en Vercel
-                const respuesta = await fetch("https://app-web-java.vercel.app/api/mensajes", {
+                const respuesta = await fetch("https://app-web-java.vercel.app/api/mensajes", { //ENDPOINT
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -1839,13 +1832,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (!respuesta.ok) throw new Error("Error del servidor al guardar el mensaje");
 
-                // === CAMBIO: Alerta de éxito convertida a flotante ===
+                // Alerta de éxito flotante ===
                 mostrarNotificacion("¡Mensaje enviado con éxito! Te responderemos pronto a tu correo.", "exito");
                 formContacto.reset();
 
             } catch (error) {
                 console.error("Error al enviar formulario:", error);
-                // === CAMBIO: Alerta de error convertida a flotante ===
+                //Alerta de error flotante ===
                 mostrarNotificacion("Ocurrió un error al enviar tu mensaje. Por favor intenta más tarde.", "error");
             } finally {
                 // Restauramos el botón a la normalidad
