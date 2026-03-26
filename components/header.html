@@ -1,44 +1,36 @@
 <header id="encabezado-principal" class="bg-black text-white w-full sticky top-0 z-50 border-b border-gray-800">
-    <div class="w-full px-8 md:px-16 lg:px-24 h-20 flex justify-between items-center">
-
+    <div class="w-full px-8 md:px-16 lg:px-24 h-20 flex justify-between items-center relative z-50 bg-black">
+        
         <div class="flex items-center gap-3 cursor-pointer">
-            <a href="/FrontEnd-PCEXTREME/index.html"
-                class="flex items-center gap-3 hover:opacity-80 transition-opacity duration-300 cursor-pointer">
-                <img src="/FrontEnd-PCEXTREME/assets/logo.png" alt="Logo PC EXTREME"
-                    class="w-8 h-8 md:w-10 md:h-10 object-contain">
-                <span class="text-white font-extrabold text-lg md:text-xl tracking-wider">
-                    PC EXTREME
-                </span>
+            <a href="/FrontEnd-PCEXTREME/index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity duration-300 cursor-pointer">
+                <img src="/FrontEnd-PCEXTREME/assets/logo.png" alt="Logo PC EXTREME" class="w-8 h-8 md:w-10 md:h-10 object-contain">
+                <span class="text-white font-extrabold text-lg md:text-xl tracking-wider">PC EXTREME</span>
             </a>
         </div>
 
         <nav class="hidden md:flex gap-8 text-sm font-semibold">
             <a href="/FrontEnd-PCEXTREME/index.html" class="hover:text-[#7ed957] transition duration-300">Inicio</a>
-            <a href="/FrontEnd-PCEXTREME/public/consultaequipo.html"
-                class="hover:text-[#7ed957] transition duration-300">Consulta tu equipo</a>
-            <a href="/FrontEnd-PCEXTREME/public/productos.html"
-                class="hover:text-[#7ed957] transition duration-300">Productos</a>
-            <a href="/FrontEnd-PCEXTREME/public/sobreNosotros.html"
-                class="hover:text-[#7ed957] transition duration-300">Sobre nosotros</a>
-            <a href="/FrontEnd-PCEXTREME/public/ecuacionCrecimiento.html"
-                class="hover:text-[#7ed957] transition duration-300">Ejercicio Cálculo</a>
+            <a href="/FrontEnd-PCEXTREME/public/consultaequipo.html" class="hover:text-[#7ed957] transition duration-300">Consulta tu equipo</a>
+            <a href="/FrontEnd-PCEXTREME/public/productos.html" class="hover:text-[#7ed957] transition duration-300">Productos</a>
+            <a href="/FrontEnd-PCEXTREME/public/sobreNosotros.html" class="hover:text-[#7ed957] transition duration-300">Sobre nosotros</a>
+            <a href="/FrontEnd-PCEXTREME/public/ecuacionCrecimiento.html" class="hover:text-[#7ed957] transition duration-300">Ejercicio Cálculo</a>
         </nav>
 
         <div class="flex items-center gap-4">
-            <div class="relative">
-                <button id="authButton"
-                    class="bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-2 px-6 rounded-full text-sm transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.4)]">
-                    Cuenta
-                </button>
+            
+            <div id="auth-desktop-pos" class="hidden md:block">
+                
+                <div id="contenedor-auth" class="relative text-black">
+                    <button id="authButton" class="bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold py-2 px-6 rounded-full text-sm transition duration-300 shadow-[0_0_15px_rgba(126,217,87,0.4)]">
+                        Cuenta
+                    </button>
 
-                <div id="authMenu"
-                    class="hidden absolute right-0 mt-3 w-40 bg-[#1e1e1e] border border-gray-700 rounded-lg shadow-xl py-2 z-50">
-                    <a href="/FrontEnd-PCEXTREME/public/login.html"
-                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Iniciar
-                        Sesión</a>
-                    <a href="/FrontEnd-PCEXTREME/public/login.html?tab=registro"
-                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Registrarse</a>
+                    <div id="authMenu" class="hidden absolute right-0 mt-3 w-40 bg-[#1e1e1e] border border-gray-700 rounded-lg shadow-xl py-2 z-50 text-left">
+                        <a href="/FrontEnd-PCEXTREME/public/login.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Iniciar Sesión</a>
+                        <a href="/FrontEnd-PCEXTREME/public/login.html?tab=registro" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#333] hover:text-[#7ed957] transition">Registrarse</a>
+                    </div>
                 </div>
+
             </div>
 
             <button id="btn-menu-movil" class="md:hidden text-white hover:text-[#7ed957] transition focus:outline-none">
@@ -47,16 +39,18 @@
                 </svg>
             </button>
         </div>
-
     </div>
 
-    <div id="menu-movil" class="hidden md:hidden bg-[#111] border-b border-gray-800">
-        <nav class="flex flex-col px-8 py-4 gap-4 text-sm font-semibold">
+    <div id="menu-movil" class="hidden md:hidden absolute top-20 left-0 w-full bg-[#111] border-b border-gray-800 shadow-2xl z-40">
+        <nav class="flex flex-col px-8 py-6 gap-6 text-base font-semibold text-right">
             <a href="/FrontEnd-PCEXTREME/index.html" class="hover:text-[#7ed957] transition duration-300 block">Inicio</a>
             <a href="/FrontEnd-PCEXTREME/public/consultaequipo.html" class="hover:text-[#7ed957] transition duration-300 block">Consulta tu equipo</a>
             <a href="/FrontEnd-PCEXTREME/public/productos.html" class="hover:text-[#7ed957] transition duration-300 block">Productos</a>
             <a href="/FrontEnd-PCEXTREME/public/sobreNosotros.html" class="hover:text-[#7ed957] transition duration-300 block">Sobre nosotros</a>
             <a href="/FrontEnd-PCEXTREME/public/ecuacionCrecimiento.html" class="hover:text-[#7ed957] transition duration-300 block">Ejercicio Cálculo</a>
+            
+            <div id="auth-mobile-pos" class="mt-2 border-t border-gray-800 pt-6 flex justify-end">
+                </div>
         </nav>
     </div>
 </header>

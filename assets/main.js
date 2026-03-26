@@ -949,34 +949,46 @@ function iniciarModuloCrecimiento() {
 // ==========================================
 // MÓDULO 8: ARRANQUE DE LA APLICACIÓN
 // ==========================================
-// Esto se ejecuta automáticamente en cuanto la página termina de cargar
-
-// Función para inyectar el HTML de la barra superior y pie de página
 async function cargarComponentes() {
     try {
         const resHeader = await fetch("/FrontEnd-PCEXTREME/components/header.html");
-        if (resHeader.ok)
-            document.getElementById("encabezado-principal").innerHTML =
-                await resHeader.text();
-        const btnMenuMovil = document.getElementById("btn-menu-movil");
-        const menuMovil = document.getElementById("menu-movil");
-        if (btnMenuMovil && menuMovil) {
-            btnMenuMovil.addEventListener("click", () => {
-                menuMovil.classList.toggle("hidden");
-            });
+        if (resHeader.ok) {
+            document.getElementById("encabezado-principal").innerHTML = await resHeader.text();
+            
+            const btnMenuMovil = document.getElementById("btn-menu-movil");
+            const menuMovil = document.getElementById("menu-movil");
+            const contenedorAuth = document.getElementById("contenedor-auth");
+            const posDesktop = document.getElementById("auth-desktop-pos");
+            const posMobile = document.getElementById("auth-mobile-pos");
+
+            if (btnMenuMovil && menuMovil) {
+                btnMenuMovil.addEventListener("click", () => {
+                    menuMovil.classList.toggle("hidden");
+                });
+            }
+            function adaptarMenu() {
+                if (window.innerWidth < 768) {
+                    if (posMobile && contenedorAuth) posMobile.appendChild(contenedorAuth);
+                } else {
+                    if (posDesktop && contenedorAuth) posDesktop.appendChild(contenedorAuth);
+                    if (menuMovil) menuMovil.classList.add("hidden"); 
+                }
+            }  
+            window.addEventListener("resize", adaptarMenu);
+            adaptarMenu(); // 
         }
+
         inicializarMenuCuenta();
         verificarSesion();
 
         const resFooter = await fetch("/FrontEnd-PCEXTREME/components/footer.html");
         if (resFooter.ok)
-            document.getElementById("pie-de-pagina").innerHTML =
-                await resFooter.text();
+            document.getElementById("pie-de-pagina").innerHTML = await resFooter.text();
+            
     } catch (error) {
         console.error("Error cargando componentes:", error);
     }
 }
-
 // ==========================================
 // MÓDULO 9: PERFIL, DISPOSITIVOS Y EDICIÓN
 // ==========================================
