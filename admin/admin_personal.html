@@ -33,9 +33,9 @@
             </button>
         </div>
 
-        <div id="contenedor-tabla-personal" class="overflow-x-auto bg-[#1a1c20] rounded-xl border border-gray-800 shadow-xl">
-            <table class="w-full text-left border-collapse">
-                <thead>
+       <div id="contenedor-tabla-personal" class="w-full bg-[#1a1c20] rounded-xl border border-gray-800 shadow-xl">
+            <table class="w-full text-left border-collapse block md:table">
+                <thead class="hidden md:table-header-group">
                     <tr class="bg-gray-900 text-gray-400 uppercase text-xs font-bold tracking-wider border-b border-gray-800">
                         <th class="p-4">Nombre / ID</th>
                         <th class="p-4">Rol</th>
@@ -43,8 +43,11 @@
                         <th class="p-4 text-right">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="lista-personal" class="text-sm divide-y divide-gray-800">
-                    </tbody>
+                <tbody id="lista-personal" class="text-sm divide-y divide-gray-800 block md:table-row-group">
+                    <tr class="block md:table-row">
+                        <td colspan="4" class="text-center py-8 text-gray-500 block md:table-cell">⏳ Cargando personal...</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 

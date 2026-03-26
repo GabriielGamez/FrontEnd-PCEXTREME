@@ -648,7 +648,7 @@ function mostrarPaginaProductos() {
     if (!tbody) return;
 
     if (adminProductosData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-500">No hay productos registrados.</td></tr>`;
+        tbody.innerHTML = `<tr class="block md:table-row"><td colspan="7" class="text-center py-6 text-gray-500 block md:table-cell">No hay productos registrados.</td></tr>`;
         document.getElementById('paginacion-productos').innerHTML = '';
         return;
     }
@@ -660,21 +660,53 @@ function mostrarPaginaProductos() {
     prodPagina.forEach(prod => {
         const imagenUrl = `${CLOUD_BASE}${prod.imagen_url}`;
         html += `
-            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
-                <td class="p-4 text-gray-400 font-medium align-middle">#${prod.idProducto}</td>
-                <td class="p-4 align-middle">
-                    <div class="w-12 h-12 bg-[#0f1115] rounded flex items-center justify-center p-1 border border-gray-700 shadow-sm">
-                        <img src="${imagenUrl}" alt="Img" class="max-w-full max-h-full object-contain">
+            <tr class="block md:table-row hover:bg-[#252830] transition border-b border-gray-800 p-4 md:p-0">
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 text-gray-400 font-medium align-middle">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">ID:</span>
+                    #${prod.idProducto}
+                </td>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 align-middle">
+                    <div class="flex items-center gap-3 md:block">
+                        <span class="inline-block md:hidden font-bold text-gray-500 w-24">Imagen:</span>
+                        <div class="w-12 h-12 bg-[#0f1115] rounded flex items-center justify-center p-1 border border-gray-700 shadow-sm">
+                            <img src="${imagenUrl}" alt="Img" class="max-w-full max-h-full object-contain">
+                        </div>
                     </div>
                 </td>
-                <td class="p-4 font-bold text-white align-middle">${prod.nombre}</td>
-                <td class="p-4 align-middle"><span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300 font-bold border border-gray-700 tracking-wide uppercase">${prod.categoria}</span></td>
-                <td class="p-4 text-[#7ed957] font-extrabold align-middle">$${parseFloat(prod.precio).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                <td class="p-4 text-gray-300 font-semibold align-middle">${prod.stock}</td>
-                <td class="p-4 text-center space-x-3 align-middle">
-                    <button onclick="abrirModalProducto(${prod.idProducto})" class="text-blue-400 hover:text-blue-300 font-semibold transition" title="Editar">✏️ Editar</button>
-                    <button onclick="eliminarProducto(${prod.idProducto})" class="text-red-500 hover:text-red-400 font-semibold transition ml-2" title="Eliminar">🗑️</button>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 font-bold text-white align-middle">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Nombre:</span>
+                    <span class="break-words">${prod.nombre}</span>
                 </td>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 align-middle">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Categoría:</span>
+                    <span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300 font-bold border border-gray-700 tracking-wide uppercase">${prod.categoria}</span>
+                </td>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 text-[#7ed957] font-extrabold align-middle">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Precio:</span>
+                    $${parseFloat(prod.precio).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </td>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 text-gray-300 font-semibold align-middle">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Stock:</span>
+                    ${prod.stock}
+                </td>
+                
+                <td class="block md:table-cell px-4 py-4 md:p-4 text-center border-t border-gray-800 md:border-transparent mt-3 md:mt-0">
+                    <div class="flex flex-col sm:flex-row md:flex-row gap-2 justify-center">
+                        <button onclick="abrirModalProducto(${prod.idProducto})" class="w-full sm:w-auto text-blue-400 hover:text-white font-semibold transition bg-blue-600/20 hover:bg-blue-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 rounded shadow-sm md:shadow-none flex items-center justify-center gap-2">
+                            ✏️ <span class="md:hidden">Editar</span>
+                        </button>
+                        <button onclick="eliminarProducto(${prod.idProducto})" class="w-full sm:w-auto text-red-500 hover:text-white font-semibold transition bg-red-600/20 hover:bg-red-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 rounded shadow-sm md:shadow-none flex items-center justify-center gap-2 sm:ml-2 md:ml-2">
+                            🗑️ <span class="md:hidden">Eliminar</span>
+                        </button>
+                    </div>
+                </td>
+                
             </tr>
         `;
     });
@@ -695,12 +727,20 @@ function actualizarPaginacionProductos() {
     }
 
     controles.innerHTML = `
-        <div class="flex items-center justify-between px-6 py-3 bg-gray-900 border-t border-gray-800 rounded-b-2xl">
-            <p class="text-sm text-gray-400">Mostrando ${(prodPaginaActual - 1) * prodPorPagina + 1} a ${Math.min(prodPaginaActual * prodPorPagina, adminProductosData.length)} de ${adminProductosData.length}</p>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaProductos('anterior')" ${prodPaginaActual === 1 ? "disabled" : ""} class="px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${prodPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">Anterior</button>
-                <span class="px-4 py-2 border-t border-b border-gray-700 bg-[#0f1115] text-gray-200 text-sm">Página ${prodPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaProductos('siguiente')" ${prodPaginaActual === total ? "disabled" : ""} class="px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${prodPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">Siguiente</button>
+        <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-gray-900 border-t border-gray-800 rounded-b-2xl gap-4">
+            <p class="text-sm text-gray-400 text-center sm:text-left w-full sm:w-auto">
+                Mostrando ${(prodPaginaActual - 1) * prodPorPagina + 1} a ${Math.min(prodPaginaActual * prodPorPagina, adminProductosData.length)} de ${adminProductosData.length}
+            </p>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm w-full sm:w-auto">
+                <button onclick="cambiarPaginaProductos('anterior')" ${prodPaginaActual === 1 ? "disabled" : ""} class="flex-1 sm:flex-none px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${prodPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">
+                    Anterior
+                </button>
+                <span class="px-4 py-2 border-t border-b border-gray-700 bg-[#0f1115] text-gray-200 text-sm whitespace-nowrap">
+                    Pág ${prodPaginaActual} / ${total}
+                </span>
+                <button onclick="cambiarPaginaProductos('siguiente')" ${prodPaginaActual === total ? "disabled" : ""} class="flex-1 sm:flex-none px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${prodPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">
+                    Siguiente
+                </button>
             </nav>
         </div>`;
 }
@@ -933,7 +973,7 @@ function mostrarListaPersonal() {
     if (!contenedor) return;
 
     if (personalGlobal.length === 0) {
-        contenedor.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">No hay personal registrado.</td></tr>`;
+        contenedor.innerHTML = `<tr class="block md:table-row"><td colspan="4" class="text-center py-8 text-gray-500 block md:table-cell">No hay personal registrado.</td></tr>`;
         return;
     }
 
@@ -959,23 +999,42 @@ function mostrarListaPersonal() {
             colorRol = "bg-blue-900 text-blue-300 border-blue-700";
         }
 
+        // Botonera responsiva: En móvil son botones anchos con fondo, en PC son texto normal
         let botonesAccion = esAdmin
-            ? `<span class="text-gray-600 text-sm font-semibold flex items-center justify-end gap-1 cursor-not-allowed select-none" title="Cuenta de administrador protegida">🔒 Protegido</span>`
-            : `<button onclick="abrirModalPersonal(${idEmp})" class="text-blue-400 hover:text-blue-300 transition font-semibold">Editar</button>
-               <button onclick="confirmarEliminacionPersonal(${idEmp})" class="text-red-500 hover:text-red-400 transition font-semibold ml-3">Eliminar</button>`;
+            ? `<div class="w-full flex justify-center md:justify-end"><span class="text-gray-600 text-sm font-semibold flex items-center gap-1 cursor-not-allowed select-none" title="Cuenta de administrador protegida">🔒 Protegido</span></div>`
+            : `<div class="flex flex-col sm:flex-row gap-2 justify-center md:justify-end w-full">
+                   <button onclick="abrirModalPersonal(${idEmp})" class="w-full sm:w-auto text-blue-400 hover:text-white font-semibold transition bg-blue-600/20 hover:bg-blue-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Editar</button>
+                   <button onclick="confirmarEliminacionPersonal(${idEmp})" class="w-full sm:w-auto text-red-500 hover:text-white font-semibold transition bg-red-600/20 hover:bg-red-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Eliminar</button>
+               </div>`;
 
         html += `
-            <tr class="hover:bg-[#1a1a1a] transition duration-200">
-                <td class="p-4 align-top">
-                    <strong class="text-white text-base block">${emp.nombre} ${emp.aPaterno} ${emp.aMaterno || ''}</strong>
-                    <span class="text-gray-500 text-xs mt-1">ID: ${idEmp}</span>
+            <tr class="block md:table-row hover:bg-[#1a1a1a] transition duration-200 border-b border-gray-800 p-4 md:p-0">
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Empleado:</span>
+                    <div class="inline-block align-top">
+                        <strong class="text-white text-base block">${emp.nombre} ${emp.aPaterno} ${emp.aMaterno || ''}</strong>
+                        <span class="text-gray-500 text-xs mt-1 md:block">ID: ${idEmp}</span>
+                    </div>
                 </td>
-                <td class="p-4 align-top"><span class="${colorRol} border py-1 px-3 rounded-full text-xs font-bold tracking-wide">${nombreRol}</span></td>
-                <td class="p-4 text-gray-300 align-top">
-                    <div class="mb-1">✉️ ${correo}</div>
-                    <div>📞 ${tel}</div>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Rol:</span>
+                    <span class="${colorRol} border py-1 px-3 rounded-full text-xs font-bold tracking-wide">${nombreRol}</span>
                 </td>
-                <td class="p-4 text-right align-top">${botonesAccion}</td>
+                
+                <td class="block md:table-cell px-4 py-2 md:p-4 text-gray-300 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24 align-top">Contacto:</span>
+                    <div class="inline-block align-top">
+                        <div class="mb-1 break-all">✉️ ${correo}</div>
+                        <div>📞 ${tel}</div>
+                    </div>
+                </td>
+                
+                <td class="block md:table-cell px-4 py-4 md:p-4 text-right align-top border-t border-gray-800 md:border-transparent mt-3 md:mt-0">
+                    ${botonesAccion}
+                </td>
+                
             </tr>
         `;
     });
