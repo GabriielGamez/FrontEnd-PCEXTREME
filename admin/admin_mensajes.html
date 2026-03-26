@@ -31,70 +31,24 @@
             <p class="text-gray-400 mt-1 text-sm">Gestiona los mensajes y cotizaciones enviados por los clientes desde la página principal.</p>
         </div>
 
-        <div class="bg-[#1a1c20] rounded-xl shadow-xl overflow-hidden border border-gray-800">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-900 border-b border-gray-800 text-gray-400 text-xs font-bold uppercase tracking-wider">
-                        <th class="px-6 py-4 w-40">Fecha</th>
-                        <th class="px-6 py-4 w-52">De (Cliente)</th>
-                        <th class="px-6 py-4">Asunto / Mensaje</th>
-                        <th class="px-6 py-4 text-center w-48">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-800 text-sm">
-                    
-                    <tr class="hover:bg-[#252830] transition-colors duration-200">
-                        <td class="px-6 py-5 text-gray-500 font-medium align-top">
-                            04 Dec <br><span class="text-xs">11:30 PM</span>
-                        </td>
-                        <td class="px-6 py-5 align-top">
-                            <span class="font-bold text-gray-200 block truncate">juanespana413@gmail.com</span>
-                        </td>
-                        <td class="px-6 py-5 align-top">
-                            <div class="text-[#7ed957] font-bold mb-2 text-base">ps nomas</div>
-                            <div class="bg-[#0f1115] border border-gray-700 rounded-lg p-3 text-gray-400 leading-relaxed shadow-inner">
-                                alch no sé que poner
-                            </div>
-                        </td>
-                        <td class="px-6 py-5 align-top">
-                            <div class="flex flex-col space-y-2 items-center">
-                                <button class="w-full max-w-[120px] bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
-                                    <i class="fas fa-envelope mr-2"></i> RESPONDER
-                                </button>
-                                <button class="w-full max-w-[120px] bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
-                                    <i class="fas fa-trash-alt mr-2"></i> ELIMINAR
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr class="hover:bg-[#252830] transition-colors duration-200">
-                        <td class="px-6 py-5 text-gray-500 font-medium align-top">
-                            01 Dec <br><span class="text-xs">08:48 AM</span>
-                        </td>
-                        <td class="px-6 py-5 align-top">
-                            <span class="font-bold text-gray-200 block truncate">pxndxgamez@gmail.com</span>
-                        </td>
-                        <td class="px-6 py-5 align-top">
-                            <div class="text-[#7ed957] font-bold mb-2 text-base">Cotización de pc master race</div>
-                            <div class="bg-[#0f1115] border border-gray-700 rounded-lg p-3 text-gray-400 leading-relaxed shadow-inner">
-                                quiero saber mas info
-                            </div>
-                        </td>
-                        <td class="px-6 py-5 align-top">
-                            <div class="flex flex-col space-y-2 items-center">
-                                <button class="w-full max-w-[120px] bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
-                                    <i class="fas fa-envelope mr-2"></i> RESPONDER
-                                </button>
-                                <button class="w-full max-w-[120px] bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
-                                    <i class="fas fa-trash-alt mr-2"></i> ELIMINAR
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
+       <div class="bg-[#1a1c20] rounded-xl shadow-xl overflow-hidden border border-gray-800">
+            <div class="w-full">
+                <table class="w-full text-left border-collapse block md:table">
+                    <thead class="hidden md:table-header-group bg-gray-900 border-b border-gray-800 text-gray-400 text-xs font-bold uppercase tracking-wider">
+                        <tr>
+                            <th class="px-6 py-4 w-40">Fecha</th>
+                            <th class="px-6 py-4 w-52">De (Cliente)</th>
+                            <th class="px-6 py-4">Asunto / Mensaje</th>
+                            <th class="px-6 py-4 text-center w-48">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800 text-sm block md:table-row-group">
+                        <tr class="block md:table-row">
+                            <td colspan="4" class="text-center py-8 text-gray-500 animate-pulse block md:table-cell">Cargando buzón...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
     <div id="modal-respuesta" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 px-4 transition-opacity">

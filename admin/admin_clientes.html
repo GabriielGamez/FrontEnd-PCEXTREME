@@ -40,9 +40,10 @@
         </div>
 
         <div class="bg-[#1a1c20] rounded-xl shadow-xl border border-gray-800 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-900 text-gray-400 uppercase text-xs font-bold border-b border-gray-800 tracking-wider">
+            <div class="w-full">
+                <table class="w-full text-left border-collapse block md:table">
+                    
+                    <thead class="hidden md:table-header-group bg-gray-900 text-gray-400 uppercase text-xs font-bold border-b border-gray-800 tracking-wider">
                         <tr>
                             <th class="px-6 py-4 w-20">ID</th>
                             <th class="px-6 py-4">Nombre Completo</th>
@@ -51,8 +52,10 @@
                             <th class="px-6 py-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-clientes" class="divide-y divide-gray-800">
-                        </tbody>
+                    
+                    <tbody id="lista-clientes" class="divide-y divide-gray-800 block md:table-row-group">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-500 block md:table-cell">Cargando...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>

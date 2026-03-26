@@ -527,7 +527,7 @@ function mostrarPaginaClientes() {
     if (!contenedor) return;
 
     if (cliFiltrados.length === 0) {
-        contenedor.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No se encontraron clientes con esa búsqueda.</td></tr>`;
+        contenedor.innerHTML = `<tr class="block md:table-row"><td colspan="5" class="text-center py-8 text-gray-500 block md:table-cell">No se encontraron clientes con esa búsqueda.</td></tr>`;
         actualizarPaginacionClientes();
         return;
     }
@@ -541,18 +541,30 @@ function mostrarPaginaClientes() {
         const whatsappLink = phone ? `https://wa.me/52${phone}` : "#";
 
         html += `
-            <tr class="hover:bg-[#252830] transition border-b border-gray-800">
-                <td class="px-6 py-5 align-top"><span class="bg-gray-800 text-gray-300 font-bold px-3 py-1 rounded text-sm border border-gray-700">#${cli.idCliente}</span></td>
-                <td class="px-6 py-5 font-bold text-gray-200 align-top">${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ""}</td>
-                <td class="px-6 py-5 align-top">
-                    <div class="flex flex-col space-y-1 text-sm text-gray-400">
-                        <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> ${cli.email || "Sin correo"}</span>
+            <tr class="block md:table-row hover:bg-[#252830] transition border-b border-gray-800 p-4 md:p-0">
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">ID:</span>
+                    <span class="bg-gray-800 text-gray-300 font-bold px-3 py-1 rounded text-sm border border-gray-700">#${cli.idCliente}</span>
+                </td>
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 font-bold text-gray-200 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Cliente:</span>
+                    ${cli.nombre} ${cli.aPaterno} ${cli.aMaterno || ""}
+                </td>
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24 align-top">Contacto:</span>
+                    <div class="inline-flex md:flex flex-col space-y-1 text-sm text-gray-400 align-top">
+                        <span class="flex items-center"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-4"></i> <span class="break-all">${cli.email || "Sin correo"}</span></span>
                         <span class="flex items-center"><i class="fa-solid fa-phone text-pink-400 mr-2 w-4"></i> ${cli.telefono || "Sin teléfono"}</span>
                     </div>
                 </td>
-                <td class="px-6 py-5 text-sm text-gray-400 max-w-xs align-top">${cli.direccion || "Sin dirección registrada"}</td>
-                <td class="px-6 py-5 text-center align-top">
-                    <a href="${whatsappLink}" target="_blank" class="inline-flex items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow-sm"><i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Chat WhatsApp</a>
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 text-sm text-gray-400 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24 align-top">Dirección:</span>
+                    <span class="inline-block align-top max-w-full sm:max-w-xs break-words" title="${cli.direccion || "Sin dirección registrada"}">${cli.direccion || "Sin dirección registrada"}</span>
+                </td>
+                <td class="block md:table-cell px-4 py-4 md:px-6 md:py-5 text-center align-top border-t border-gray-800 md:border-transparent mt-3 md:mt-0">
+                    <a href="${whatsappLink}" target="_blank" class="w-full md:w-auto inline-flex justify-center items-center bg-[#25D366] hover:bg-green-600 text-white font-bold py-2.5 md:py-2 px-4 rounded-lg text-sm transition shadow-sm">
+                        <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Chat WhatsApp
+                    </a>
                 </td>
             </tr>
         `;
@@ -569,7 +581,7 @@ function actualizarPaginacionClientes() {
         const tabla = document.querySelector("#lista-clientes").closest("table").parentNode;
         controles = document.createElement("div");
         controles.id = "paginacion-clientes";
-        controles.className = "flex items-center justify-between px-6 py-3 bg-gray-900 border-t border-gray-800 sm:px-6 rounded-b-lg mt-2";
+        controles.className = "flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-gray-900 border-t border-gray-800 sm:px-6 rounded-b-lg mt-2 gap-4";
         tabla.appendChild(controles);
     }
 
@@ -580,12 +592,20 @@ function actualizarPaginacionClientes() {
     }
 
     controles.innerHTML = `
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-400">Mostrando ${(cliPaginaActual - 1) * cliPorPagina + 1} a ${Math.min(cliPaginaActual * cliPorPagina, cliFiltrados.length)} de ${cliFiltrados.length}</p>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm">
-                <button onclick="cambiarPaginaClientes('anterior')" ${cliPaginaActual === 1 ? "disabled" : ""} class="px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${cliPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">Anterior</button>
-                <span class="px-4 py-2 border border-gray-700 bg-[#0f1115] text-gray-200 text-sm">Página ${cliPaginaActual} de ${total}</span>
-                <button onclick="cambiarPaginaClientes('siguiente')" ${cliPaginaActual === total ? "disabled" : ""} class="px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${cliPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">Siguiente</button>
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-gray-400 text-center sm:text-left w-full sm:w-auto">
+                Mostrando ${(cliPaginaActual - 1) * cliPorPagina + 1} a ${Math.min(cliPaginaActual * cliPorPagina, cliFiltrados.length)} de ${cliFiltrados.length}
+            </p>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm w-full sm:w-auto">
+                <button onclick="cambiarPaginaClientes('anterior')" ${cliPaginaActual === 1 ? "disabled" : ""} class="flex-1 sm:flex-none px-4 py-2 rounded-l-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${cliPaginaActual === 1 ? "opacity-50 cursor-not-allowed" : ""}">
+                    Anterior
+                </button>
+                <span class="px-4 py-2 border-t border-b border-gray-700 bg-[#0f1115] text-gray-200 text-sm whitespace-nowrap">
+                    Pág ${cliPaginaActual} / ${total}
+                </span>
+                <button onclick="cambiarPaginaClientes('siguiente')" ${cliPaginaActual === total ? "disabled" : ""} class="flex-1 sm:flex-none px-4 py-2 rounded-r-md border border-gray-700 bg-[#1a1c20] text-sm text-gray-400 hover:bg-gray-800 ${cliPaginaActual === total ? "opacity-50 cursor-not-allowed" : ""}">
+                    Siguiente
+                </button>
             </nav>
         </div>`;
 }
@@ -1463,11 +1483,11 @@ function dibujarTablaMensajes() {
 
     tbody.innerHTML = '';
 
-    // ¡Filtro Universitario! Solo mostramos los mensajes ENTRANTES
+    //Solo mostramos los mensajes ENTRANTES
     const mensajesEntrantes = mensajesData.filter(m => m.tipo_mensaje !== 'SALIENTE');
 
     if (mensajesEntrantes.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500 font-medium">Bandeja de entrada limpia. No hay mensajes.</td></tr>`;
+        tbody.innerHTML = `<tr class="block md:table-row"><td colspan="4" class="text-center py-8 text-gray-500 font-medium block md:table-cell">Bandeja de entrada limpia. No hay mensajes.</td></tr>`;
         return;
     }
 
@@ -1488,36 +1508,51 @@ function dibujarTablaMensajes() {
         const colorEstado = estado === 'RESPONDIDO' ? 'text-green-400 border-green-700' : 'text-orange-400 border-orange-700';
 
         html += `
-            <tr class="hover:bg-[#252830] transition-colors duration-200">
-                <td class="px-6 py-5 text-gray-500 font-medium align-top">
-                    ${fecha} <br><span class="text-xs">${hora}</span>
-                    <br><span class="${colorEstado} border py-0.5 px-2 mt-2 inline-block rounded-full text-[9px] font-bold tracking-wide">${estado}</span>
+            <tr class="block md:table-row hover:bg-[#252830] transition-colors duration-200 p-4 md:p-0">
+                
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 text-gray-500 font-medium align-top">
+                    <div class="flex justify-between items-center md:block">
+                        <span class="inline-block md:hidden font-bold text-gray-500 w-24">Fecha:</span>
+                        <div class="text-right md:text-left">
+                            ${fecha} <span class="text-xs ml-2 md:ml-0 md:block">${hora}</span>
+                        </div>
+                    </div>
+                    <div class="text-right md:text-left mt-2">
+                        <span class="${colorEstado} border py-0.5 px-2 inline-block rounded-full text-[9px] font-bold tracking-wide">${estado}</span>
+                    </div>
                 </td>
-                <td class="px-6 py-5 align-top">
-                    <div class="text-gray-400 text-xs mt-1"><i class="fas fa-envelope mr-1 text-blue-400"></i> ${correo}</div>
+
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 w-24">Cliente:</span>
+                    <div class="inline-block text-gray-400 text-xs md:mt-1 break-all">
+                        <i class="fas fa-envelope mr-1 text-blue-400"></i> ${correo}
+                    </div>
                 </td>
-                <td class="px-6 py-5 align-top">
+
+                <td class="block md:table-cell px-4 py-2 md:px-6 md:py-5 align-top">
+                    <span class="inline-block md:hidden font-bold text-gray-500 block mb-1">Mensaje:</span>
                     <div class="text-[#7ed957] font-bold mb-2 text-base">${asunto}</div>
                     <div class="bg-[#0f1115] border border-gray-700 rounded-lg p-3 text-gray-400 leading-relaxed shadow-inner text-xs">
                         ${contenido}
                     </div>
                 </td>
-                <td class="px-6 py-5 align-top">
-                    <div class="flex flex-col space-y-2 items-center">
-                        <button onclick="abrirModalRespuesta(${id})" class="w-full max-w-[120px] bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
+
+                <td class="block md:table-cell px-4 py-4 md:px-6 md:py-5 align-top border-t border-gray-800 md:border-transparent mt-3 md:mt-0">
+                    <div class="flex flex-col sm:flex-row md:flex-col gap-2 items-center justify-center">
+                        <button onclick="abrirModalRespuesta(${id})" class="w-full sm:w-1/2 md:w-full max-w-[200px] md:max-w-[120px] bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-600/50 text-[10px] font-bold py-2.5 md:py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
                             <i class="fas fa-reply mr-2"></i> RESPONDER
                         </button>
-                        <button onclick="eliminarMensajeBuzon(${id})" class="w-full max-w-[120px] bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 text-[10px] font-bold py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
+                        <button onclick="eliminarMensajeBuzon(${id})" class="w-full sm:w-1/2 md:w-full max-w-[200px] md:max-w-[120px] bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 text-[10px] font-bold py-2.5 md:py-2 px-3 rounded flex items-center justify-center transition shadow-sm">
                             <i class="fas fa-trash-alt mr-2"></i> ELIMINAR
                         </button>
                     </div>
                 </td>
+
             </tr>
         `;
     });
     tbody.innerHTML = html;
 }
-
 // 3. Control del Modal
 window.abrirModalRespuesta = function (id) {
     const msg = mensajesData.find(m => (m.idMensaje || m.id) === id);
