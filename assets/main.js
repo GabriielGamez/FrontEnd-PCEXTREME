@@ -954,6 +954,10 @@ function iniciarModuloCrecimiento() {
 // Función para inyectar el HTML de la barra superior y pie de página
 async function cargarComponentes() {
     try {
+        const resHeader = await fetch("/FrontEnd-PCEXTREME/components/header.html");
+        if (resHeader.ok)
+            document.getElementById("encabezado-principal").innerHTML =
+                await resHeader.text();
         const btnMenuMovil = document.getElementById("btn-menu-movil");
         const menuMovil = document.getElementById("menu-movil");
         if (btnMenuMovil && menuMovil) {
@@ -961,7 +965,6 @@ async function cargarComponentes() {
                 menuMovil.classList.toggle("hidden");
             });
         }
-
         inicializarMenuCuenta();
         verificarSesion();
 
