@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acceso — PC EXTREME</title>
-    
+
     <link rel="icon" type="image/png" href="/FrontEnd-PCEXTREME/assets/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
-    
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
-    
+
     <link rel="stylesheet" href="/FrontEnd-PCEXTREME/assets/styles.css" />
 </head>
 
-<body class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
+<body
+    class="bg-[#0a0a0a] bg-[url('https://raw.githubusercontent.com/GabriielGamez/FrontEnd-PCEXTREME/3338643fc6c440f325015bb0213c96583116ca43/assets/background.svg')] bg-cover bg-fixed bg-center text-white antialiased">
 
     <header id="encabezado-principal" class="w-full h-20 bg-black flex items-center px-8 border-b border-gray-800">
     </header>
 
     <main class="flex-grow flex items-center justify-center py-12 px-6">
-        
-        <div class="w-full max-w-2xl bg-[#111] border border-gray-800 rounded-2xl p-8 md:p-12 shadow-[0_0_40px_rgba(126,217,87,0.05)] relative overflow-hidden">
-            
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7ed957] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+
+        <div
+            class="w-full max-w-2xl bg-[#111] border border-gray-800 rounded-2xl p-8 md:p-12 shadow-[0_0_40px_rgba(126,217,87,0.05)] relative overflow-hidden">
+
+            <div
+                class="absolute -top-20 -right-20 w-40 h-40 bg-[#7ed957] rounded-full blur-[100px] opacity-20 pointer-events-none">
+            </div>
 
             <div id="bloque-login" class="block transition-all duration-500">
                 <div class="text-center mb-8">
@@ -35,32 +42,40 @@
 
                 <form id="formulario-login" class="flex flex-col gap-5">
                     <div>
-                        <label for="correo-login" class="block text-sm font-medium text-gray-400 mb-1">Correo Electrónico:</label>
-                        <input type="email" id="correo-login" required placeholder="ejemplo@correo.com" 
-                               class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                        <label for="correo-login" class="block text-sm font-medium text-gray-400 mb-1">Correo
+                            Electrónico:</label>
+                        <input type="email" id="correo-login" required placeholder="ejemplo@correo.com"
+                            class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
                     </div>
 
                     <div>
-                        <label for="password-login" class="block text-sm font-medium text-gray-400 mb-1">Contraseña:</label>
+                        <label for="password-login"
+                            class="block text-sm font-medium text-gray-400 mb-1">Contraseña:</label>
                         <div class="relative flex items-center">
-                            <input type="password" id="password-login" required placeholder="••••••••" 
-                                   class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 pr-10 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
-                            <button type="button" class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <input type="password" id="password-login" required placeholder="••••••••"
+                                class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-3 pr-10 text-black focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition">
+                            <button type="button"
+                                class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </button>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 mt-2 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+                    <button type="submit"
+                        class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 mt-2 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
                         Entrar
                     </button>
 
                     <div class="text-center mt-4 text-sm text-gray-400">
-                        ¿No tienes cuenta? 
-                        <a href="/login.html?tab=registro" id="ir-a-registro" class="text-[#7ed957] hover:underline font-semibold ml-1">Regístrate como Cliente</a>
+                        ¿No tienes cuenta?
+                        <a href="/login.html?tab=registro" id="ir-a-registro"
+                            class="text-[#7ed957] hover:underline font-semibold ml-1">Regístrate como Cliente</a>
                     </div>
                 </form>
             </div>
@@ -73,25 +88,32 @@
                 </div>
 
                 <form id="formulario-registro" class="flex flex-col gap-6">
-                    
+
                     <div>
-                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Datos Personales</h3>
+                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Datos Personales
+                        </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2">
                                 <label for="reg-nombre" class="block text-sm text-gray-400 mb-1">Nombre(s):</label>
-                                <input type="text" id="reg-nombre" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <input type="text" id="reg-nombre" required
+                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
                             <div>
-                                <label for="reg-ap-paterno" class="block text-sm text-gray-400 mb-1">Apellido Paterno:</label>
-                                <input type="text" id="reg-ap-paterno" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <label for="reg-ap-paterno" class="block text-sm text-gray-400 mb-1">Apellido
+                                    Paterno:</label>
+                                <input type="text" id="reg-ap-paterno" required
+                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
                             <div>
-                                <label for="reg-ap-materno" class="block text-sm text-gray-400 mb-1">Apellido Materno:</label>
-                                <input type="text" id="reg-ap-materno" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <label for="reg-ap-materno" class="block text-sm text-gray-400 mb-1">Apellido
+                                    Materno:</label>
+                                <input type="text" id="reg-ap-materno" required
+                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
                             <div class="md:col-span-2">
                                 <label for="reg-telefono" class="block text-sm text-gray-400 mb-1">Teléfono:</label>
-                                <input type="tel" id="reg-telefono" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <input type="tel" id="reg-telefono" required
+                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
                         </div>
                     </div>
@@ -101,74 +123,117 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="reg-cp" class="block text-sm text-gray-400 mb-1">C.P.:</label>
-                                <input type="text" id="reg-cp" required maxlength="5" placeholder="Ej. 42080" class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <input type="text" id="reg-cp" required maxlength="5" placeholder="Ej. 42080"
+                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
-                            
+
                             <div>
                                 <label for="reg-estado" class="block text-sm text-gray-400 mb-1">Estado:</label>
-                                <input type="text" id="reg-estado" required readonly placeholder="Automático" class="w-full bg-gray-200 border border-gray-400 rounded-lg px-4 py-2 text-gray-600 focus:outline-none cursor-not-allowed">
+                                <input type="text" id="reg-estado" required readonly placeholder="Automático"
+                                    class="w-full bg-gray-200 border border-gray-400 rounded-lg px-4 py-2 text-gray-600 focus:outline-none cursor-not-allowed">
                             </div>
-                            
+
                             <div>
-                                <label for="reg-ciudad" class="block text-sm text-gray-400 mb-1">Ciudad / Municipio:</label>
-                                <input type="text" id="reg-ciudad" required readonly placeholder="Automático" class="w-full bg-gray-200 border border-gray-400 rounded-lg px-4 py-2 text-gray-600 focus:outline-none cursor-not-allowed">
+                                <label for="reg-ciudad" class="block text-sm text-gray-400 mb-1">Ciudad /
+                                    Municipio:</label>
+                                <input type="text" id="reg-ciudad" required readonly placeholder="Automático"
+                                    class="w-full bg-gray-200 border border-gray-400 rounded-lg px-4 py-2 text-gray-600 focus:outline-none cursor-not-allowed">
                             </div>
-                            
+
                             <div>
-                                <label for="reg-asentamiento" class="block text-sm text-gray-400 mb-1">Asentamiento:</label>
+                                <label for="reg-asentamiento"
+                                    class="block text-sm text-gray-400 mb-1">Asentamiento:</label>
                                 <div id="contenedor-asentamiento" class="relative">
-                                    <input type="text" id="reg-asentamiento" required readonly placeholder="Escribe el C.P. primero" class="w-full bg-gray-200 border border-gray-400 rounded-lg px-4 py-2 text-gray-600 focus:outline-none cursor-not-allowed">
+                                    <input type="text" id="reg-asentamiento" required readonly
+                                        placeholder="Escribe el C.P. primero"
+                                        class="w-full bg-gray-200 border border-gray-400 rounded-lg px-4 py-2 text-gray-600 focus:outline-none cursor-not-allowed">
                                 </div>
                             </div>
 
                             <div class="md:col-span-2">
                                 <label for="reg-calle" class="block text-sm text-gray-400 mb-1">Calle y Número:</label>
-                                <input type="text" id="reg-calle" required placeholder="Ej. Av. Juárez #123" class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <input type="text" id="reg-calle" required placeholder="Ej. Av. Juárez #123"
+                                    class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Cuenta</h3>
+                        <h3 class="text-[#7ed957] font-semibold border-b border-gray-800 pb-2 mb-4">Cuenta y Seguridad
+                        </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                             <div class="md:col-span-2">
-                                <label for="reg-email" class="block text-sm text-gray-400 mb-1">Correo Electrónico:</label>
-                                <input type="email" id="reg-email" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                <label for="reg-email" class="block text-sm text-gray-400 mb-1">Correo
+                                    Electrónico:</label>
+                                <div class="relative flex items-center">
+                                    <input type="email" id="reg-email" autocomplete="off" required
+                                        class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                    <div id="email-icono" class="absolute right-3 hidden"></div>
+                                </div>
+                                <p id="email-mensaje" class="text-xs mt-1 font-semibold hidden"></p>
                             </div>
+
                             <div>
                                 <label for="reg-password" class="block text-sm text-gray-400 mb-1">Contraseña:</label>
                                 <div class="relative flex items-center">
-                                    <input type="password" id="reg-password" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
-                                    <button type="button" class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <input type="password" id="reg-password" autocomplete="new-password" required
+                                        class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                    <button type="button"
+                                        class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                     </button>
                                 </div>
+                                <ul class="text-[11px] mt-2 space-y-1 font-medium">
+                                    <li id="req-len" class="text-gray-500 flex items-center gap-1 transition-colors">
+                                        <span class="w-3">✖</span> Mínimo 8 caracteres</li>
+                                    <li id="req-up" class="text-gray-500 flex items-center gap-1 transition-colors">
+                                        <span class="w-3">✖</span> Una letra mayúscula</li>
+                                    <li id="req-low" class="text-gray-500 flex items-center gap-1 transition-colors">
+                                        <span class="w-3">✖</span> Una letra minúscula</li>
+                                    <li id="req-num" class="text-gray-500 flex items-center gap-1 transition-colors">
+                                        <span class="w-3">✖</span> Un número</li>
+                                </ul>
                             </div>
+
                             <div>
-                                <label for="reg-password-confirm" class="block text-sm text-gray-400 mb-1">Confirmar Contraseña:</label>
+                                <label for="reg-password-confirm" class="block text-sm text-gray-400 mb-1">Confirmar
+                                    Contraseña:</label>
                                 <div class="relative flex items-center">
-                                    <input type="password" id="reg-password-confirm" required class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
-                                    <button type="button" class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <input type="password" id="reg-password-confirm" autocomplete="new-password"
+                                        required
+                                        class="w-full bg-[#ffffff] border border-gray-700 rounded-lg px-4 py-2 pr-10 text-black focus:border-[#7ed957] focus:outline-none transition">
+                                    <button type="button"
+                                        class="btn-ver-password absolute right-3 text-gray-500 hover:text-[#7ed957] transition cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                     </button>
                                 </div>
+                                <p id="conf-mensaje" class="text-[11px] mt-1 font-semibold hidden"></p>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-white font-bold py-3 rounded-lg transition duration-300 mt-4 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
+                    <button type="submit" id="btn-registrar" disabled
+                        class="w-full bg-[#7ed957] text-white opacity-50 cursor-not-allowed font-bold py-3 rounded-lg transition duration-300 mt-4 shadow-[0_0_15px_rgba(126,217,87,0.3)]">
                         Registrarse
                     </button>
 
                     <div class="text-center mt-2 text-sm text-gray-400">
-                        ¿Ya tienes cuenta? 
-                        <a href="#" id="ir-a-login" class="text-[#7ed957] hover:underline font-semibold ml-1">Inicia Sesión aquí</a>
+                        ¿Ya tienes cuenta?
+                        <a href="#" id="ir-a-login" class="text-[#7ed957] hover:underline font-semibold ml-1">Inicia
+                            Sesión aquí</a>
                     </div>
                 </form>
             </div>
@@ -180,4 +245,5 @@
 
     <script src="/FrontEnd-PCEXTREME/assets/main.js"></script>
 </body>
+
 </html>

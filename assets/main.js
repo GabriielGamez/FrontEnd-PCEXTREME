@@ -364,26 +364,161 @@ function inicializarEventosLogin() {
     // Formulario de Registro
     const formRegistro = document.getElementById("formulario-registro");
     if (formRegistro) {
-        formRegistro.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        
+        // ===============================================
+        // LÓGICA DE VALIDACIÓN EN TIEMPO REAL ---
+        // ===============================================
+        const inputEmail = document.getElementById("reg-email");
+        const iconoEmail = document.getElementById("email-icono");
+        const msgEmail = document.getElementById("email-mensaje");
+        
+        const inputPass = document.getElementById("reg-password");
+        const reqLen = document.getElementById("req-len");
+        const reqUp = document.getElementById("req-up");
+        const reqLow = document.getElementById("req-low");
+        const reqNum = document.getElementById("req-num");
+        
+        const inputConf = document.getElementById("reg-password-confirm");
+        const msgConf = document.getElementById("conf-mensaje");
+        
+        const btnRegistrar = document.getElementById("btn-registrar");
+        
+        // control de las 3 reglas
+        let estadoValidacion = { email: false, pass: false, match: false };
+        let timeoutEmail; // Para no saturar el servidor en cada tecla
 
-            const password = document.getElementById("reg-password").value;
-            const passwordConfirm = document.getElementById(
-                "reg-password-confirm"
-            ).value;
+        // Iconos en formato SVG de Tailwind
+        const checkSVG = `<svg class="w-5 h-5 text-[#7ed957]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        const crossSVG = `<svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+        const checkSmall = `<span class="w-3 text-[#7ed957]">✔</span>`;
+        const crossSmall = `<span class="w-3 text-gray-500">✖</span>`;
 
-            if (password !== passwordConfirm) {
-                mostrarNotificacion(
-                    "Las contraseñas no coinciden. Intenta de nuevo.",
-                    "error"
-                );
+        // Función que desbloquea el botón si TODO está correcto
+        function actualizarBotonRegistro() {
+            if (estadoValidacion.email && estadoValidacion.pass && estadoValidacion.match) {
+                btnRegistrar.disabled = false;
+                btnRegistrar.classList.remove("opacity-50", "cursor-not-allowed");
+                btnRegistrar.classList.add("hover:bg-[#6bc148]");
+            } else {
+                btnRegistrar.disabled = true;
+                btnRegistrar.classList.add("opacity-50", "cursor-not-allowed");
+                btnRegistrar.classList.remove("hover:bg-[#6bc148]");
+            }
+        }
+
+        // 1. VALIDAR CORREO 
+        inputEmail.addEventListener("input", (e) => {
+            clearTimeout(timeoutEmail);
+            const correo = e.target.value.trim();
+            estadoValidacion.email = false;
+            actualizarBotonRegistro();
+
+            // Solo busca si el correo tiene formato básico
+            if (!correo.includes("@") || !correo.includes(".")) {
+                iconoEmail.classList.add("hidden");
+                msgEmail.classList.add("hidden");
                 return;
             }
 
-            const btnSubmit = formRegistro.querySelector('button[type="submit"]');
-            const textoOriginal = btnSubmit.innerText;
-            btnSubmit.innerText = "⏳ Creando cuenta...";
-            btnSubmit.disabled = true;
+            // Spinner de carga mientras consulta la base de datos
+            iconoEmail.innerHTML = `<svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            iconoEmail.classList.remove("hidden");
+            msgEmail.classList.add("hidden");
+
+            // Espera 800 milisegundos para no saturar la API
+            timeoutEmail = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${API_BASE_URL}/clientes`);
+                    if (!res.ok) throw new Error();
+                    const clientes = await res.json();
+                    
+                    const existe = clientes.some(c => c.email === correo || c.correo === correo);
+
+                    if (existe) {
+                        iconoEmail.innerHTML = crossSVG;
+                        msgEmail.innerText = "Este correo ya está registrado. Intenta con otro.";
+                        msgEmail.className = "text-[11px] mt-1 font-bold text-red-500";
+                        msgEmail.classList.remove("hidden");
+                        estadoValidacion.email = false;
+                    } else {
+                        iconoEmail.innerHTML = checkSVG;
+                        msgEmail.innerText = "Correo disponible.";
+                        msgEmail.className = "text-[11px] mt-1 font-bold text-[#7ed957]";
+                        msgEmail.classList.remove("hidden");
+                        estadoValidacion.email = true;
+                    }
+                } catch (error) {
+                    iconoEmail.classList.add("hidden");
+                    estadoValidacion.email = true; 
+                }
+                actualizarBotonRegistro();
+            }, 800); 
+        });
+
+        // 2. VALIDAR CONTRASEÑA 
+        function actualizarRequisito(elemento, cumple) {
+            if (cumple) {
+                elemento.classList.replace("text-gray-500", "text-[#7ed957]");
+                elemento.innerHTML = elemento.innerHTML.replace(crossSmall, checkSmall);
+            } else {
+                elemento.classList.replace("text-[#7ed957]", "text-gray-500");
+                elemento.innerHTML = elemento.innerHTML.replace(checkSmall, crossSmall);
+            }
+        }
+
+        inputPass.addEventListener("input", (e) => {
+            const p = e.target.value;
+            
+            const len = p.length >= 8;
+            const up = /[A-Z]/.test(p);
+            const low = /[a-z]/.test(p);
+            const num = /[0-9]/.test(p);
+
+            actualizarRequisito(reqLen, len);
+            actualizarRequisito(reqUp, up);
+            actualizarRequisito(reqLow, low);
+            actualizarRequisito(reqNum, num);
+
+            estadoValidacion.pass = len && up && low && num;
+            verificarMatch(); // Volvemos a revisar coincidencia si edita la de arriba
+            actualizarBotonRegistro();
+        });
+
+        // 3. VALIDAR COINCIDENCIA DE CONTRASEÑAS
+        function verificarMatch() {
+            if (inputConf.value === "") {
+                msgConf.classList.add("hidden");
+                estadoValidacion.match = false;
+                return;
+            }
+            if (inputConf.value === inputPass.value) {
+                msgConf.innerText = "¡Las contraseñas coinciden!";
+                msgConf.className = "text-[11px] mt-1 font-bold text-[#7ed957]";
+                msgConf.classList.remove("hidden");
+                estadoValidacion.match = true;
+            } else {
+                msgConf.innerText = "Las contraseñas no coinciden.";
+                msgConf.className = "text-[11px] mt-1 font-bold text-red-500";
+                msgConf.classList.remove("hidden");
+                estadoValidacion.match = false;
+            }
+        }
+
+        inputConf.addEventListener("input", () => {
+            verificarMatch();
+            actualizarBotonRegistro();
+        });
+        // ===============================================
+
+        // ENVÍO DE DATOS A LA BASE DE DATOS
+        formRegistro.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Bloqueamos el botón y ponemos mensaje de espera
+            const textoOriginal = btnRegistrar.innerText;
+            btnRegistrar.innerText = "Creando cuenta...";
+            btnRegistrar.disabled = true;
+            btnRegistrar.classList.add("opacity-50", "cursor-not-allowed");
 
             const datosCliente = {
                 nombre: document.getElementById("reg-nombre").value.trim(),
@@ -396,7 +531,7 @@ function inicializarEventosLogin() {
                 asentamiento: document.getElementById("reg-asentamiento").value.trim(),
                 calle: document.getElementById("reg-calle").value.trim(),
                 email: document.getElementById("reg-email").value.trim(),
-                password: password,
+                password: document.getElementById("reg-password").value, // Mandamos la contraseña segura
             };
 
             try {
@@ -414,13 +549,19 @@ function inicializarEventosLogin() {
                     "¡Cuenta creada con éxito! Ahora puedes iniciar sesión.",
                     "exito"
                 );
+                
                 formRegistro.reset();
+                // Limpiamos los requisitos visuales
+                estadoValidacion = { email: false, pass: false, match: false };
+                actualizarBotonRegistro();
+                
                 setTimeout(() => document.getElementById("ir-a-login").click(), 1500);
             } catch (error) {
                 mostrarNotificacion(error.message, "error");
             } finally {
-                btnSubmit.innerText = textoOriginal;
-                btnSubmit.disabled = false;
+                btnRegistrar.innerText = textoOriginal;
+                btnRegistrar.disabled = false;
+                btnRegistrar.classList.remove("opacity-50", "cursor-not-allowed");
             }
         });
     }
@@ -438,6 +579,8 @@ function inicializarEventosLogin() {
             bloqueLogin.classList.replace("block", "hidden");
             bloqueRegistro.classList.replace("hidden", "block");
             window.history.pushState({}, "", "?tab=registro");
+
+            if (formRegistro) formRegistro.reset();
         });
 
         btnIrLogin.addEventListener("click", (e) => {
@@ -445,6 +588,7 @@ function inicializarEventosLogin() {
             bloqueRegistro.classList.replace("block", "hidden");
             bloqueLogin.classList.replace("hidden", "block");
             window.history.pushState({}, "", window.location.pathname);
+            if (formLogin) formLogin.reset();
         });
     }
 }
