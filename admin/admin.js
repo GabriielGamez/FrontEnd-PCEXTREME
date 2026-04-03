@@ -253,8 +253,6 @@ async function cargarDatosTicket() {
         document.getElementById('mensaje-carga').style.display = 'none';
         document.getElementById('ticket-contenido').style.display = 'block';
         
-        // Damos medio segundo para que las fuentes y el logo carguen bien antes de imprimir
-        setTimeout(() => window.print(), 500);
 
     } catch (error) {
         document.getElementById('mensaje-carga').innerText = `Error: ${error.message}`;
