@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket de Servicio PC EXTREME</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            width: 80mm;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            color: #000;
+        }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        .logo { max-width: 150px; filter: grayscale(100%); }
+        h2, h3 { margin: 5px 0; }
+        .info-empresa { font-size: 12px; margin-bottom: 10px; }
+        
+        .datos-orden { width: 100%; margin-bottom: 15px; font-size: 14px;}
+        .etiqueta { font-weight: bold; }
+        
+        .seccion { margin-top: 15px; border-top: 1px dashed #000; padding-top: 10px; font-size: 14px; }
+        
+        .terminos { font-size: 10px; text-align: justify; margin-top: 20px; }
+        
+        .firmas { margin-top: 40px; text-align: center; font-size: 12px;}
+        .linea-firma { border-top: 1px solid #000; width: 80%; margin: 0 auto; margin-top: 30px; padding-top: 5px;}
+        
+        .btn-print {
+            display: block; width: 100%; padding: 10px; background: #000; color: #fff; 
+            text-align: center; text-decoration: none; margin-bottom: 20px; cursor: pointer;
+            font-weight: bold; font-family: sans-serif;
+        }
+        
+        @media print {
+            .btn-print { display: none; }
+            body { width: 100%; margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <a onclick="window.print()" class="btn-print">🖨️ IMPRIMIR TICKET</a>
+
+    <div id="ticket-contenido" style="display: none;">
+        <div class="header">
+            <img src="https://res.cloudinary.com/dswljrmnu/image/upload/logo.png" class="logo" alt="Logo PC Extreme"> 
+            <h3>PC EXTREME</h3>
+            <div class="info-empresa">
+                <span id="empresa-direccion">Cargando...</span><br>
+                <span id="empresa-telefono">Cargando...</span><br>
+                <span id="empresa-email">Cargando...</span>
+            </div>
+            <h2>ORDEN #<span id="folio-numero"></span></h2>
+            <small>Fecha: <span id="folio-fecha"></span></small>
+        </div>
+
+        <div class="datos-orden">
+            <div><span class="etiqueta">Equipo:</span> <span id="equipo-nombre"></span></div>
+            <div><span class="etiqueta">No. Serie:</span> <span id="equipo-serie"></span></div>
+            <div><span class="etiqueta">Estado Inicial:</span> <span id="equipo-estado"></span></div>
+        </div>
+
+        <div class="seccion">
+            <span class="etiqueta">PROBLEMA REPORTADO:</span><br>
+            <span id="problema-reportado"></span>
+        </div>
+
+        <div class="seccion" id="contenedor-costo">
+            <span class="etiqueta">COSTO ESTIMADO:</span><br>
+            <span id="costo-estimado"></span>
+        </div>
+
+        <div class="terminos">
+            <strong>TÉRMINOS Y CONDICIONES:</strong><br>
+            1. El diagnóstico tiene un costo si no se acepta la reparación.<br>
+            2. PC EXTREME no se hace responsable por pérdida de información (haga respaldo).<br>
+            3. Después de 30 días de notificado, si el equipo no es retirado, pasará a reciclaje sin responsabilidad para la empresa.<br>
+            4. La garantía aplica solo sobre la reparación realizada.
+        </div>
+
+        <div class="firmas">
+            <div class="linea-firma">Firma del Cliente (Acepto términos)</div>
+            <br>
+            <small>Consulta el estado de tu equipo en:<br>www.pcextreme.com</small>
+        </div>
+    </div>
+
+    <h2 id="mensaje-carga" style="text-align: center; margin-top: 50px;">Generando ticket...</h2>
+    
+    <script src="/FrontEnd-PCEXTREME/assets/admin.js"></script>
+
+</body>
+</html>

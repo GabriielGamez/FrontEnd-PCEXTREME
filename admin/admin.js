@@ -184,6 +184,85 @@ async function cargarComponentesAdmin() {
         console.error("Error al cargar header/footer:", error);
     }
 }
+
+window.imprimirTicket = function(folio) {
+    // Abre el ticket en una pestaña nueva
+    window.open(`/FrontEnd-PCEXTREME/admin/ticket.html?folio=${folio}`, '_blank');
+};
+
+// Función principal que recolecta y dibuja los datos
+async function cargarDatosTicket() {
+    // Extraemos el número de folio de la URL (ej: ticket.html?folio=267)
+    const urlParams = new URLSearchParams(window.location.search);
+    const folio = urlParams.get('folio');
+    
+    if(!folio) {
+        document.getElementById('mensaje-carga').innerText = "Error: No se especificó un número de folio.";
+        return;
+    }
+
+    try {
+        // 1. Obtener la orden de reparación
+        const resReg = await fetch(`${baseUrl}/registros/${folio}`);
+        if(!resReg.ok) throw new Error("Orden no encontrada");
+        let orden = await resReg.json();
+        if(Array.isArray(orden)) orden = orden[0];
+
+        // 2. Obtener los detalles del dispositivo
+        let dispositivo = { marca: '', modelo: '', numSerie: 'N/A' };
+        if(orden.idDispositivo) {
+            const resDisp = await fetch(`${baseUrl}/dispositivos/${orden.idDispositivo}`);
+            if(resDisp.ok) {
+                let disp = await resDisp.json();
+                if(Array.isArray(disp)) disp = disp[0];
+                dispositivo = disp;
+            }
+        }
+
+        // 3. Obtener el contacto de la empresa
+        const resCont = await fetch(`${baseUrl}/contacto`);
+        if(resCont.ok) {
+            let cont = await resCont.json();
+            if(Array.isArray(cont)) cont = cont[0];
+            
+            document.getElementById('empresa-direccion').innerText = cont.direccion || '';
+            document.getElementById('empresa-telefono').innerText = "Tel: " + (cont.telefono || '');
+            document.getElementById('empresa-email').innerText = cont.email || '';
+        }
+
+        // 4. Inyectar todos los datos en el HTML
+        document.getElementById('folio-numero').innerText = String(folio).padStart(5, '0');
+        
+        const fecha = new Date(orden.fechaIngreso || orden.fecha || new Date());
+        document.getElementById('folio-fecha').innerText = fecha.toLocaleDateString('es-MX');
+
+        document.getElementById('equipo-nombre').innerText = `${dispositivo.marca || ''} ${dispositivo.modelo || ''}`.trim() || 'Equipo no registrado';
+        document.getElementById('equipo-serie').innerText = dispositivo.numSerie || dispositivo.numeroSerie || 'N/A';
+        document.getElementById('equipo-estado').innerText = orden.estadoEquipo || 'Recibido';
+
+        document.getElementById('problema-reportado').innerText = orden.detalles || orden.falla || 'Sin detalles reportados.';
+
+        const costo = parseFloat(orden.costo || 0);
+        if(costo > 0) {
+            document.getElementById('costo-estimado').innerText = `$${costo.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        } else {
+            document.getElementById('contenedor-costo').style.display = 'none'; // Oculta la sección si es $0
+        }
+
+        // 5. Ocultar mensaje de carga, mostrar el ticket y lanzar impresión
+        document.getElementById('mensaje-carga').style.display = 'none';
+        document.getElementById('ticket-contenido').style.display = 'block';
+        
+        // Damos medio segundo para que las fuentes y el logo carguen bien antes de imprimir
+        setTimeout(() => window.print(), 500);
+
+    } catch (error) {
+        document.getElementById('mensaje-carga').innerText = `Error: ${error.message}`;
+    }
+}
+
+// Disparador: Ejecuta la función en cuanto el HTML esté listo
+document.addEventListener("DOMContentLoaded", cargarDatosTicket);
 // ==========================================
 // SECCIÓN: GESTIÓN DE REPARACIONES 
 // ==========================================
@@ -303,9 +382,14 @@ async function mostrarPaginaReparaciones() {
                     <span class="px-3 py-1 rounded-full text-xs font-bold border ${colorEstado}">${estado}</span>
                 </td>
                 <td class="block md:table-cell md:p-4 text-center mt-4 md:mt-0 pt-4 md:pt-0 border-t border-gray-800 md:border-transparent">
-                    <button onclick="abrirModalReparacion(${idRegistro})" class="w-full md:w-auto bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-2 mx-auto px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
-                        ✏️ Editar
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                        <button onclick="abrirModalReparacion(${idRegistro})" class="w-full sm:w-auto bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-2 px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
+                            ✏️ Editar
+                        </button>
+                        <button onclick="imprimirTicket(${idRegistro})" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-white font-bold transition flex items-center justify-center gap-2 px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
+                            🖨️ Imprimir
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
