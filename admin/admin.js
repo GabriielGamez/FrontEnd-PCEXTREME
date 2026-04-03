@@ -115,51 +115,68 @@ async function cargarComponentesAdmin() {
 
                 const usuarioStr = localStorage.getItem('usuario');
 
-                // Si no hay sesión iniciada, te manda a la página pública
-                if (!usuarioStr) {
-                    window.location.replace('../index.html');
-                    return;
-                }
-
-                // Si no eres empleado, no tienes acceso a esta zona
+                // Si no hay sesión iniciada o es cliente, lo echa al index
+                if (!usuarioStr) return window.location.replace('../index.html');
                 const usuario = JSON.parse(usuarioStr);
-                if (usuario.tipo !== 'trabajador') {
-                    window.location.replace('../index.html');
-                    return;
+                if (usuario.tipo !== 'trabajador') return window.location.replace('../index.html');
+
+                // ==========================================
+                // LÓGICA DE PERMISOS Y ROLES
+                // ==========================================
+                const idRol = String(usuario.idRol || usuario.rol);
+                
+                // Mapa de permisos por Rol (1: Admin, 2: Recepcionista, 3: Técnico)
+                const paginasPermitidas = {
+                    "1": ["dashboard.html", "admin_reparaciones.html", "admin_clientes.html", "admin_mensajes.html", "admin_productos.html", "admin_web.html", "admin_personal.html", "ticket.html"],
+                    "2": ["dashboard.html", "admin_reparaciones.html", "admin_clientes.html", "admin_mensajes.html", "ticket.html"],
+                    "3": ["dashboard.html", "admin_reparaciones.html", "admin_productos.html", "ticket.html"]
+                };
+
+                const misPermisos = paginasPermitidas[idRol] || [];
+                const paginaActual = window.location.pathname.split('/').pop() || "dashboard.html";
+                
+                // 1. Protección de URL (Por si escriben el link directo)
+                if (!misPermisos.includes(paginaActual) && paginaActual !== "index.html" && paginaActual !== "") {
+                    mostrarNotificacionAdmin("Acceso denegado: Área restringida para tu rol.", "error");
+                    // Lo mandamos al dashboard si no tiene permiso
+                    setTimeout(() => window.location.replace('/FrontEnd-PCEXTREME/admin/dashboard.html'), 1500);
+                    return; 
                 }
 
-                // Ponemos el nombre y rol del empleado en la barra de arriba
+                // 2. Interceptar los clics en el menú para la ventana flotante
+                const enlacesMenu = headerEl.querySelectorAll('nav a');
+                enlacesMenu.forEach(enlace => {
+                    enlace.addEventListener('click', (e) => {
+                        const destino = enlace.getAttribute('href').split('/').pop();
+                        if (!misPermisos.includes(destino)) {
+                            e.preventDefault(); // Detiene el clic
+                            mostrarNotificacionAdmin("No tienes autorización para acceder a esta sección.", "error");
+                        }
+                    });
+                });
+                // ==========================================
+
+                // Ponemos el nombre y rol del empleado en la barra
                 const nombreAdminEl = document.getElementById('admin-nombre-usuario');
                 const rolAdminEl = document.getElementById('admin-nombre-rol');
 
                 if (nombreAdminEl) nombreAdminEl.innerText = usuario.nombre;
-
                 if (rolAdminEl) {
-                    const idDelRol = usuario.idRol || usuario.rol;
-                    const diccionarioRoles = {
-                        "1": "Administrador",
-                        "2": "Recepcionista",
-                        "3": "Técnico"
-                    };
-                    rolAdminEl.innerText = diccionarioRoles[String(idDelRol)] || "Empleado";
+                    const diccionarioRoles = { "1": "Administrador", "2": "Recepcionista", "3": "Técnico" };
+                    rolAdminEl.innerText = diccionarioRoles[idRol] || "Empleado";
                 }
-                //reponsiva
+
+                // Menú Móvil responsivo
                 const btnMenuMovil = document.getElementById("btn-menu-admin-movil");
                 const menuMovil = document.getElementById("menu-admin-movil");
-
                 if (btnMenuMovil && menuMovil) {
-                    btnMenuMovil.addEventListener("click", () => {
-                        menuMovil.classList.toggle("hidden");
-                    });
-
-                    // Oculta el menú automáticamente si agrandan la ventana (modo PC)
+                    btnMenuMovil.addEventListener("click", () => menuMovil.classList.toggle("hidden"));
                     window.addEventListener("resize", () => {
-                        if (window.innerWidth >= 1024) {
-                            menuMovil.classList.add("hidden");
-                        }
+                        if (window.innerWidth >= 1024) menuMovil.classList.add("hidden");
                     });
                 }
-                // Activa el botón de salir
+
+                // Botones de Salir
                 const hacerLogout = () => {
                     localStorage.removeItem('token');
                     localStorage.removeItem('usuario');
@@ -168,7 +185,6 @@ async function cargarComponentesAdmin() {
 
                 const btnCerrarSesion = document.getElementById('btn-cerrar-sesion');
                 const btnCerrarSesionMovil = document.getElementById('btn-cerrar-sesion-movil');
-
                 if (btnCerrarSesion) btnCerrarSesion.addEventListener('click', hacerLogout);
                 if (btnCerrarSesionMovil) btnCerrarSesionMovil.addEventListener('click', hacerLogout);
             }
@@ -1060,6 +1076,13 @@ function mostrarListaPersonal() {
     const mapaRoles = {};
     rolesGlobales.forEach(rol => mapaRoles[rol.idRol || rol.id] = rol.nombreRol || rol.nombre || "Desconocido");
 
+    // === EXTRAEMOS DATOS DEL USUARIO LOGUEADO PARA PERMISOS ===
+    const usuarioLogueadoStr = localStorage.getItem('usuario');
+    const usuarioLogueado = usuarioLogueadoStr ? JSON.parse(usuarioLogueadoStr) : {};
+    const idLogueado = String(usuarioLogueado.idTrabajador || usuarioLogueado.idEmpleado || usuarioLogueado.id);
+    const rolLogueado = String(usuarioLogueado.idRol || usuarioLogueado.rol);
+    // ==========================================================
+
     let html = "";
     personalGlobal.forEach((emp) => {
         const idEmp = emp.idTrabajador || emp.id || emp.idEmpleado;
@@ -1068,20 +1091,32 @@ function mostrarListaPersonal() {
         const tel = emp.telefono || "Sin teléfono";
 
         let colorRol = "bg-gray-900 text-gray-300 border-gray-700";
-        let esAdmin = false;
+        let esAdminTarget = false;
 
+        // Detectamos el rol del empleado que se está dibujando en la fila
         if (nombreRol.toLowerCase().includes("admin")) {
             colorRol = "bg-green-900 text-green-300 border-green-700";
-            esAdmin = true;
+            esAdminTarget = true;
         } else if (nombreRol.toLowerCase().includes("recep")) {
             colorRol = "bg-purple-900 text-purple-300 border-purple-700";
         } else if (nombreRol.toLowerCase().includes("téc") || nombreRol.toLowerCase().includes("tec")) {
             colorRol = "bg-blue-900 text-blue-300 border-blue-700";
         }
 
-        // Botonera responsiva: En móvil son botones anchos con fondo, en PC son texto normal
-        let botonesAccion = esAdmin
-            ? `<div class="w-full flex justify-center md:justify-end"><span class="text-gray-600 text-sm font-semibold flex items-center gap-1 cursor-not-allowed select-none" title="Cuenta de administrador protegida">🔒 Protegido</span></div>`
+        // === EVALUACIÓN DEL PODER DE EDICIÓN ===
+        let tienePermisoEdicion = false;
+
+        if (idLogueado === "1") {
+            // El Súper Admin (El jefe de jefes ID: 1) puede editar a TODOS sin excepción
+            tienePermisoEdicion = true;
+        } else if (rolLogueado === "1" && !esAdminTarget) {
+            // Un Admin normal (Ej. ID: 2, 3...) puede editar Técnicos y Recep, pero NO a otros Admins
+            tienePermisoEdicion = true;
+        }
+
+        // Asignamos la botonera o el candadito según el permiso
+        let botonesAccion = !tienePermisoEdicion
+            ? `<div class="w-full flex justify-center md:justify-end"><span class="text-gray-600 text-sm font-semibold flex items-center gap-1 cursor-not-allowed select-none" title="No tienes permiso para editar a este usuario">🔒 Sin Autorización</span></div>`
             : `<div class="flex flex-col sm:flex-row gap-2 justify-center md:justify-end w-full">
                    <button onclick="abrirModalPersonal(${idEmp})" class="w-full sm:w-auto text-blue-400 hover:text-white font-semibold transition bg-blue-600/20 hover:bg-blue-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Editar</button>
                    <button onclick="confirmarEliminacionPersonal(${idEmp})" class="w-full sm:w-auto text-red-500 hover:text-white font-semibold transition bg-red-600/20 hover:bg-red-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Eliminar</button>
@@ -1089,7 +1124,6 @@ function mostrarListaPersonal() {
 
         html += `
             <tr class="block md:table-row hover:bg-[#1a1a1a] transition duration-200 border-b border-gray-800 p-4 md:p-0">
-                
                 <td class="block md:table-cell px-4 py-2 md:p-4 align-top">
                     <span class="inline-block md:hidden font-bold text-gray-500 w-24">Empleado:</span>
                     <div class="inline-block align-top">
@@ -1097,12 +1131,10 @@ function mostrarListaPersonal() {
                         <span class="text-gray-500 text-xs mt-1 md:block">ID: ${idEmp}</span>
                     </div>
                 </td>
-                
                 <td class="block md:table-cell px-4 py-2 md:p-4 align-top">
                     <span class="inline-block md:hidden font-bold text-gray-500 w-24">Rol:</span>
                     <span class="${colorRol} border py-1 px-3 rounded-full text-xs font-bold tracking-wide">${nombreRol}</span>
                 </td>
-                
                 <td class="block md:table-cell px-4 py-2 md:p-4 text-gray-300 align-top">
                     <span class="inline-block md:hidden font-bold text-gray-500 w-24 align-top">Contacto:</span>
                     <div class="inline-block align-top">
@@ -1110,11 +1142,9 @@ function mostrarListaPersonal() {
                         <div>📞 ${tel}</div>
                     </div>
                 </td>
-                
                 <td class="block md:table-cell px-4 py-4 md:p-4 text-right align-top border-t border-gray-800 md:border-transparent mt-3 md:mt-0">
                     ${botonesAccion}
                 </td>
-                
             </tr>
         `;
     });
