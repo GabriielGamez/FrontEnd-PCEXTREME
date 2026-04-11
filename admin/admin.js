@@ -373,6 +373,17 @@ async function mostrarPaginaReparaciones() {
         else if (estado === 'En Diagnóstico') colorEstado = 'bg-orange-900/40 text-orange-400 border-orange-800';
         else if (estado === 'Sin Reparación') colorEstado = 'bg-red-900/40 text-red-400 border-red-800';
 
+        // === NUEVO: LÓGICA DE BLOQUEO DE EDICIÓN ===
+        const esInmodificable = (estado === 'Entregado' || estado === 'Sin Reparación');
+        
+        let botonEditarHtml = esInmodificable
+            ? `<button disabled class="w-full sm:w-auto bg-gray-800 text-gray-500 font-bold transition flex items-center justify-center gap-2 px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider cursor-not-allowed" title="Este registro ya está cerrado">
+                🔒 Cerrado
+               </button>`
+            : `<button onclick="abrirModalReparacion(${idRegistro})" class="w-full sm:w-auto bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-2 px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
+                ✏️ Editar
+               </button>`;
+
         return `
             <tr class="block md:table-row hover:bg-[#252830] transition border-b border-gray-800 p-4 md:p-0">
                 <td class="block md:table-cell md:p-4 text-gray-400 font-medium mb-2 md:mb-0">
@@ -397,9 +408,7 @@ async function mostrarPaginaReparaciones() {
                 </td>
                 <td class="block md:table-cell md:p-4 text-center mt-4 md:mt-0 pt-4 md:pt-0 border-t border-gray-800 md:border-transparent">
                     <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                        <button onclick="abrirModalReparacion(${idRegistro})" class="w-full sm:w-auto bg-[#3f51b5] hover:bg-blue-600 text-white font-bold transition flex items-center justify-center gap-2 px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
-                            ✏️ Editar
-                        </button>
+                        ${botonEditarHtml}
                         <button onclick="imprimirTicket(${idRegistro})" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-white font-bold transition flex items-center justify-center gap-2 px-4 py-2.5 md:py-1.5 rounded shadow-sm text-xs tracking-wider">
                             🖨️ Imprimir
                         </button>
@@ -491,19 +500,28 @@ function cerrarModalReparacion() {
 async function gestionarSubmitReparacion(evento) {
     evento.preventDefault();
 
-    const btnGuardar = evento.target.querySelector('button[type="submit"]');
-    const textoOriginalBtn = btnGuardar.innerText;
-
     const id = document.getElementById('admin-reparacion-id').value;
     const nuevoEstado = document.getElementById('admin-estado-reparacion').value;
-
     const quiereNotificar = document.getElementById('admin-notificar-whatsapp').checked;
+
+    // === NUEVO: VALIDACIÓN DE ESTADOS FINALES ===
+    if (nuevoEstado === 'Entregado' || nuevoEstado === 'Sin Reparación') {
+        const mensajeAdvertencia = `Estás a punto de cambiar el estado a "<b>${nuevoEstado}</b>".<br><br>Al confirmar, este registro se considerará cerrado y <b>ya no podrá volver a ser editado</b> en el futuro. ¿Deseas continuar?`;
+        
+        const confirmado = await mostrarConfirmacionAdmin(mensajeAdvertencia, 'advertencia');
+        if (!confirmado) return; // Si el usuario cancela, detenemos la función aquí
+    }
+    // ============================================
+
+    const btnGuardar = evento.target.querySelector('button[type="submit"]');
+    const textoOriginalBtn = btnGuardar.innerText;
 
     btnGuardar.disabled = true;
     btnGuardar.classList.add('opacity-70', 'cursor-not-allowed');
     btnGuardar.innerText = "Actualizando...";
 
     try {
+        // ... (El resto del código dentro del try/catch/finally se queda exactamente igual)
         // 1. Buscamos el registro original completo en nuestra memoria
         const reg = adminReparacionesData.find(r => String(r.idFolio) === String(id));
         if (!reg) throw new Error("No se encontró el registro en memoria para armar la petición.");
