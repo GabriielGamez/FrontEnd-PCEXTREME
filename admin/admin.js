@@ -1063,7 +1063,7 @@ async function iniciarModuloPersonal() {
     }
 }
 
-// Dibuja la tabla del personal (Protege visualmente a los administradores)
+// Dibuja la tabla del personal (Protege visualmente a los administradores y evita la autoeliminación)
 function mostrarListaPersonal() {
     const contenedor = document.getElementById("lista-personal");
     if (!contenedor) return;
@@ -1103,31 +1103,61 @@ function mostrarListaPersonal() {
             colorRol = "bg-blue-900 text-blue-300 border-blue-700";
         }
 
-        // === EVALUACIÓN DEL PODER DE EDICIÓN ===
-        let tienePermisoEdicion = false;
+        // === EVALUACIÓN DEL PODER DE EDICIÓN Y ELIMINACIÓN ===
+        let puedeEditar = false;
+        let puedeEliminar = false;
+        const esMiPerfil = (String(idEmp) === String(idLogueado));
 
         if (idLogueado === "1") {
-            // El Súper Admin (El jefe de jefes ID: 1) puede editar a TODOS sin excepción
-            tienePermisoEdicion = true;
-        } else if (rolLogueado === "1" && !esAdminTarget) {
-            // Un Admin normal (Ej. ID: 2, 3...) puede editar Técnicos y Recep, pero NO a otros Admins
-            tienePermisoEdicion = true;
+            // REGLA 1: El Súper Admin Global (ID: 1)
+            puedeEditar = true; // Edita a TODOS
+            puedeEliminar = !esMiPerfil; // Elimina a todos, EXCEPTO a sí mismo
+        } else if (rolLogueado === "1") {
+            // REGLA 2: Administrador Normal (ID diferente de 1)
+            if (esMiPerfil) {
+                puedeEditar = true; // Sí puede editar SU propia información
+                puedeEliminar = false; // NO puede autoeliminarse
+            } else if (esAdminTarget) {
+                puedeEditar = false; // NO puede editar a otros Admins
+                puedeEliminar = false; // NO puede eliminar a otros Admins
+            } else {
+                puedeEditar = true; // Sí puede editar Técnicos y Recepcionistas
+                puedeEliminar = true; // Sí puede eliminar Técnicos y Recepcionistas
+            }
         }
 
-        // Asignamos la botonera o el candadito según el permiso
-        let botonesAccion = !tienePermisoEdicion
-            ? `<div class="w-full flex justify-center md:justify-end"><span class="text-gray-600 text-sm font-semibold flex items-center gap-1 cursor-not-allowed select-none" title="No tienes permiso para editar a este usuario">🔒 Sin Autorización</span></div>`
-            : `<div class="flex flex-col sm:flex-row gap-2 justify-center md:justify-end w-full">
-                   <button onclick="abrirModalPersonal(${idEmp})" class="w-full sm:w-auto text-blue-400 hover:text-white font-semibold transition bg-blue-600/20 hover:bg-blue-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Editar</button>
-                   <button onclick="confirmarEliminacionPersonal(${idEmp})" class="w-full sm:w-auto text-red-500 hover:text-white font-semibold transition bg-red-600/20 hover:bg-red-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Eliminar</button>
-               </div>`;
+        // Armamos la botonera según los permisos otorgados arriba
+        let botonesAccion = "";
+
+        if (!puedeEditar && !puedeEliminar) {
+            // Si no puede hacer nada (Ej. un Admin normal viendo a otro Admin)
+            botonesAccion = `<div class="w-full flex justify-center md:justify-end"><span class="text-gray-600 text-sm font-semibold flex items-center gap-1 cursor-not-allowed select-none" title="No tienes permiso para editar a este usuario">🔒 Sin Autorización</span></div>`;
+        } else {
+            botonesAccion = `<div class="flex flex-col sm:flex-row gap-2 justify-center md:justify-end w-full">`;
+            
+            if (puedeEditar) {
+                botonesAccion += `<button onclick="abrirModalPersonal(${idEmp})" class="w-full sm:w-auto text-blue-400 hover:text-white font-semibold transition bg-blue-600/20 hover:bg-blue-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Editar</button>`;
+            }
+            
+            if (puedeEliminar) {
+                botonesAccion += `<button onclick="confirmarEliminacionPersonal(${idEmp})" class="w-full sm:w-auto text-red-500 hover:text-white font-semibold transition bg-red-600/20 hover:bg-red-600 md:bg-transparent md:hover:bg-transparent py-2.5 md:py-0 px-4 md:px-0 rounded shadow-sm md:shadow-none">Eliminar</button>`;
+            } else if (esMiPerfil) {
+                // Si es su propio perfil, mostramos el botón de eliminar deshabilitado o un indicador para que sepa por qué no puede hacerlo
+                botonesAccion += `<span class="w-full sm:w-auto text-gray-600 font-semibold flex items-center justify-center py-2.5 md:py-0 px-4 md:px-0 cursor-not-allowed select-none" title="No puedes autoeliminar tu propia cuenta">🚫 Eliminar</span>`;
+            }
+            
+            botonesAccion += `</div>`;
+        }
 
         html += `
             <tr class="block md:table-row hover:bg-[#1a1a1a] transition duration-200 border-b border-gray-800 p-4 md:p-0">
                 <td class="block md:table-cell px-4 py-2 md:p-4 align-top">
                     <span class="inline-block md:hidden font-bold text-gray-500 w-24">Empleado:</span>
                     <div class="inline-block align-top">
-                        <strong class="text-white text-base block">${emp.nombre} ${emp.aPaterno} ${emp.aMaterno || ''}</strong>
+                        <strong class="text-white text-base block flex items-center gap-2">
+                            ${emp.nombre} ${emp.aPaterno} ${emp.aMaterno || ''} 
+                            ${esMiPerfil ? '<span class="bg-gray-800 text-gray-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider ml-1">Tú</span>' : ''}
+                        </strong>
                         <span class="text-gray-500 text-xs mt-1 md:block">ID: ${idEmp}</span>
                     </div>
                 </td>
