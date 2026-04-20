@@ -1090,7 +1090,11 @@ async function cargarDetalleProducto() {
 const P0 = 12;
 const t_actual = 2.2;
 const P_actual = 250;
-const k = Math.log(P_actual / P0) / t_actual;
+
+// 1. Calculamos k y lo truncamos a exactamente 4 decimales
+const k_crudo = Math.log(P_actual / P0) / t_actual;
+const k = Math.trunc(k_crudo * 10000) / 10000; // Queda 1.3802 exacto
+
 let miGraficoCrecimiento;
 
 window.calcularCrecimiento = function () {
@@ -1099,15 +1103,17 @@ window.calcularCrecimiento = function () {
 
     const t_futuro = parseFloat(inputTiempo.value);
     if (isNaN(t_futuro) || t_futuro < 0) {
-       // Alerta nativa cambiada por notificación flotante 
         mostrarNotificacion("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
         return;
     }
 
     document.getElementById("resultado-k").innerText = k.toFixed(4);
+    
+    // 2. Usamos el valor k de 4 decimales para el cálculo
     const clientesProyectados = P0 * Math.exp(k * t_futuro);
-    document.getElementById("resultado-p").innerText =
-        Math.round(clientesProyectados).toLocaleString();
+    
+    // 3. Usamos Math.trunc() para tomar solo la parte entera sin redondear
+    document.getElementById("resultado-p").innerText = Math.trunc(clientesProyectados).toLocaleString();
 
     dibujarGraficaCrecimiento(t_futuro);
 };
@@ -1127,7 +1133,9 @@ function dibujarGraficaCrecimiento(t_max) {
         let t_punto = (t_max / pasos) * i;
         let clientes_punto = P0 * Math.exp(k * t_punto);
         etiquetasTiempo.push("Año " + t_punto.toFixed(1));
-        datosClientes.push(Math.round(clientes_punto));
+        
+        // Aplicamos Math.trunc() también para los puntos de la gráfica
+        datosClientes.push(Math.trunc(clientes_punto));
     }
 
     miGraficoCrecimiento = new Chart(ctx, {
