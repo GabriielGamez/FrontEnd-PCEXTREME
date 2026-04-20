@@ -1087,13 +1087,18 @@ async function cargarDetalleProducto() {
 // ==========================================
 // Calcula y dibuja la gráfica de crecimiento de clientes
 
+// Función auxiliar para forzar a JavaScript a cortar a 4 decimales sin redondear
+function truncar4(valor) {
+    return Math.trunc(valor * 10000) / 10000;
+}
+
 const P0 = 12;
 const t_actual = 2.2;
 const P_actual = 250;
 
-// 1. Calculamos k y lo truncamos a exactamente 4 decimales
+// 1. Calculamos k crudo y lo truncamos a 4 decimales exactos
 const k_crudo = Math.log(P_actual / P0) / t_actual;
-const k = Math.trunc(k_crudo * 10000) / 10000; // Queda 1.3802 exacto
+const k = truncar4(k_crudo); // El resultado será 1.3802
 
 let miGraficoCrecimiento;
 
@@ -1109,10 +1114,17 @@ window.calcularCrecimiento = function () {
 
     document.getElementById("resultado-k").innerText = k.toFixed(4);
     
-    // 2. Usamos el valor k de 4 decimales para el cálculo
-    const clientesProyectados = P0 * Math.exp(k * t_futuro);
+    // 2. Replicamos el cálculo a mano paso por paso truncando a 4 decimales
+    // Paso A: Multiplicamos k * t y truncamos (Ej. 10.6275)
+    const exponente = truncar4(k * t_futuro); 
     
-    // 3. Usamos Math.trunc() para tomar solo la parte entera sin redondear
+    // Paso B: Elevamos "e" a esa potencia y truncamos (Ej. 41253.9015)
+    const valorEuler = truncar4(Math.exp(exponente)); 
+    
+    // Paso C: Multiplicamos por los 12 clientes iniciales
+    const clientesProyectados = P0 * valorEuler; 
+    
+    // 3. Cortamos los decimales finales para dejar solo números enteros
     document.getElementById("resultado-p").innerText = Math.trunc(clientesProyectados).toLocaleString();
 
     dibujarGraficaCrecimiento(t_futuro);
@@ -1131,11 +1143,14 @@ function dibujarGraficaCrecimiento(t_max) {
 
     for (let i = 0; i <= pasos; i++) {
         let t_punto = (t_max / pasos) * i;
-        let clientes_punto = P0 * Math.exp(k * t_punto);
-        etiquetasTiempo.push("Año " + t_punto.toFixed(1));
         
-        // Aplicamos Math.trunc() también para los puntos de la gráfica
-        datosClientes.push(Math.trunc(clientes_punto));
+        // Obligamos a la gráfica a usar la misma matemática de 4 decimales
+        let exp_punto = truncar4(k * t_punto);
+        let euler_punto = truncar4(Math.exp(exp_punto));
+        let clientes_punto = Math.trunc(P0 * euler_punto);
+
+        etiquetasTiempo.push("Año " + t_punto.toFixed(1));
+        datosClientes.push(clientes_punto);
     }
 
     miGraficoCrecimiento = new Chart(ctx, {
@@ -1173,7 +1188,6 @@ function iniciarModuloCrecimiento() {
     const canvas = document.getElementById("graficaCrecimiento");
     if (canvas) window.calcularCrecimiento();
 }
-
 // ==========================================
 // MÓDULO 8: ARRANQUE DE LA APLICACIÓN
 // ==========================================
