@@ -1085,20 +1085,21 @@ async function cargarDetalleProducto() {
 // ==========================================
 // MÓDULO 7: ESTADÍSTICAS Y GRÁFICAS (ED)
 // ==========================================
-// Calcula y dibuja la gráfica de crecimiento de clientes
 
-// Función auxiliar para forzar a JavaScript a cortar a 4 decimales sin redondear
+// Corta a 4 decimales exactos. Usamos trunc en vez de round para evitar 
+// que JavaScript nos infle los resultados con su redondeo por defecto.
 function truncar4(valor) {
     return Math.trunc(valor * 10000) / 10000;
 }
 
+// Valores históricos base para el modelo matemático
 const P0 = 12;
 const t_actual = 2.2;
 const P_actual = 250;
 
-// 1. Calculamos k crudo y lo truncamos a 4 decimales exactos
+// Sacamos la constante de crecimiento (k)
 const k_crudo = Math.log(P_actual / P0) / t_actual;
-const k = truncar4(k_crudo); // El resultado será 1.3802
+const k = truncar4(k_crudo); // Debe quedar en 1.3802 para cuadrar con el cálculo manual
 
 let miGraficoCrecimiento;
 
@@ -1107,6 +1108,8 @@ window.calcularCrecimiento = function () {
     if (!inputTiempo) return;
 
     const t_futuro = parseFloat(inputTiempo.value);
+    
+    // Validación básica para evitar que se rompa la gráfica
     if (isNaN(t_futuro) || t_futuro < 0) {
         mostrarNotificacion("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
         return;
@@ -1114,17 +1117,13 @@ window.calcularCrecimiento = function () {
 
     document.getElementById("resultado-k").innerText = k.toFixed(4);
     
-    // 2. Replicamos el cálculo a mano paso por paso truncando a 4 decimales
-    // Paso A: Multiplicamos k * t y truncamos (Ej. 10.6275)
+    // Desglose de la fórmula P = P0 * e^(kt)
+    // Forzamos el truncamiento en cada variable intermedia para que no se arrastren decimales
     const exponente = truncar4(k * t_futuro); 
-    
-    // Paso B: Elevamos "e" a esa potencia y truncamos (Ej. 41253.9015)
     const valorEuler = truncar4(Math.exp(exponente)); 
-    
-    // Paso C: Multiplicamos por los 12 clientes iniciales
     const clientesProyectados = P0 * valorEuler; 
     
-    // 3. Cortamos los decimales finales para dejar solo números enteros
+    // Mostramos la proyección final de clientes (desechando fracciones de personas)
     document.getElementById("resultado-p").innerText = Math.trunc(clientesProyectados).toLocaleString();
 
     dibujarGraficaCrecimiento(t_futuro);
@@ -1135,16 +1134,18 @@ function dibujarGraficaCrecimiento(t_max) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
+    // Limpiamos el canvas antes de dibujar para evitar sobreposición si el usuario recalcula
     if (miGraficoCrecimiento) miGraficoCrecimiento.destroy();
 
     let etiquetasTiempo = [];
     let datosClientes = [];
-    const pasos = 20;
+    const pasos = 20; // Puntos de referencia para trazar la curva
 
     for (let i = 0; i <= pasos; i++) {
         let t_punto = (t_max / pasos) * i;
         
-        // Obligamos a la gráfica a usar la misma matemática de 4 decimales
+        // Misma lógica matemática del cálculo principal para que la gráfica 
+        // no desentone con el número final mostrado en la pantalla
         let exp_punto = truncar4(k * t_punto);
         let euler_punto = truncar4(Math.exp(exp_punto));
         let clientes_punto = Math.trunc(P0 * euler_punto);
@@ -1153,6 +1154,7 @@ function dibujarGraficaCrecimiento(t_max) {
         datosClientes.push(clientes_punto);
     }
 
+    // Renderizado visual de la curva con Chart.js
     miGraficoCrecimiento = new Chart(ctx, {
         type: "line",
         data: {
@@ -1188,6 +1190,7 @@ function iniciarModuloCrecimiento() {
     const canvas = document.getElementById("graficaCrecimiento");
     if (canvas) window.calcularCrecimiento();
 }
+
 // ==========================================
 // MÓDULO 8: ARRANQUE DE LA APLICACIÓN
 // ==========================================
