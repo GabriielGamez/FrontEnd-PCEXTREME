@@ -127,7 +127,7 @@ async function cargarComponentesAdmin() {
                 
                 // Mapa de permisos por Rol (1: Admin, 2: Recepcionista, 3: Técnico)
                 const paginasPermitidas = {
-                    "1": ["dashboard.html", "admin_reparaciones.html", "admin_clientes.html", "admin_mensajes.html", "admin_productos.html", "admin_web.html", "admin_personal.html", "ticket.html"],
+                    "1": ["dashboard.html", "admin_reparaciones.html", "admin_clientes.html", "admin_mensajes.html", "admin_productos.html", "admin_web.html", "admin_personal.html", "ticket.html", "ecuacionCrecimiento.html"],
                     "2": ["dashboard.html", "admin_reparaciones.html", "admin_clientes.html", "admin_mensajes.html", "ticket.html"],
                     "3": ["dashboard.html", "admin_reparaciones.html", "admin_productos.html", "ticket.html"]
                 };
@@ -1878,6 +1878,115 @@ window.eliminarMensajeBuzon = async function (id) {
 };
 
 // ==========================================
+// MÓDULO 11: ESTADÍSTICAS Y GRÁFICAS (ED)
+// ==========================================
+// Calcula y dibuja la gráfica de crecimiento dinámico desde la BD
+
+function truncar4(valor) {
+    return Math.trunc(valor * 10000) / 10000;
+}
+
+const P0 = 12;
+const t_actual = 2.2;
+
+// Variables que ahora se llenan solas gracias a la Base de Datos
+let P_actual_dinamico = 0;
+let k_dinamico = 0;
+let miGraficoCrecimiento;
+
+window.calcularCrecimiento = function () {
+    const inputTiempo = document.getElementById("input-tiempo");
+    if (!inputTiempo) return;
+
+    const t_futuro = parseFloat(inputTiempo.value);
+    
+    if (isNaN(t_futuro) || t_futuro < 0) {
+        // Usa la alerta nativa del administrador
+        mostrarNotificacionAdmin("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
+        return;
+    }
+
+    document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
+    
+    const exponente = truncar4(k_dinamico * t_futuro); 
+    const valorEuler = truncar4(Math.exp(exponente)); 
+    const clientesProyectados = P0 * valorEuler; 
+    
+    document.getElementById("resultado-p").innerText = Math.trunc(clientesProyectados).toLocaleString();
+
+    dibujarGraficaCrecimiento(t_futuro);
+};
+
+function dibujarGraficaCrecimiento(t_max) {
+    const canvas = document.getElementById("graficaCrecimiento");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    if (miGraficoCrecimiento) miGraficoCrecimiento.destroy();
+
+    let etiquetasTiempo = [];
+    let datosClientes = [];
+    const pasos = 20; 
+
+    for (let i = 0; i <= pasos; i++) {
+        let t_punto = (t_max / pasos) * i;
+        
+        let exp_punto = truncar4(k_dinamico * t_punto);
+        let euler_punto = truncar4(Math.exp(exp_punto));
+        let clientes_punto = Math.trunc(P0 * euler_punto);
+
+        etiquetasTiempo.push("Año " + t_punto.toFixed(1));
+        datosClientes.push(clientes_punto);
+    }
+
+    miGraficoCrecimiento = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: etiquetasTiempo,
+            datasets: [{
+                label: "Proyección de Clientes",
+                data: datosClientes,
+                borderColor: "#7ed957",
+                backgroundColor: "rgba(126, 217, 87, 0.1)",
+                borderWidth: 3,
+                pointBackgroundColor: "#3f51b5",
+                pointBorderColor: "#fff",
+                pointRadius: 4,
+                fill: true,
+                tension: 0.4,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: "#a1a1aa" } } },
+            scales: {
+                x: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
+                y: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
+            },
+        },
+    });
+}
+
+// Esta función recibe el dato en tiempo real desde el Módulo 9 (Dashboard)
+function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
+    const canvas = document.getElementById("graficaCrecimiento");
+    if (!canvas) return;
+
+    // Evitamos calcular con 0 para que la matemática no truene, si la DB está vacía, usamos 1
+    P_actual_dinamico = totalClientesBD > 0 ? totalClientesBD : 1;
+
+    // Calculamos la 'k' dinámica basándonos en la realidad de la BD
+    const k_crudo = Math.log(P_actual_dinamico / P0) / t_actual;
+    k_dinamico = truncar4(k_crudo);
+
+    // Disparamos el primer cálculo automáticamente usando el input que esté por defecto
+    const inputTiempo = document.getElementById("input-tiempo");
+    if (inputTiempo && inputTiempo.value) {
+        window.calcularCrecimiento();
+    }
+}
+// ==========================================
 // ARRANQUE DE LA APLICACIÓN
 // ==========================================
 // Se encarga de arrancar todas las funciones cuando la página carga
@@ -1905,5 +2014,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById('lista-reparaciones')) {
         cargarTablaAdminReparaciones();
         document.getElementById('formulario-reparacion').addEventListener('submit', gestionarSubmitReparacion);
+    }
+    // === NUEVO: Disparador para la página de la Ecuación ===
+    if (document.getElementById('graficaCrecimiento')) {
+        // Hacemos una petición rápida para saber cuántos clientes hay
+        const tokenStr = localStorage.getItem('token');
+        fetch(`${baseUrl}/dashboard/totales`, { 
+            headers: { 'Authorization': `Bearer ${tokenStr}` } 
+        })
+        .then(res => res.json())
+        .then(data => {
+            // Mandamos el total de clientes reales a tu función matemática
+            inicializarCalculoCrecimientoDinamico(data.total_clientes || 0);
+        })
+        .catch(err => {
+            console.error("Error obteniendo total de clientes para la ED", err);
+            // Si falla, lo iniciamos con 1 cliente para que no se rompa la app
+            inicializarCalculoCrecimientoDinamico(1); 
+        });
     }
 });
