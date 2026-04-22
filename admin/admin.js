@@ -1876,7 +1876,6 @@ window.eliminarMensajeBuzon = async function (id) {
         mostrarNotificacionAdmin("Error al eliminar el mensaje", "error");
     }
 };
-
 // ==========================================
 // MÓDULO 11: ESTADÍSTICAS Y GRÁFICAS (ED)
 // ==========================================
@@ -1912,7 +1911,8 @@ window.calcularCrecimiento = function () {
     const valorEuler = truncar4(Math.exp(exponente)); 
     const clientesProyectados = P0 * valorEuler; 
     
-    document.getElementById("resultado-p").innerText = Math.trunc(clientesProyectados).toLocaleString();
+    // === CAMBIO AQUÍ: Usamos Math.round para que 249.99 suba a 250 ===
+    document.getElementById("resultado-p").innerText = Math.round(clientesProyectados).toLocaleString();
 
     dibujarGraficaCrecimiento(t_futuro);
 };
@@ -1933,7 +1933,9 @@ function dibujarGraficaCrecimiento(t_max) {
         
         let exp_punto = truncar4(k_dinamico * t_punto);
         let euler_punto = truncar4(Math.exp(exp_punto));
-        let clientes_punto = Math.trunc(P0 * euler_punto);
+        
+        // === CAMBIO AQUÍ: También redondeamos los puntos de la gráfica ===
+        let clientes_punto = Math.round(P0 * euler_punto);
 
         etiquetasTiempo.push("Año " + t_punto.toFixed(1));
         datosClientes.push(clientes_punto);
