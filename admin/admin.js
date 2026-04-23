@@ -1879,17 +1879,15 @@ window.eliminarMensajeBuzon = async function (id) {
 // ==========================================
 // MÓDULO 11: ESTADÍSTICAS Y GRÁFICAS (ED)
 // ==========================================
-// Calcula y dibuja la gráfica de crecimiento dinámico desde la BD
+// Proyección dinámica de crecimiento basada en datos reales de la BD
 
 function truncar4(valor) {
     return Math.trunc(valor * 10000) / 10000;
 }
 
-const P0 = 12;
+// Variables globales del modelo
+let P0_dinamico = 0; 
 const t_actual = 2.2;
-
-// Variables que ahora se llenan solas gracias a la Base de Datos
-let P_actual_dinamico = 0;
 let k_dinamico = 0;
 let miGraficoCrecimiento;
 
@@ -1900,18 +1898,18 @@ window.calcularCrecimiento = function () {
     const t_futuro = parseFloat(inputTiempo.value);
     
     if (isNaN(t_futuro) || t_futuro < 0) {
-        // Usa la alerta nativa del administrador
         mostrarNotificacionAdmin("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
         return;
     }
 
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
     
+    // Cálculo por pasos truncando a 4 decimales para mantener precisión manual
     const exponente = truncar4(k_dinamico * t_futuro); 
     const valorEuler = truncar4(Math.exp(exponente)); 
-    const clientesProyectados = P0 * valorEuler; 
+    const clientesProyectados = P0_dinamico * valorEuler; 
     
-    // === CAMBIO AQUÍ: Usamos Math.round para que 249.99 suba a 250 ===
+    // Redondeo del resultado final (población entera)
     document.getElementById("resultado-p").innerText = Math.round(clientesProyectados).toLocaleString();
 
     dibujarGraficaCrecimiento(t_futuro);
@@ -1933,9 +1931,7 @@ function dibujarGraficaCrecimiento(t_max) {
         
         let exp_punto = truncar4(k_dinamico * t_punto);
         let euler_punto = truncar4(Math.exp(exp_punto));
-        
-        // === CAMBIO AQUÍ: También redondeamos los puntos de la gráfica ===
-        let clientes_punto = Math.round(P0 * euler_punto);
+        let clientes_punto = Math.round(P0_dinamico * euler_punto);
 
         etiquetasTiempo.push("Año " + t_punto.toFixed(1));
         datosClientes.push(clientes_punto);
@@ -1970,22 +1966,31 @@ function dibujarGraficaCrecimiento(t_max) {
     });
 }
 
-// Esta función recibe el dato en tiempo real desde el Módulo 9 (Dashboard)
-function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
+// Sincroniza los datos de la API y arranca el motor de cálculo
+async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
     const canvas = document.getElementById("graficaCrecimiento");
     if (!canvas) return;
 
-    // Evitamos calcular con 0 para que la matemática no truene, si la DB está vacía, usamos 1
-    P_actual_dinamico = totalClientesBD > 0 ? totalClientesBD : 1;
+    try {
+        // 1. Obtenemos los clientes iniciales (Enero 2024) para definir P0
+        const respuesta = await fetch(`${baseUrl}/dashboard/clientesIniciales`);
+        const clientesIniciales = await respuesta.json();
+        
+        // P0 es la cantidad de registros encontrados en ese periodo
+        P0_dinamico = clientesIniciales.length > 0 ? clientesIniciales.length : 1;
+        const P_actual = totalClientesBD > 0 ? totalClientesBD : 1;
 
-    // Calculamos la 'k' dinámica basándonos en la realidad de la BD
-    const k_crudo = Math.log(P_actual_dinamico / P0) / t_actual;
-    k_dinamico = truncar4(k_crudo);
+        // 2. Calculamos la tasa k en tiempo real: ln(P_actual / P0) / t
+        const k_crudo = Math.log(P_actual / P0_dinamico) / t_actual;
+        k_dinamico = truncar4(k_crudo);
 
-    // Disparamos el primer cálculo automáticamente usando el input que esté por defecto
-    const inputTiempo = document.getElementById("input-tiempo");
-    if (inputTiempo && inputTiempo.value) {
-        window.calcularCrecimiento();
+        // 3. Ejecutamos el cálculo inicial con el valor del input
+        const inputTiempo = document.getElementById("input-tiempo");
+        if (inputTiempo && inputTiempo.value) {
+            window.calcularCrecimiento();
+        }
+    } catch (error) {
+        console.error("Error al inicializar el modelo de crecimiento:", error);
     }
 }
 // ==========================================
