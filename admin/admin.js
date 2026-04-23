@@ -1884,34 +1884,32 @@ function truncar4(valor) {
     return Math.trunc(valor * 10000) / 10000;
 }
 
-// Configuración base del sistema
+// Variables base
 let P0_dinamico = 12; 
-const t_actual = 2.2; // 2 años, 2 meses y 12 días aprox.
+const t_actual = 2.2; 
 let k_dinamico = 0;
 let miGraficoCrecimiento;
 
 /**
- * Función "Inteligente" para etiquetas de tiempo
- * Convierte un decimal (ej: 2.7) en una fecha real (ej: Sep 2026)
+ * FUNCIÓN DE FORMATO CLÁSICO
+ * Convierte 2.2 en "2 años, 2 meses" o 0.5 en "6 meses"
  */
-function generarEtiquetaInteligente(t_decimal) {
-    // Definimos el inicio: Enero (0) de 2024
-    const fechaInicio = new Date(2024, 0, 1);
-    
-    // Calculamos el total de meses transcurridos
-    // Multiplicamos el tiempo decimal por 12 meses
-    const mesesTotales = Math.round(t_decimal * 12);
-    
-    // Creamos una nueva fecha sumando esos meses
-    const fechaPunto = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + mesesTotales);
-    
-    // Si la proyección es muy larga (más de 3 años), mostramos solo el año para no amontonar
-    // Si es corta, mostramos Mes y Año.
-    const opciones = mesesTotales > 36 
-        ? { year: 'numeric' } 
-        : { month: 'short', year: 'numeric' };
+function formatearTiempoClasico(t_decimal) {
+    const años = Math.floor(t_decimal);
+    const meses = Math.round((t_decimal - años) * 12);
 
-    return fechaPunto.toLocaleString('es-ES', opciones);
+    let resultado = [];
+
+    if (años > 0) {
+        resultado.push(`${años} ${años === 1 ? 'año' : 'años'}`);
+    }
+
+    if (meses > 0) {
+        resultado.push(`${meses} ${meses === 1 ? 'mes' : 'meses'}`);
+    }
+
+    // Si ambos son 0 (es el inicio), devolvemos "Inicio" o "0 meses"
+    return resultado.length > 0 ? resultado.join(", ") : "0 meses";
 }
 
 window.calcularCrecimiento = function () {
@@ -1925,7 +1923,7 @@ window.calcularCrecimiento = function () {
         return;
     }
 
-    // REGLA DE LA MAESTRA: Calculamos el tiempo total acumulado
+    // Aplicamos la regla de la maestra: t_total = actual + extra
     const t_total = t_actual + t_extra; 
 
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
@@ -1948,13 +1946,13 @@ function dibujarGraficaCrecimiento(t_max) {
 
     let etiquetasTiempo = [];
     let datosClientes = [];
-    const pasos = 15; // Reducimos pasos para que las fechas se lean bien
+    const pasos = 10; // Reducimos pasos para que los nombres largos no se amontonen
 
     for (let i = 0; i <= pasos; i++) {
         let t_punto = (t_max / pasos) * i;
         
-        // --- USAMOS LA NUEVA FUNCIÓN AQUÍ ---
-        etiquetasTiempo.push(generarEtiquetaInteligente(t_punto));
+        // --- AQUÍ APLICAMOS EL FORMATO CLÁSICO ---
+        etiquetasTiempo.push(formatearTiempoClasico(t_punto));
         
         let exp_punto = truncar4(k_dinamico * t_punto);
         let euler_punto = truncar4(Math.exp(exp_punto));
@@ -1966,18 +1964,14 @@ function dibujarGraficaCrecimiento(t_max) {
         data: {
             labels: etiquetasTiempo,
             datasets: [{
-                label: "Evolución de Clientes (Real + Proyectado)",
+                label: "Proyección de Clientes",
                 data: datosClientes,
                 borderColor: "#7ed957",
                 backgroundColor: "rgba(126, 217, 87, 0.1)",
                 borderWidth: 3,
-                pointBackgroundColor: (context) => {
-                    // Marcamos de color diferente el "Hoy" (año 2.2)
-                    const index = context.dataIndex;
-                    const t_en_este_punto = (t_max / pasos) * index;
-                    return t_en_este_punto >= 2.1 && t_en_este_punto <= 2.3 ? "#fff" : "#3f51b5";
-                },
-                pointRadius: 5,
+                pointBackgroundColor: "#3f51b5",
+                pointBorderColor: "#fff",
+                pointRadius: 4,
                 fill: true,
                 tension: 0.4,
             }],
@@ -1989,19 +1983,25 @@ function dibujarGraficaCrecimiento(t_max) {
                 legend: { labels: { color: "#a1a1aa" } },
                 tooltip: {
                     callbacks: {
-                        label: (context) => ` Clientes: ${context.parsed.y}`
+                        label: (context) => ` ${context.parsed.y} Clientes`
                     }
                 }
             },
             scales: {
-                x: { ticks: { color: "#a1a1aa" }, grid: { display: false } },
+                x: { 
+                    ticks: { 
+                        color: "#a1a1aa",
+                        font: { size: 10 } // Bajamos un poco el tamaño para que quepan los nombres
+                    }, 
+                    grid: { display: false } 
+                },
                 y: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
             },
         },
     });
 }
 
-// ... inicializarCalculoCrecimientoDinamico se mantiene igual ...
+// ... La función inicializarCalculoCrecimientoDinamico se mantiene igual ...
 
 // Sincroniza los datos de la API y arranca el motor de cálculo
 async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
