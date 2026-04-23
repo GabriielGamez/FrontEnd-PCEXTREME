@@ -1895,24 +1895,32 @@ window.calcularCrecimiento = function () {
     const inputTiempo = document.getElementById("input-tiempo");
     if (!inputTiempo) return;
 
-    const t_futuro = parseFloat(inputTiempo.value);
+    // 1. Extraemos los años "extra" que quieres proyectar hacia el futuro
+    const t_extra = parseFloat(inputTiempo.value);
     
-    if (isNaN(t_futuro) || t_futuro < 0) {
+    if (isNaN(t_extra) || t_extra < 0) {
         mostrarNotificacionAdmin("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
         return;
     }
 
+    // === EL CAMBIO QUE PIDIÓ TU MAESTRA ===
+    // Sumamos el tiempo de vida actual de la empresa (2.2) más los años a proyectar
+    // Si pones 6 años, t_total será 8.2
+    const t_total = t_actual + t_extra; 
+    // ======================================
+
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
     
-    // Cálculo por pasos truncando a 4 decimales para mantener precisión manual
-    const exponente = truncar4(k_dinamico * t_futuro); 
+    // 2. Usamos el TIEMPO TOTAL (t_total) para el cálculo matemático
+    const exponente = truncar4(k_dinamico * t_total); 
     const valorEuler = truncar4(Math.exp(exponente)); 
     const clientesProyectados = P0_dinamico * valorEuler; 
     
-    // Redondeo del resultado final (población entera)
+    // Redondeo del resultado final
     document.getElementById("resultado-p").innerText = Math.round(clientesProyectados).toLocaleString();
 
-    dibujarGraficaCrecimiento(t_futuro);
+    // 3. Le pasamos a la gráfica el tiempo total para que dibuje la curva completa
+    dibujarGraficaCrecimiento(t_total);
 };
 
 function dibujarGraficaCrecimiento(t_max) {
