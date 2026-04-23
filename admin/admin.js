@@ -1911,7 +1911,7 @@ window.calcularCrecimiento = function () {
 
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
     
-    // 2. Usamos el TIEMPO TOTAL (t_total) para el cálculo matemático
+    // 2. Usamos el TIEMPO TOTAL (t_total) para el cálculo matemáticas
     const exponente = truncar4(k_dinamico * t_total); 
     const valorEuler = truncar4(Math.exp(exponente)); 
     const clientesProyectados = P0_dinamico * valorEuler; 
