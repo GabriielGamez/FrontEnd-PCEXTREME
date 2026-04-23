@@ -1879,47 +1879,63 @@ window.eliminarMensajeBuzon = async function (id) {
 // ==========================================
 // MÓDULO 11: ESTADÍSTICAS Y GRÁFICAS (ED)
 // ==========================================
-// Proyección dinámica de crecimiento basada en datos reales de la BD
 
 function truncar4(valor) {
     return Math.trunc(valor * 10000) / 10000;
 }
 
-// Variables globales del modelo
-let P0_dinamico = 0; 
-const t_actual = 2.2;
+// Configuración base del sistema
+let P0_dinamico = 12; 
+const t_actual = 2.2; // 2 años, 2 meses y 12 días aprox.
 let k_dinamico = 0;
 let miGraficoCrecimiento;
+
+/**
+ * Función "Inteligente" para etiquetas de tiempo
+ * Convierte un decimal (ej: 2.7) en una fecha real (ej: Sep 2026)
+ */
+function generarEtiquetaInteligente(t_decimal) {
+    // Definimos el inicio: Enero (0) de 2024
+    const fechaInicio = new Date(2024, 0, 1);
+    
+    // Calculamos el total de meses transcurridos
+    // Multiplicamos el tiempo decimal por 12 meses
+    const mesesTotales = Math.round(t_decimal * 12);
+    
+    // Creamos una nueva fecha sumando esos meses
+    const fechaPunto = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + mesesTotales);
+    
+    // Si la proyección es muy larga (más de 3 años), mostramos solo el año para no amontonar
+    // Si es corta, mostramos Mes y Año.
+    const opciones = mesesTotales > 36 
+        ? { year: 'numeric' } 
+        : { month: 'short', year: 'numeric' };
+
+    return fechaPunto.toLocaleString('es-ES', opciones);
+}
 
 window.calcularCrecimiento = function () {
     const inputTiempo = document.getElementById("input-tiempo");
     if (!inputTiempo) return;
 
-    // 1. Extraemos los años "extra" que quieres proyectar hacia el futuro
     const t_extra = parseFloat(inputTiempo.value);
     
     if (isNaN(t_extra) || t_extra < 0) {
-        mostrarNotificacionAdmin("Por favor ingresa un tiempo válido mayor o igual a 0.", "error");
+        mostrarNotificacionAdmin("Por favor ingresa un tiempo válido.", "error");
         return;
     }
 
-    // === EL CAMBIO QUE PIDIÓ TU MAESTRA ===
-    // Sumamos el tiempo de vida actual de la empresa (2.2) más los años a proyectar
-    // Si pones 6 años, t_total será 8.2
+    // REGLA DE LA MAESTRA: Calculamos el tiempo total acumulado
     const t_total = t_actual + t_extra; 
-    // ======================================
 
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
     
-    // 2. Usamos el TIEMPO TOTAL (t_total) para el cálculo matemático
     const exponente = truncar4(k_dinamico * t_total); 
     const valorEuler = truncar4(Math.exp(exponente)); 
     const clientesProyectados = P0_dinamico * valorEuler; 
     
-    // Redondeo del resultado final
     document.getElementById("resultado-p").innerText = Math.round(clientesProyectados).toLocaleString();
 
-    // 3. Le pasamos a la gráfica el tiempo total para que dibuje la curva completa
     dibujarGraficaCrecimiento(t_total);
 };
 
@@ -1932,17 +1948,17 @@ function dibujarGraficaCrecimiento(t_max) {
 
     let etiquetasTiempo = [];
     let datosClientes = [];
-    const pasos = 20; 
+    const pasos = 15; // Reducimos pasos para que las fechas se lean bien
 
     for (let i = 0; i <= pasos; i++) {
         let t_punto = (t_max / pasos) * i;
         
+        // --- USAMOS LA NUEVA FUNCIÓN AQUÍ ---
+        etiquetasTiempo.push(generarEtiquetaInteligente(t_punto));
+        
         let exp_punto = truncar4(k_dinamico * t_punto);
         let euler_punto = truncar4(Math.exp(exp_punto));
-        let clientes_punto = Math.round(P0_dinamico * euler_punto);
-
-        etiquetasTiempo.push("Año " + t_punto.toFixed(1));
-        datosClientes.push(clientes_punto);
+        datosClientes.push(Math.round(P0_dinamico * euler_punto));
     }
 
     miGraficoCrecimiento = new Chart(ctx, {
@@ -1950,14 +1966,18 @@ function dibujarGraficaCrecimiento(t_max) {
         data: {
             labels: etiquetasTiempo,
             datasets: [{
-                label: "Proyección de Clientes",
+                label: "Evolución de Clientes (Real + Proyectado)",
                 data: datosClientes,
                 borderColor: "#7ed957",
                 backgroundColor: "rgba(126, 217, 87, 0.1)",
                 borderWidth: 3,
-                pointBackgroundColor: "#3f51b5",
-                pointBorderColor: "#fff",
-                pointRadius: 4,
+                pointBackgroundColor: (context) => {
+                    // Marcamos de color diferente el "Hoy" (año 2.2)
+                    const index = context.dataIndex;
+                    const t_en_este_punto = (t_max / pasos) * index;
+                    return t_en_este_punto >= 2.1 && t_en_este_punto <= 2.3 ? "#fff" : "#3f51b5";
+                },
+                pointRadius: 5,
                 fill: true,
                 tension: 0.4,
             }],
@@ -1965,14 +1985,23 @@ function dibujarGraficaCrecimiento(t_max) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "#a1a1aa" } } },
+            plugins: { 
+                legend: { labels: { color: "#a1a1aa" } },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => ` Clientes: ${context.parsed.y}`
+                    }
+                }
+            },
             scales: {
-                x: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
+                x: { ticks: { color: "#a1a1aa" }, grid: { display: false } },
                 y: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
             },
         },
     });
 }
+
+// ... inicializarCalculoCrecimientoDinamico se mantiene igual ...
 
 // Sincroniza los datos de la API y arranca el motor de cálculo
 async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
