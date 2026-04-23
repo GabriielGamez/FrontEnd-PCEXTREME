@@ -1980,15 +1980,28 @@ async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
     if (!canvas) return;
 
     try {
-        // 1. Obtenemos los clientes iniciales (Enero 2024) para definir P0
-        const respuesta = await fetch(`${baseUrl}/dashboard/clientesIniciales`);
-        const clientesIniciales = await respuesta.json();
+        // === CORRECCIÓN 1: Enviamos el token por si la ruta está protegida ===
+        const token = localStorage.getItem('token');
+        const headersSeguros = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+        // 1. Obtenemos los clientes iniciales (Enero 2024)
+        const respuesta = await fetch(`${baseUrl}/dashboard/clientesIniciales`, { 
+            headers: headersSeguros 
+        });
         
-        // P0 es la cantidad de registros encontrados en ese periodo
-        P0_dinamico = clientesIniciales.length > 0 ? clientesIniciales.length : 1;
+        let clientesIniciales = [];
+        if (respuesta.ok) {
+            clientesIniciales = await respuesta.json();
+        }
+        
+        // === CORRECCIÓN 2: El Fallback ===
+        // Si la BD no encuentra a nadie en enero 2024 (porque la columna es nueva), 
+        // forzamos el 12 de tus apuntes en lugar de 1.
+        P0_dinamico = clientesIniciales.length > 0 ? clientesIniciales.length : 12;
+        
         const P_actual = totalClientesBD > 0 ? totalClientesBD : 1;
 
-        // 2. Calculamos la tasa k en tiempo real: ln(P_actual / P0) / t
+        // 2. Calculamos la tasa k en tiempo real
         const k_crudo = Math.log(P_actual / P0_dinamico) / t_actual;
         k_dinamico = truncar4(k_crudo);
 
