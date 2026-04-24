@@ -1913,11 +1913,8 @@ function generarEtiquetaInteligente(t_decimal) {
     const mesesTotales = Math.round(t_decimal * 12);
     const fechaPunto = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + mesesTotales);
     
-    const opciones = mesesTotales > 48 
-        ? { year: 'numeric' } 
-        : { month: 'short', year: 'numeric' };
-
-    return fechaPunto.toLocaleString('es-ES', opciones);
+    // SIEMPRE entregamos mes y año. Chart.js se encargará de no amontonarlos.
+    return fechaPunto.toLocaleString('es-ES', { month: 'short', year: 'numeric' });
 }
 window.calcularCrecimiento = function () {
     const inputInicio = document.getElementById("input-inicio").value;
@@ -2006,14 +2003,18 @@ function dibujarGraficaCrecimiento(t_inicio, t_fin) {
                 tooltip: { callbacks: { label: (context) => ` ${context.parsed.y} Clientes` } }
             },
             scales: {
+                // === CAMBIO AQUÍ: Le damos reglas a Chart.js para el eje X ===
                 x: { 
-                    ticks: { color: "#a1a1aa" }, 
+                    ticks: { 
+                        color: "#a1a1aa",
+                        autoSkip: true,         // Oculta etiquetas automáticamente si no caben
+                        maxTicksLimit: 15,      // Máximo de etiquetas a mostrar (bien distribuidas)
+                        maxRotation: 45,        // Las inclina 45 grados para que se lean mejor
+                        minRotation: 45
+                    }, 
                     grid: { display: false } 
                 },
-                y: { 
-                    ticks: { color: "#a1a1aa" }, 
-                    grid: { color: "#27272a" } 
-                },
+                y: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
             },
         },
     });
