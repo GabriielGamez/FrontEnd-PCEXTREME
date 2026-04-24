@@ -1913,90 +1913,95 @@ function generarEtiquetaInteligente(t_decimal) {
 }
 
 window.calcularCrecimiento = async function () {
-    const inputInicio = document.getElementById("input-inicio").value;
-    const inputFin = document.getElementById("input-fin").value;
+    // 1. LEER INPUTS DE SECCIÓN 1 (Para calcular K)
+    const analisisInicio = document.getElementById("input-analisis-inicio").value;
+    const analisisFin = document.getElementById("input-analisis-fin").value;
 
-    if (!inputInicio || !inputFin) {
-        mostrarNotificacionAdmin("Por favor selecciona ambas fechas.", "error");
+    // 2. LEER INPUTS DE SECCIÓN 2 (Para proyectar al futuro)
+    const proyInicio = document.getElementById("input-proyeccion-inicio").value;
+    const proyFin = document.getElementById("input-proyeccion-fin").value;
+
+    if (!analisisInicio || !analisisFin || !proyInicio || !proyFin) {
+        mostrarNotificacionAdmin("Por favor selecciona todas las fechas en ambas secciones.", "error");
         return;
     }
 
-    const t_inicio = convertirMesADecimal(inputInicio);
-    const t_fin = convertirMesADecimal(inputFin);
-
-    if (t_fin <= t_inicio) {
-        mostrarNotificacionAdmin("La fecha 'Hasta' debe ser mayor que 'Desde'.", "advertencia");
-        return;
-    }
-
-    // 1. Formateamos las fechas al estilo SQL (YYYY-MM-DD HH:MM:SS)
-    const partesInicio = inputInicio.split('-');
+    // ==========================================
+    // FASE 1: CALIBRACIÓN (Consulta BD -> K)
+    // ==========================================
+    const partesInicio = analisisInicio.split('-');
     const fechaInicioSQL = `${partesInicio[0]}-${partesInicio[1]}-01 00:00:00`;
     
-    const partesFin = inputFin.split('-');
+    const partesFin = analisisFin.split('-');
     const anioFin = parseInt(partesFin[0]);
     const mesFin = parseInt(partesFin[1]);
     const ultimoDiaFin = new Date(anioFin, mesFin, 0).getDate(); 
     const fechaFinSQL = `${anioFin}-${String(mesFin).padStart(2, '0')}-${ultimoDiaFin} 23:59:59`;
 
     try {
-        // 2. Ejecutamos la consulta a la nueva ruta de la API
         const token = localStorage.getItem('token');
         const headersSeguros = token ? { 'Authorization': `Bearer ${token}` } : {};
         
         const urlPeticion = `${baseUrl}/dashboard/clientesRango?inicio=${fechaInicioSQL}&fin=${fechaFinSQL}`;
         const respuesta = await fetch(urlPeticion, { headers: headersSeguros });
         
-        let P_actual_BD = 1; // Respaldo si la BD está vacía
-        
+        let P_actual_BD = 1; 
         if (respuesta.ok) {
             const data = await respuesta.json();
             P_actual_BD = data.total_clientes > 0 ? data.total_clientes : 1; 
         }
 
-        // --- ACTUALIZAMOS LOS RESULTADOS EN EL FRONT (LAS 5 TARJETAS) ---
-
-        // Tarjeta 1: Población Inicial (P0)
+        // Actualizamos UI Sección 1
         const spanP0 = document.getElementById("resultado-p0");
         if(spanP0) spanP0.innerText = P0_dinamico.toLocaleString();
 
-        // Tarjeta 2: Población Actual en Rango
         const spanActual = document.getElementById("resultado-p-actual");
         if(spanActual) spanActual.innerText = P_actual_BD.toLocaleString();
 
-        // Tarjeta 3: Tasa de Crecimiento (K) recalculada con la BD
         const k_crudo = Math.log(P_actual_BD / P0_dinamico) / t_actual;
         k_dinamico = truncar4(k_crudo);
         document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
 
-        // Cálculos matemáticos para proyecciones
-        const expInicio = truncar4(k_dinamico * t_inicio);
-        const clientesInicio = Math.round(P0_dinamico * truncar4(Math.exp(expInicio)));
+        // ==========================================
+        // FASE 2: PROYECCIÓN FUTURA (Rango -> Decimal t)
+        // ==========================================
+        // Convertimos el rango futuro a decimales (t)
+        const t_inicio_proy = convertirMesADecimal(proyInicio);
+        const t_fin_proy = convertirMesADecimal(proyFin);
 
-        const expFin = truncar4(k_dinamico * t_fin); 
-        const valorEulerFin = truncar4(Math.exp(expFin)); 
+        if (t_fin_proy <= t_inicio_proy) {
+            mostrarNotificacionAdmin("El fin de la proyección debe ser mayor al inicio.", "advertencia");
+            return;
+        }
+
+        // Calculamos P(t) para el inicio de la proyección
+        const expInicioProy = truncar4(k_dinamico * t_inicio_proy);
+        const clientesInicioProy = Math.round(P0_dinamico * truncar4(Math.exp(expInicioProy)));
+
+        // Calculamos P(t) para el final de la proyección
+        const expFinProy = truncar4(k_dinamico * t_fin_proy); 
+        const valorEulerFin = truncar4(Math.exp(expFinProy)); 
         const clientesProyectados = Math.round(P0_dinamico * valorEulerFin); 
         
-        // Tarjeta 4: Población Proyectada
+        // Actualizamos UI Sección 2
         document.getElementById("resultado-p").innerText = clientesProyectados.toLocaleString();
 
-        // Tarjeta 5: Diferencia de Aumento (Nuevos clientes)
-        const nuevosClientes = clientesProyectados - clientesInicio;
+        const nuevosClientes = clientesProyectados - clientesInicioProy;
         const spanNuevos = document.getElementById("resultado-nuevos");
         if (spanNuevos) {
             if (nuevosClientes > 0) {
-                spanNuevos.innerText = `+${nuevosClientes.toLocaleString()} crecimiento estimado`;
+                spanNuevos.innerText = `+${nuevosClientes.toLocaleString()} crecimiento en este rango`;
                 spanNuevos.classList.remove("opacity-0");
             } else {
                 spanNuevos.classList.add("opacity-0");
             }
         }
 
-        // 3. Dibujamos la gráfica
-        dibujarGraficaCrecimiento(t_inicio, t_fin);
+        // Dibujamos la gráfica usando los tiempos del futuro
+        dibujarGraficaCrecimiento(t_inicio_proy, t_fin_proy);
 
     } catch (error) {
-        console.error("Error al consultar la BD en rango:", error);
+        console.error("Error al ejecutar el modelo:", error);
         mostrarNotificacionAdmin("Error de conexión con el servidor", "error");
     }
 };
