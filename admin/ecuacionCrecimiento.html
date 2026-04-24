@@ -30,49 +30,76 @@
         </div>
 
         <div class="bg-[#1a1c20] p-6 rounded-xl shadow-lg border border-gray-800">
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
-                
-                <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-between">
-                    <label class="block text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-wider text-center">Rango de Proyección</label>
+            <div class="mb-2">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fas fa-history text-blue-400"></i> 1. Calibración del Modelo (Análisis de k)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     
-                    <div class="flex flex-col gap-3 mb-4">
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[9px] text-gray-500 uppercase font-semibold">Desde:</span>
-                            <input type="month" id="input-inicio" value="2026-03" min="2024-01" max="2050-12" 
-                                class="w-full bg-[#1a1c20] border border-gray-700 text-white px-3 py-1.5 rounded text-xs focus:outline-none focus:border-[#7ed957] cursor-pointer">
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-[9px] text-gray-500 uppercase font-semibold">Hasta:</span>
-                            <input type="month" id="input-fin" value="2030-01" min="2026-03" max="2050-12" 
-                                class="w-full bg-[#1a1c20] border border-gray-700 text-white px-3 py-1.5 rounded text-xs focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                    <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-between">
+                        <label class="block text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-wider text-center">Periodo de Análisis</label>
+                        <div class="flex flex-col gap-2 mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-gray-500 uppercase font-semibold w-12">Desde:</span>
+                                <input type="month" id="input-analisis-inicio" value="2024-01" min="2024-01" max="2050-12" class="w-full bg-[#1a1c20] border border-gray-700 text-white px-2 py-1.5 rounded text-xs focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-gray-500 uppercase font-semibold w-12">Hasta:</span>
+                                <input type="month" id="input-analisis-fin" value="2026-03" min="2024-01" max="2050-12" class="w-full bg-[#1a1c20] border border-gray-700 text-white px-2 py-1.5 rounded text-xs focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                            </div>
                         </div>
                     </div>
-                    <button onclick="calcularCrecimiento()" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-black text-xs font-bold px-3 py-2 rounded transition-all mt-auto">
-                        Calcular
-                    </button>
-                </div>
 
-                <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
-                    <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Población Inicial<br><span class="text-gray-500 text-[8px]">(Enero 2024)</span></span>
-                    <span id="resultado-p0" class="text-3xl font-black text-white">0</span>
-                </div>
+                    <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
+                        <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Población Inicial<br><span class="text-gray-500 text-[8px]">(P0)</span></span>
+                        <span id="resultado-p0" class="text-3xl font-black text-white">0</span>
+                    </div>
 
-                <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
-                    <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Población Actual<br><span class="text-gray-500 text-[8px]">(En Rango)</span></span>
-                    <span id="resultado-p-actual" class="text-3xl font-black text-white">0</span>
+                    <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
+                        <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Población Actual<br><span class="text-gray-500 text-[8px]">(En periodo)</span></span>
+                        <span id="resultado-p-actual" class="text-3xl font-black text-white">0</span>
+                    </div>
+                    
+                    <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
+                        <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Tasa de<br>Crecimiento (k)</span>
+                        <span id="resultado-k" class="text-3xl font-black text-blue-400">0.0000</span>
+                    </div>
                 </div>
-                
-                <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
-                    <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Tasa de<br>Crecimiento (k)</span>
-                    <span id="resultado-k" class="text-3xl font-black text-blue-400">0.0000</span>
-                </div>
-                
-                <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center relative overflow-hidden">
-                    <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Población<br>Proyectada</span>
-                    <span id="resultado-p" class="text-3xl font-black text-[#7ed957] transition-all duration-300">0</span>
-                    <span id="resultado-nuevos" class="text-[#7ed957] text-[9px] font-medium mt-1 opacity-0 transition-opacity duration-300 text-center">
-                        +0 crecimiento
-                    </span>
+            </div>
+
+            <hr class="border-gray-800 my-8">
+
+            <div class="mb-6">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fas fa-rocket text-[#7ed957]"></i> 2. Proyección de Población Futura
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-between">
+                        <label class="block text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-wider text-center">Rango a Proyectar</label>
+                        <div class="flex flex-col gap-3 mb-4">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[9px] text-gray-500 uppercase font-semibold">Inicio de Proyección:</span>
+                                <input type="month" id="input-proyeccion-inicio" value="2026-03" min="2024-01" max="2050-12" class="w-full bg-[#1a1c20] border border-gray-700 text-white px-3 py-2 rounded text-xs focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[9px] text-gray-500 uppercase font-semibold">Fin de Proyección:</span>
+                                <input type="month" id="input-proyeccion-fin" value="2030-01" min="2026-03" max="2050-12" class="w-full bg-[#1a1c20] border border-gray-700 text-white px-3 py-2 rounded text-xs focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                            </div>
+                        </div>
+                        <button onclick="calcularCrecimiento()" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-black text-sm font-bold px-3 py-3 rounded-lg transition-all shadow-[0_4px_14px_0_rgba(126,217,87,0.39)]">
+                            Ejecutar Modelo Completo
+                        </button>
+                    </div>
+
+                    <div class="bg-[#0f1115] p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center relative overflow-hidden">
+                        <span class="text-gray-400 text-[10px] font-bold uppercase mb-2 text-center">Población Final<br>Proyectada</span>
+                        <span id="resultado-p" class="text-5xl font-black text-[#7ed957] transition-all duration-300">0</span>
+                        <span id="resultado-nuevos" class="text-[#7ed957] text-xs font-medium mt-2 opacity-0 transition-opacity duration-300 text-center">
+                            +0 crecimiento
+                        </span>
+                    </div>
+
                 </div>
             </div>
 
