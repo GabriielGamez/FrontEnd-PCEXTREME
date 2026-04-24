@@ -1890,13 +1890,10 @@ const t_actual = 2.2;
 let k_dinamico = 0;
 let miGraficoCrecimiento;
 
-/**
- * === NUEVO: TRADUCTOR DE FECHAS A DECIMAL ===
- * Toma "2026-03", cuenta los meses desde Enero 2024, y devuelve 2.1666...
- */
+//Traductor de meses a decimal
 function convertirMesADecimal(fechaString) {
     if (!fechaString) return 0;
-    const partes = fechaString.split('-'); // ["2026", "03"]
+    const partes = fechaString.split('-');
     const anio = parseInt(partes[0]);
     const mes = parseInt(partes[1]);
     
@@ -1907,13 +1904,11 @@ function convertirMesADecimal(fechaString) {
     return mesesTranscurridos / 12; 
 }
 
-// Generador Inteligente para las etiquetas (el que ya teníamos)
+// Generador Inteligente para las etiquetas
 function generarEtiquetaInteligente(t_decimal) {
     const fechaInicio = new Date(2024, 0, 1);
     const mesesTotales = Math.round(t_decimal * 12);
     const fechaPunto = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + mesesTotales);
-    
-    // SIEMPRE entregamos mes y año. Chart.js se encargará de no amontonarlos.
     return fechaPunto.toLocaleString('es-ES', { month: 'short', year: 'numeric' });
 }
 window.calcularCrecimiento = function () {
@@ -2034,15 +2029,12 @@ function dibujarGraficaCrecimiento(t_inicio, t_fin) {
     });
 }
 
-// ... La función inicializarCalculoCrecimientoDinamico se mantiene igual ...
-
 // Sincroniza los datos de la API y arranca el motor de cálculo
 async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
     const canvas = document.getElementById("graficaCrecimiento");
     if (!canvas) return;
 
     try {
-        // === CORRECCIÓN 1: Enviamos el token por si la ruta está protegida ===
         const token = localStorage.getItem('token');
         const headersSeguros = token ? { 'Authorization': `Bearer ${token}` } : {};
 
@@ -2056,9 +2048,6 @@ async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
             clientesIniciales = await respuesta.json();
         }
         
-        // === CORRECCIÓN 2: El Fallback ===
-        // Si la BD no encuentra a nadie en enero 2024 (porque la columna es nueva), 
-        // forzamos el 12 de tus apuntes en lugar de 1.
         P0_dinamico = clientesIniciales.length > 0 ? clientesIniciales.length : 12;
         
         const P_actual = totalClientesBD > 0 ? totalClientesBD : 1;
