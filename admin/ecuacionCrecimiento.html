@@ -33,20 +33,22 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 
                 <div class="bg-[#0f1115] p-5 rounded-lg border border-gray-700 flex flex-col justify-between">
-                    <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Rango de Proyección</label>
+                    <label class="block text-gray-400 text-xs font-bold mb-4 uppercase tracking-wider">Rango de Proyección</label>
                     
-                    <div class="flex flex-col sm:flex-row gap-3 mb-3">
-                        <div class="w-full">
-                            <span class="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Desde:</span>
-                            <input type="month" id="input-inicio" value="2026-03" class="w-full bg-[#1a1c20] border border-gray-700 text-white px-3 py-2 rounded text-sm focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-5">
+                        <div class="w-full relative">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-wider block mb-1.5 font-semibold">Desde:</span>
+                            <input type="month" id="input-inicio" value="2026-03" min="2026-03" max="2050-12" 
+                                class="w-full bg-[#1a1c20] border border-gray-700 text-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition-all cursor-pointer shadow-inner appearance-none">
                         </div>
-                        <div class="w-full">
-                            <span class="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Hasta:</span>
-                            <input type="month" id="input-fin" value="2030-12" class="w-full bg-[#1a1c20] border border-gray-700 text-white px-3 py-2 rounded text-sm focus:outline-none focus:border-[#7ed957] cursor-pointer">
+                        <div class="w-full relative">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-wider block mb-1.5 font-semibold">Hasta:</span>
+                            <input type="month" id="input-fin" value="2030-01" min="2026-03" max="2050-12" 
+                                class="w-full bg-[#1a1c20] border border-gray-700 text-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:border-[#7ed957] focus:ring-1 focus:ring-[#7ed957] transition-all cursor-pointer shadow-inner appearance-none">
                         </div>
                     </div>
 
-                    <button onclick="calcularCrecimiento()" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold px-5 py-2 rounded transition shadow-sm mt-auto">
+                    <button onclick="calcularCrecimiento()" class="w-full bg-[#7ed957] hover:bg-[#6bc148] text-black font-bold px-5 py-3 rounded-lg transition-all shadow-[0_4px_14px_0_rgba(126,217,87,0.39)] hover:shadow-[0_6px_20px_rgba(126,217,87,0.23)] mt-auto">
                         Calcular Proyección
                     </button>
                 </div>
