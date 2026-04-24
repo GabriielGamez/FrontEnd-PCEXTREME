@@ -1891,53 +1891,66 @@ let k_dinamico = 0;
 let miGraficoCrecimiento;
 
 /**
- * FUNCIÓN DE FORMATO CLÁSICO
- * Convierte 2.2 en "2 años, 2 meses" o 0.5 en "6 meses"
+ * === NUEVO: TRADUCTOR DE FECHAS A DECIMAL ===
+ * Toma "2026-03", cuenta los meses desde Enero 2024, y devuelve 2.1666...
  */
-function formatearTiempoClasico(t_decimal) {
-    const años = Math.floor(t_decimal);
-    const meses = Math.round((t_decimal - años) * 12);
-
-    let resultado = [];
-
-    if (años > 0) {
-        resultado.push(`${años} ${años === 1 ? 'año' : 'años'}`);
-    }
-
-    if (meses > 0) {
-        resultado.push(`${meses} ${meses === 1 ? 'mes' : 'meses'}`);
-    }
-
-    // Si ambos son 0 (es el inicio), devolvemos "Inicio" o "0 meses"
-    return resultado.length > 0 ? resultado.join(", ") : "0 meses";
+function convertirMesADecimal(fechaString) {
+    if (!fechaString) return 0;
+    const partes = fechaString.split('-'); // ["2026", "03"]
+    const anio = parseInt(partes[0]);
+    const mes = parseInt(partes[1]);
+    
+    // Contamos meses transcurridos desde Enero (Mes 1) de 2024
+    const mesesTranscurridos = ((anio - 2024) * 12) + (mes - 1);
+    
+    // Lo convertimos a la fracción de año que usa la ecuación
+    return mesesTranscurridos / 12; 
 }
 
-window.calcularCrecimiento = function () {
-    const inputTiempo = document.getElementById("input-tiempo");
-    if (!inputTiempo) return;
-
-    const t_extra = parseFloat(inputTiempo.value);
+// Generador Inteligente para las etiquetas (el que ya teníamos)
+function generarEtiquetaInteligente(t_decimal) {
+    const fechaInicio = new Date(2024, 0, 1);
+    const mesesTotales = Math.round(t_decimal * 12);
+    const fechaPunto = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + mesesTotales);
     
-    if (isNaN(t_extra) || t_extra < 0) {
-        mostrarNotificacionAdmin("Por favor ingresa un tiempo válido.", "error");
+    const opciones = mesesTotales > 48 
+        ? { year: 'numeric' } 
+        : { month: 'short', year: 'numeric' };
+
+    return fechaPunto.toLocaleString('es-ES', opciones);
+}
+window.calcularCrecimiento = function () {
+    const inputInicio = document.getElementById("input-inicio").value;
+    const inputFin = document.getElementById("input-fin").value;
+
+    if (!inputInicio || !inputFin) {
+        mostrarNotificacionAdmin("Por favor selecciona ambas fechas.", "error");
         return;
     }
 
-    // Aplicamos la regla de la maestra: t_total = actual + extra
-    const t_total = t_actual + t_extra; 
+    // 1. Traducimos las fechas del usuario a tiempos decimales
+    const t_inicio = convertirMesADecimal(inputInicio);
+    const t_fin = convertirMesADecimal(inputFin);
+
+    if (t_fin <= t_inicio) {
+        mostrarNotificacionAdmin("La fecha 'Hasta' debe ser mayor que 'Desde'.", "advertencia");
+        return;
+    }
 
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
     
-    const exponente = truncar4(k_dinamico * t_total); 
+    // 2. Calculamos la población para el final de la proyección (t_fin)
+    const exponente = truncar4(k_dinamico * t_fin); 
     const valorEuler = truncar4(Math.exp(exponente)); 
     const clientesProyectados = P0_dinamico * valorEuler; 
     
     document.getElementById("resultado-p").innerText = Math.round(clientesProyectados).toLocaleString();
 
-    dibujarGraficaCrecimiento(t_total);
+    // 3. Dibujamos la gráfica pasándole dónde empieza y dónde termina
+    dibujarGraficaCrecimiento(t_inicio, t_fin);
 };
 
-function dibujarGraficaCrecimiento(t_max) {
+function dibujarGraficaCrecimiento(t_inicio, t_fin) {
     const canvas = document.getElementById("graficaCrecimiento");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -1946,13 +1959,16 @@ function dibujarGraficaCrecimiento(t_max) {
 
     let etiquetasTiempo = [];
     let datosClientes = [];
-    const pasos = 10; // Reducimos pasos para que los nombres largos no se amontonen
+    const pasos = 15; 
+    
+    // Rango total de tiempo a dibujar (ej. de 2026 a 2027 = 1 año)
+    const t_rango = t_fin - t_inicio;
 
     for (let i = 0; i <= pasos; i++) {
-        let t_punto = (t_max / pasos) * i;
+        // En lugar de empezar desde 0, empezamos desde t_inicio
+        let t_punto = t_inicio + (t_rango / pasos) * i;
         
-        // --- AQUÍ APLICAMOS EL FORMATO CLÁSICO ---
-        etiquetasTiempo.push(formatearTiempoClasico(t_punto));
+        etiquetasTiempo.push(generarEtiquetaInteligente(t_punto));
         
         let exp_punto = truncar4(k_dinamico * t_punto);
         let euler_punto = truncar4(Math.exp(exp_punto));
@@ -1964,14 +1980,14 @@ function dibujarGraficaCrecimiento(t_max) {
         data: {
             labels: etiquetasTiempo,
             datasets: [{
-                label: "Proyección de Clientes",
+                label: "Clientes Proyectados en Rango",
                 data: datosClientes,
                 borderColor: "#7ed957",
                 backgroundColor: "rgba(126, 217, 87, 0.1)",
                 borderWidth: 3,
                 pointBackgroundColor: "#3f51b5",
                 pointBorderColor: "#fff",
-                pointRadius: 4,
+                pointRadius: 5,
                 fill: true,
                 tension: 0.4,
             }],
@@ -1981,20 +1997,10 @@ function dibujarGraficaCrecimiento(t_max) {
             maintainAspectRatio: false,
             plugins: { 
                 legend: { labels: { color: "#a1a1aa" } },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => ` ${context.parsed.y} Clientes`
-                    }
-                }
+                tooltip: { callbacks: { label: (context) => ` ${context.parsed.y} Clientes` } }
             },
             scales: {
-                x: { 
-                    ticks: { 
-                        color: "#a1a1aa",
-                        font: { size: 10 } // Bajamos un poco el tamaño para que quepan los nombres
-                    }, 
-                    grid: { display: false } 
-                },
+                x: { ticks: { color: "#a1a1aa" }, grid: { display: false } },
                 y: { ticks: { color: "#a1a1aa" }, grid: { color: "#27272a" } },
             },
         },
