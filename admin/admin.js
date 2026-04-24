@@ -1925,7 +1925,6 @@ window.calcularCrecimiento = function () {
         return;
     }
 
-    // 1. Traducimos las fechas del usuario a tiempos decimales
     const t_inicio = convertirMesADecimal(inputInicio);
     const t_fin = convertirMesADecimal(inputFin);
 
@@ -1936,14 +1935,29 @@ window.calcularCrecimiento = function () {
 
     document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
     
-    // 2. Calculamos la población para el final de la proyección (t_fin)
-    const exponente = truncar4(k_dinamico * t_fin); 
-    const valorEuler = truncar4(Math.exp(exponente)); 
-    const clientesProyectados = P0_dinamico * valorEuler; 
-    
-    document.getElementById("resultado-p").innerText = Math.round(clientesProyectados).toLocaleString();
+    // 1. Calculamos cuántos clientes hay EXACTAMENTE en la fecha "Desde"
+    const expInicio = truncar4(k_dinamico * t_inicio);
+    const clientesInicio = Math.round(P0_dinamico * truncar4(Math.exp(expInicio)));
 
-    // 3. Dibujamos la gráfica pasándole dónde empieza y dónde termina
+    // 2. Calculamos cuántos clientes habrá en la fecha "Hasta"
+    const expFin = truncar4(k_dinamico * t_fin); 
+    const valorEulerFin = truncar4(Math.exp(expFin)); 
+    const clientesProyectados = Math.round(P0_dinamico * valorEulerFin); 
+    
+    // 3. Calculamos la diferencia (El aumento neto)
+    const nuevosClientes = clientesProyectados - clientesInicio;
+
+    // 4. Actualizamos la interfaz
+    document.getElementById("resultado-p").innerText = clientesProyectados.toLocaleString();
+    
+    const spanNuevos = document.getElementById("resultado-nuevos");
+    if (nuevosClientes > 0) {
+        spanNuevos.innerText = `+${nuevosClientes.toLocaleString()} nuevos clientes estimados`;
+        spanNuevos.classList.remove("opacity-0"); // Lo hacemos visible
+    } else {
+        spanNuevos.classList.add("opacity-0"); // Lo ocultamos si no hay aumento
+    }
+
     dibujarGraficaCrecimiento(t_inicio, t_fin);
 };
 
