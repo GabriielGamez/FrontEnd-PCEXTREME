@@ -1966,18 +1966,12 @@ function dibujarGraficaCrecimiento(t_inicio, t_fin) {
     let etiquetasTiempo = [];
     let datosClientes = [];
     
-    // Rango total de tiempo a dibujar (ej. de 2026 a 2027 = 1 año)
     const t_rango = t_fin - t_inicio;
-
-    // === CORRECCIÓN AQUÍ: Pasos Dinámicos ===
-    // Multiplicamos el rango de años por 12 para saber exactamente cuántos meses hay de diferencia.
     let pasos = Math.round(t_rango * 12);
     
-    // Si por error el usuario pone la misma fecha de inicio y fin, forzamos a 1 para que no marque error matemático
     if (pasos <= 0) pasos = 1; 
 
     for (let i = 0; i <= pasos; i++) {
-        // En lugar de dividir el mes en pedacitos, avanzamos exactamente mes a mes
         let t_punto = t_inicio + (t_rango / pasos) * i;
         
         etiquetasTiempo.push(generarEtiquetaInteligente(t_punto));
@@ -2012,13 +2006,12 @@ function dibujarGraficaCrecimiento(t_inicio, t_fin) {
                 tooltip: { callbacks: { label: (context) => ` ${context.parsed.y} Clientes` } }
             },
             scales: {
-                // === CAMBIO AQUÍ: Le damos reglas a Chart.js para el eje X ===
                 x: { 
                     ticks: { 
                         color: "#a1a1aa",
-                        autoSkip: true,         // Oculta etiquetas automáticamente si no caben
-                        maxTicksLimit: 15,      // Máximo de etiquetas a mostrar (bien distribuidas)
-                        maxRotation: 45,        // Las inclina 45 grados para que se lean mejor
+                        autoSkip: true,         
+                        maxTicksLimit: 15,      
+                        maxRotation: 45,        
                         minRotation: 45
                     }, 
                     grid: { display: false } 
