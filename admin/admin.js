@@ -1911,7 +1911,8 @@ function generarEtiquetaInteligente(t_decimal) {
     const fechaPunto = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + mesesTotales);
     return fechaPunto.toLocaleString('es-ES', { month: 'short', year: 'numeric' });
 }
-window.calcularCrecimiento = function () {
+// La hacemos asíncrona (async) porque ahora se conectará a la Base de Datos
+window.calcularCrecimiento = async function () {
     const inputInicio = document.getElementById("input-inicio").value;
     const inputFin = document.getElementById("input-fin").value;
 
@@ -1928,34 +1929,71 @@ window.calcularCrecimiento = function () {
         return;
     }
 
-    document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
+    // 1. Formateamos las fechas al estilo SQL (YYYY-MM-DD HH:MM:SS)
+    const partesInicio = inputInicio.split('-');
+    const fechaInicioSQL = `${partesInicio[0]}-${partesInicio[1]}-01 00:00:00`;
     
-    // 1. Calculamos cuántos clientes hay EXACTAMENTE en la fecha "Desde"
-    const expInicio = truncar4(k_dinamico * t_inicio);
-    const clientesInicio = Math.round(P0_dinamico * truncar4(Math.exp(expInicio)));
+    const partesFin = inputFin.split('-');
+    const anioFin = parseInt(partesFin[0]);
+    const mesFin = parseInt(partesFin[1]);
+    const ultimoDiaFin = new Date(anioFin, mesFin, 0).getDate(); // Truco para obtener el último día del mes
+    const fechaFinSQL = `${anioFin}-${String(mesFin).padStart(2, '0')}-${ultimoDiaFin} 23:59:59`;
 
-    // 2. Calculamos cuántos clientes habrá en la fecha "Hasta"
-    const expFin = truncar4(k_dinamico * t_fin); 
-    const valorEulerFin = truncar4(Math.exp(expFin)); 
-    const clientesProyectados = Math.round(P0_dinamico * valorEulerFin); 
-    
-    // 3. Calculamos la diferencia (El aumento neto)
-    const nuevosClientes = clientesProyectados - clientesInicio;
+    try {
+        // 2. Ejecutamos la consulta a la nueva ruta de la API
+        const token = localStorage.getItem('token');
+        const headersSeguros = token ? { 'Authorization': `Bearer ${token}` } : {};
+        
+        const urlPeticion = `${baseUrl}/dashboard/clientesRango?inicio=${fechaInicioSQL}&fin=${fechaFinSQL}`;
+        const respuesta = await fetch(urlPeticion, { headers: headersSeguros });
+        
+        let P_actual_BD = 1; // Respaldo por si la BD está vacía
+        
+        if (respuesta.ok) {
+            const data = await respuesta.json();
+            // Obtenemos los clientes exactos que entraron en ese rango
+            P_actual_BD = data.total_clientes > 0 ? data.total_clientes : 1; 
+        }
 
-    // 4. Actualizamos la interfaz
-    document.getElementById("resultado-p").innerText = clientesProyectados.toLocaleString();
-    
-    const spanNuevos = document.getElementById("resultado-nuevos");
-    if (nuevosClientes > 0) {
-        spanNuevos.innerText = `+${nuevosClientes.toLocaleString()} nuevos clientes estimados`;
-        spanNuevos.classList.remove("opacity-0"); // Lo hacemos visible
-    } else {
-        spanNuevos.classList.add("opacity-0"); // Lo ocultamos si no hay aumento
+        // --- ACTUALIZAMOS LOS RESULTADOS EN EL FRONT ---
+
+        // A) Población Actual (Mostramos el dato crudo de la BD)
+        const spanActual = document.getElementById("resultado-p-actual");
+        if(spanActual) spanActual.innerText = P_actual_BD.toLocaleString();
+
+        // B) Tasa de Crecimiento (Calculamos K con el nuevo valor de la BD)
+        const k_crudo = Math.log(P_actual_BD / P0_dinamico) / t_actual;
+        k_dinamico = truncar4(k_crudo);
+        document.getElementById("resultado-k").innerText = k_dinamico.toFixed(4);
+
+        // C) Población Proyectada (Usamos la ED para ver el futuro)
+        const expInicio = truncar4(k_dinamico * t_inicio);
+        const clientesInicio = Math.round(P0_dinamico * truncar4(Math.exp(expInicio)));
+
+        const expFin = truncar4(k_dinamico * t_fin); 
+        const valorEulerFin = truncar4(Math.exp(expFin)); 
+        const clientesProyectados = Math.round(P0_dinamico * valorEulerFin); 
+        
+        document.getElementById("resultado-p").innerText = clientesProyectados.toLocaleString();
+
+        // D) Diferencia de Aumento
+        const nuevosClientes = clientesProyectados - clientesInicio;
+        const spanNuevos = document.getElementById("resultado-nuevos");
+        if (nuevosClientes > 0) {
+            spanNuevos.innerText = `+${nuevosClientes.toLocaleString()} crecimiento neto estimado`;
+            spanNuevos.classList.remove("opacity-0");
+        } else {
+            spanNuevos.classList.add("opacity-0");
+        }
+
+        // 3. Dibujamos la gráfica
+        dibujarGraficaCrecimiento(t_inicio, t_fin);
+
+    } catch (error) {
+        console.error("Error al consultar la BD en rango:", error);
+        mostrarNotificacionAdmin("Error de conexión con el servidor", "error");
     }
-
-    dibujarGraficaCrecimiento(t_inicio, t_fin);
 };
-
 function dibujarGraficaCrecimiento(t_inicio, t_fin) {
     const canvas = document.getElementById("graficaCrecimiento");
     if (!canvas) return;
@@ -2022,8 +2060,12 @@ function dibujarGraficaCrecimiento(t_inicio, t_fin) {
     });
 }
 
-// Sincroniza los datos de la API y arranca el motor de cálculo
-async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
+// ==========================================
+// MÓDULO 11: INICIALIZACIÓN DINÁMICA (ED)
+// ==========================================
+
+// Esta función es la "llave" que prepara el modelo matemático
+async function inicializarCalculoCrecimientoDinamico() {
     const canvas = document.getElementById("graficaCrecimiento");
     if (!canvas) return;
 
@@ -2031,53 +2073,51 @@ async function inicializarCalculoCrecimientoDinamico(totalClientesBD) {
         const token = localStorage.getItem('token');
         const headersSeguros = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-        // 1. Obtenemos los clientes iniciales (Enero 2024)
-        const respuesta = await fetch(`${baseUrl}/dashboard/clientesIniciales`, { 
+        // 1. Obtenemos PRIMERO los clientes iniciales (P0 - Los 12 pioneros de Enero 2024)
+        // Esto es necesario antes de cualquier cálculo de k
+        const respuestaP0 = await fetch(`${baseUrl}/dashboard/clientesIniciales`, { 
             headers: headersSeguros 
         });
         
-        let clientesIniciales = [];
-        if (respuesta.ok) {
-            clientesIniciales = await respuesta.json();
+        if (respuestaP0.ok) {
+            const clientesIniciales = await respuestaP0.json();
+            // Si la BD no tiene datos de 2024, usamos el 12 por defecto para no romper el modelo
+            P0_dinamico = clientesIniciales.length > 0 ? clientesIniciales.length : 12;
         }
-        
-        P0_dinamico = clientesIniciales.length > 0 ? clientesIniciales.length : 12;
-        
-        const P_actual = totalClientesBD > 0 ? totalClientesBD : 1;
 
-        // 2. Calculamos la tasa k en tiempo real
-        const k_crudo = Math.log(P_actual / P0_dinamico) / t_actual;
-        k_dinamico = truncar4(k_crudo);
+        // 2. Disparamos el primer cálculo automático
+        // Al llamar a esta función, ella misma consultará la población en el rango
+        // que tengan los selectores por defecto (ej. Marzo 2026 - Enero 2030)
+        await window.calcularCrecimiento();
 
-        // 3. Ejecutamos el cálculo inicial con el valor del input
-        const inputTiempo = document.getElementById("input-tiempo");
-        if (inputTiempo && inputTiempo.value) {
-            window.calcularCrecimiento();
-        }
     } catch (error) {
         console.error("Error al inicializar el modelo de crecimiento:", error);
+        // Fallback de seguridad para que la gráfica no aparezca vacía si falla la API
+        P0_dinamico = 12;
+        window.calcularCrecimiento();
     }
 }
+
 // ==========================================
 // ARRANQUE DE LA APLICACIÓN
 // ==========================================
-// Se encarga de arrancar todas las funciones cuando la página carga
 document.addEventListener("DOMContentLoaded", () => {
-    // Componentes principales
+    // Componentes y módulos generales
     cargarComponentesAdmin();
     inicializarSepomex();
     inicializarOjoPassword();
     cargarDashboardAdmin();
-
-    // Módulos según la página en la que te encuentres
     iniciarModuloClientes();
     iniciarModuloWeb();
     iniciarModuloPersonal();
+
+    // Lógica de páginas específicas
     if (document.querySelector('title').innerText.includes('Buzón')) {
         iniciarModuloMensajes();
         const formResp = document.getElementById('formulario-respuesta');
         if (formResp) formResp.addEventListener('submit', enviarRespuestaMensaje);
     }
+    
     if (document.getElementById('tabla-productos-admin')) {
         cargarTablaAdminProductos();
         document.getElementById('formulario-producto').addEventListener('submit', gestionarSubmitProducto);
@@ -2087,22 +2127,11 @@ document.addEventListener("DOMContentLoaded", () => {
         cargarTablaAdminReparaciones();
         document.getElementById('formulario-reparacion').addEventListener('submit', gestionarSubmitReparacion);
     }
-    // === NUEVO: Disparador para la página de la Ecuación ===
+
+    // === MODIFICACIÓN: Nuevo arranque para el Modelo de Crecimiento ===
     if (document.getElementById('graficaCrecimiento')) {
-        // Hacemos una petición rápida para saber cuántos clientes hay
-        const tokenStr = localStorage.getItem('token');
-        fetch(`${baseUrl}/dashboard/totales`, { 
-            headers: { 'Authorization': `Bearer ${tokenStr}` } 
-        })
-        .then(res => res.json())
-        .then(data => {
-            // Mandamos el total de clientes reales a tu función matemática
-            inicializarCalculoCrecimientoDinamico(data.total_clientes || 0);
-        })
-        .catch(err => {
-            console.error("Error obteniendo total de clientes para la ED", err);
-            // Si falla, lo iniciamos con 1 cliente para que no se rompa la app
-            inicializarCalculoCrecimientoDinamico(1); 
-        });
+        // Ya no necesitamos el fetch de /totales aquí, 
+        // porque la función de inicialización ahora es autosuficiente.
+        inicializarCalculoCrecimientoDinamico();
     }
 });
